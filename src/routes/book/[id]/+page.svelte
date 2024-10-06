@@ -1,6 +1,8 @@
 <script lang="ts">
+	import BookingDateTime from '$lib/components/BookingDateTime.svelte';
 	import BookingType from '$lib/components/BookingType.svelte';
 	import type { Booking } from 'types/Booking';
+	import type { Day } from 'types/Day';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -19,7 +21,7 @@
 		{
 			durations: [{ hours: 0, minutes: 30 }],
 			name: 'Tutor Meeting',
-			online: true,
+			online: false,
 			inPerson: true
 		},
 		{
@@ -32,13 +34,82 @@
 			inPerson: false
 		}
 	];
+
+	let days: Day[] = [
+		{
+			day: new Date('2024-10-5'),
+			workHours: { start: { hours: 9, minutes: 0 }, end: { hours: 17, minutes: 0 } },
+			inPerson: true,
+			online: true,
+			unavailability: [{ start: { hours: 12, minutes: 0 }, end: { hours: 13, minutes: 0 } }],
+			availableTimes: [
+				{ hours: 9, minutes: 0 },
+				{ hours: 9, minutes: 30 },
+				{ hours: 10, minutes: 0 },
+				{ hours: 10, minutes: 30 },
+				{ hours: 12, minutes: 0 },
+				{ hours: 12, minutes: 30 },
+				{ hours: 13, minutes: 0 },
+				{ hours: 13, minutes: 30 }
+			]
+		},
+		{
+			day: new Date('2024-10-6'),
+			workHours: { start: { hours: 9, minutes: 0 }, end: { hours: 17, minutes: 0 } },
+			inPerson: true,
+			online: true,
+			unavailability: [{ start: { hours: 12, minutes: 0 }, end: { hours: 13, minutes: 0 } }],
+			availableTimes: [
+				{ hours: 9, minutes: 0 },
+				{ hours: 9, minutes: 30 },
+				{ hours: 10, minutes: 0 },
+				{ hours: 10, minutes: 30 }
+			]
+		},
+		{
+			day: new Date('2024-10-10'),
+			workHours: { start: { hours: 9, minutes: 0 }, end: { hours: 17, minutes: 0 } },
+			inPerson: true,
+			online: true,
+			unavailability: [{ start: { hours: 12, minutes: 0 }, end: { hours: 13, minutes: 0 } }],
+			availableTimes: [
+				{ hours: 9, minutes: 0 },
+				{ hours: 9, minutes: 30 }
+			]
+		},
+		{
+			day: new Date('2024-10-12'),
+			workHours: { start: { hours: 9, minutes: 0 }, end: { hours: 17, minutes: 0 } },
+			inPerson: true,
+			online: true,
+			unavailability: [{ start: { hours: 12, minutes: 0 }, end: { hours: 13, minutes: 0 } }],
+			availableTimes: [
+				{ hours: 9, minutes: 0 },
+				{ hours: 9, minutes: 30 }
+			]
+		},
+		{
+			day: new Date('2024-11-12'),
+			workHours: { start: { hours: 9, minutes: 0 }, end: { hours: 17, minutes: 0 } },
+			inPerson: true,
+			online: true,
+			unavailability: [{ start: { hours: 12, minutes: 0 }, end: { hours: 13, minutes: 0 } }],
+			availableTimes: [
+				{ hours: 9, minutes: 0 },
+				{ hours: 9, minutes: 30 }
+			]
+		}
+	];
 </script>
 
 <div class="w-full space-y-6">
-	<BookingType {bookings} />
+	<div class="space-y-2">
+		<h3>Booking</h3>
+		<BookingType {bookings} />
+	</div>
 
 	<div class="space-y-2">
-		<h3>Date and Time</h3>
-		<div class="grid grid-cols-2"></div>
+		<h3>Date and time</h3>
+		<BookingDateTime {days} />
 	</div>
 </div>

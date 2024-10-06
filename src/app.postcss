@@ -38,3 +38,67 @@ h5 {
 h6 {
 	@apply h6;
 }
+
+.air-datepicker {
+	@apply !bg-surface-200-700-token  !border-surface-400-500-token !border-token rounded-container-token !text-surface-500-400-token w-[300px];
+}
+
+.air-datepicker-nav {
+	@apply !border-surface-400-500-token !border-b-inherit;
+}
+
+.air-datepicker-body--day-name {
+	@apply !text-secondary-800-100-token;
+}
+
+.air-datepicker-nav--title {
+	@apply hover:bg-surface-hover-token !text-lg;
+}
+
+.air-datepicker-nav--action {
+	@apply !text-surface-400-500-token hover:bg-surface-hover-token;
+}
+
+.air-datepicker-cell {
+	@apply !rounded-token text-base hover:variant-soft select-none;
+}
+
+.air-datepicker-cell.-day- {
+	@apply aspect-square;
+}
+
+.air-datepicker-cell.-month- {
+	@apply py-2;
+}
+
+.air-datepicker-cell.-year- {
+	@apply py-2;
+}
+
+.air-datepicker-cell.-current- {
+	@apply border-token border-secondary-700-200-token;
+}
+
+.air-datepicker-cell.--disabled-- {
+	@apply opacity-50 hover:variant-ghost;
+}
+
+.air-datepicker-cell.-selected- {
+	@apply !variant-filled hover:variant-ghost;
+}
+
+.air-datepicker-body--day-name {
+	@apply text-base-token text-base;
+}
+
+.air-datepicker-body--cells {
+	grid-auto-rows: auto !important;
+}
+
+.air-datepicker-nav--title {
+	@apply text-base;
+}
+
+.air-datepicker-cell {
+	@apply text-lg md:text-base;
+}

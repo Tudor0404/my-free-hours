@@ -1,4 +1,6 @@
-export type TimeSection = {
-	start: Date;
-	end: Date;
+import type { HoursMinutes } from './Duration';
+
+export type DayTimeRange = {
+	start: HoursMinutes;
+	end: HoursMinutes;
 };

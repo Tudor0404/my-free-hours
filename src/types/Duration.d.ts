@@ -1,4 +1,4 @@
-export type Duration = {
+export type HoursMinutes = {
 	hours: number;
 	minutes: number;
 };
