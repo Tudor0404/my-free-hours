@@ -5,6 +5,7 @@
 	import type { Day } from 'types/Day';
 	import dayjs from 'dayjs';
 	import { singleOrFirstDayjs, timeToString } from '../../utils/time';
+	import DateBadge from './DateBadge.svelte';
 
 	export let days: Day[];
 	days = days.sort((d1, d2) => d1.day.getMilliseconds() - d2.day.getMilliseconds());
@@ -30,15 +31,15 @@
 				selectedTime = 0;
 			},
 			onRenderCell: ({ date, cellType }) => {
+				if (cellType !== 'day') {
+					return {};
+				}
+
 				let index = days.findIndex((d) => dayjs(d.day).isSame(date, 'day'));
 				if (index === -1) {
 					return {
 						disabled: true
 					};
-				}
-
-				if (cellType !== 'day') {
-					return {};
 				}
 
 				let availableTimeCount = days[index].availableTimes.length;

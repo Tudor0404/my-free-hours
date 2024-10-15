@@ -44,24 +44,6 @@
 				</RadioItem>
 			{/each}
 		</RadioGroup>
-
-		<!-- {#if !bookings[selectedType].inPerson}
-			<div class="flex justify-start items-center flex-row gap-2 text-warning-800">
-				<Icon icon="material-symbols:info-outline" class="w-6 h-6" />
-				<p>
-					This type only allows
-					<strong>online</strong> meetings
-				</p>
-			</div>
-		{:else if !bookings[selectedType].online}
-			<div class="flex justify-start items-center flex-row gap-2 text-warning-800">
-				<Icon icon="material-symbols:info-outline" class="w-6 h-6" />
-				<p>
-					This type only allows
-					<strong>in-person</strong> meetings
-				</p>
-			</div>
-		{/if} -->
 	</div>
 
 	<div class="w-full flex-1">
