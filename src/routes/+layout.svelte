@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import '../app.postcss';
 	import { AppShell, AppBar, Avatar } from '@skeletonlabs/skeleton';
 	import duration from 'dayjs/plugin/duration';
@@ -7,13 +7,14 @@
 	import 'dayjs/locale/en-gb';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
-
-	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { appBarSubTitle } from '../stores/appbar';
+
+	// Floating UI for Popups
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
+	//dayjs
 	dayjs.extend(duration);
 	dayjs.extend(LocalisedFormat);
 	dayjs.locale('en-gb');
@@ -48,9 +49,19 @@
 					{/if}
 				</div>
 			</svelte:fragment>
-			<!-- <svelte:fragment slot="trail">
-				<Avatar class="w-9" />
-			</svelte:fragment> -->
+			<svelte:fragment slot="trail">
+				{#await supabase.auth.getUser() then user}
+					{#if user.data.user}
+						<a href="/account" class="btn btn-sm variant-filled" data-sveltekit-preload-data="hover"
+							>Dashboard</a
+						>
+					{:else}
+						<a href="/auth" class="btn btn-sm variant-filled" data-sveltekit-preload-data="hover"
+							>Login</a
+						>
+					{/if}
+				{/await}
+			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 	<!-- Page Route Content -->

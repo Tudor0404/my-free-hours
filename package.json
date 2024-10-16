@@ -40,7 +40,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@floating-ui/dom": "1.6.11",
+		"@floating-ui/dom": "^1.6.11",
 		"@supabase/ssr": "^0.5.1",
 		"air-datepicker": "^3.5.3",
 		"dayjs": "^1.11.13",
