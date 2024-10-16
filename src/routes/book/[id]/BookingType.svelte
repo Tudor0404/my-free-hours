@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { ListBox, ListBoxItem, RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
-	import Icon from '@iconify/svelte';
-	import type { Booking } from 'types/Booking';
-	import type { HoursMinutes } from 'types/Duration';
-	import { areDurationsEqual, durationToString, getAllPossibleDurations } from '../../utils/time';
+	import type { Booking } from '$types/Booking';
+	import type { HoursMinutes } from '$types/Duration';
+	import { areDurationsEqual, durationToString, getAllPossibleDurations } from '$utils/time';
 
 	export let bookings: Booking[];
 

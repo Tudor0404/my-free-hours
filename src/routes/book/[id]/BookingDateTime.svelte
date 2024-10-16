@@ -2,9 +2,9 @@
 	import { onMount } from 'svelte';
 	import AirDatepicker from 'air-datepicker';
 	import localeEn from 'air-datepicker/locale/en';
-	import type { Day } from 'types/Day';
+	import type { Day } from '$types/Day';
 	import dayjs from 'dayjs';
-	import { singleOrFirstDayjs, timeToString } from '../../utils/time';
+	import { singleOrFirstDayjs, timeToString } from '$utils/time';
 	import DateBadge from './DateBadge.svelte';
 
 	export let days: Day[];

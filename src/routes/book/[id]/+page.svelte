@@ -1,8 +1,8 @@
 <script lang="ts">
-	import BookingDateTime from '$lib/components/BookingDateTime.svelte';
-	import BookingType from '$lib/components/BookingType.svelte';
-	import type { Booking } from 'types/Booking';
-	import type { Day } from 'types/Day';
+	import BookingDateTime from './BookingDateTime.svelte';
+	import BookingType from './BookingType.svelte';
+	import type { Booking } from '$types/Booking';
+	import type { Day } from '$types/Day';
 
 	/** @type {import('./$types').PageData} */
 	export let data;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppShell, AppBar, Avatar } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import duration from 'dayjs/plugin/duration';
 	import LocalisedFormat from 'dayjs/plugin/localizedFormat';
 	import dayjs from 'dayjs';
@@ -10,6 +10,7 @@
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { appBarSubTitle } from '../stores/appbar';
+	import Icon from '@iconify/svelte';
 
 	// Floating UI for Popups
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
@@ -50,7 +51,17 @@
 				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				{#await supabase.auth.getUser() then user}
+				{#await supabase.auth.getUser()}
+					<a href="#" class="btn btn-sm variant-filled" data-sveltekit-preload-data="hover">
+						<div class="relative">
+							<Icon
+								icon="tabler:loader-2"
+								class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 animate-spin h-4 w-4"
+							/>
+							<span class="text-transparent">Dashboard</span>
+						</div>
+					</a>
+				{:then user}
 					{#if user.data.user}
 						<a href="/account" class="btn btn-sm variant-filled" data-sveltekit-preload-data="hover"
 							>Dashboard</a
