@@ -1,0 +1,51 @@
+<script lang="ts">
+	import ButtonLoader from '$lib/components/ButtonLoader.svelte';
+	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import { appBarSubTitle } from '$stores/appbar';
+
+	export let data;
+	$: ({ supabase } = data);
+</script>
+
+<AppShell>
+	<svelte:fragment slot="header">
+		<!-- App Bar -->
+		<AppBar>
+			<svelte:fragment slot="lead">
+				<div class="text-xl flex flex-row gap-2">
+					<a href="/">
+						{#if $appBarSubTitle}
+							<strong class="text-xl">MFH</strong>
+						{:else}
+							<strong class="text-xl">My Free Hours</strong>
+						{/if}
+					</a>
+					{#if $appBarSubTitle}
+						<p class="text-xl">{$appBarSubTitle}</p>
+					{/if}
+				</div>
+			</svelte:fragment>
+			<svelte:fragment slot="trail">
+				{#await supabase.auth.getUser()}
+					<ButtonLoader class="btn-sm variant-filled-primary" text="Dashboard" />
+				{:then user}
+					{#if user.data.user}
+						<a
+							href="/dashboard"
+							class="btn btn-sm variant-filled-primary"
+							data-sveltekit-preload-data="hover">Dashboard</a
+						>
+					{:else}
+						<a
+							href="/auth"
+							class="btn btn-sm variant-filled-primary"
+							data-sveltekit-preload-data="hover">Login</a
+						>
+					{/if}
+				{/await}
+			</svelte:fragment>
+		</AppBar>
+	</svelte:fragment>
+	<!-- Page Route Content -->
+	<slot />
+</AppShell>

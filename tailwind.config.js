@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { MFHTheme } from './src/lib/theme';
 
 import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
@@ -18,12 +19,7 @@ export default {
 		typography,
 		skeleton({
 			themes: {
-				preset: [
-					{
-						name: 'hamlindigo',
-						enhancements: true
-					}
-				]
+				custom: [MFHTheme]
 			}
 		})
 	]

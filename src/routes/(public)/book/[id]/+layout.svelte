@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { appBarSubTitle } from '../../../stores/appbar';
+	import { appBarSubTitle } from '$stores/appbar';
 
 	onMount(() => {
 		appBarSubTitle.set('Book a meeting with NAME');

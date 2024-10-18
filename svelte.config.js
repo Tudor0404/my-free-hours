@@ -18,7 +18,8 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$types: 'src/types',
-			$utils: 'src/utils'
+			$utils: 'src/utils',
+			$stores: 'src/stores'
 		}
 	}
 };

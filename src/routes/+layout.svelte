@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import duration from 'dayjs/plugin/duration';
 	import LocalisedFormat from 'dayjs/plugin/localizedFormat';
 	import dayjs from 'dayjs';
@@ -9,8 +8,6 @@
 	import { onMount } from 'svelte';
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
-	import { appBarSubTitle } from '../stores/appbar';
-	import Icon from '@iconify/svelte';
 
 	// Floating UI for Popups
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
@@ -35,46 +32,4 @@
 	});
 </script>
 
-<!-- App Shell -->
-<AppShell>
-	<svelte:fragment slot="header">
-		<!-- App Bar -->
-		<AppBar>
-			<svelte:fragment slot="lead">
-				<div class="text-xl flex flex-row gap-2">
-					<a href="/">
-						<strong class="text-xl uppercase">MFH</strong>
-					</a>
-					{#if $appBarSubTitle}
-						<p class="text-xl">{$appBarSubTitle}</p>
-					{/if}
-				</div>
-			</svelte:fragment>
-			<svelte:fragment slot="trail">
-				{#await supabase.auth.getUser()}
-					<a href="#" class="btn btn-sm variant-filled" data-sveltekit-preload-data="hover">
-						<div class="relative">
-							<Icon
-								icon="tabler:loader-2"
-								class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 animate-spin h-4 w-4"
-							/>
-							<span class="text-transparent">Dashboard</span>
-						</div>
-					</a>
-				{:then user}
-					{#if user.data.user}
-						<a href="/account" class="btn btn-sm variant-filled" data-sveltekit-preload-data="hover"
-							>Dashboard</a
-						>
-					{:else}
-						<a href="/auth" class="btn btn-sm variant-filled" data-sveltekit-preload-data="hover"
-							>Login</a
-						>
-					{/if}
-				{/await}
-			</svelte:fragment>
-		</AppBar>
-	</svelte:fragment>
-	<!-- Page Route Content -->
-	<slot />
-</AppShell>
+<slot />
