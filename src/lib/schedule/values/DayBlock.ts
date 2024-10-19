@@ -42,7 +42,7 @@ export default class DayBlock extends ValueBlock<Dayjs> {
 				}
 				return false;
 			case 'BETWEEN':
-				if (v.isBetween(this.values[0], this.values[1], 'day')) {
+				if (v.isBetween(this.values[0], this.values[1], 'day', '[]')) {
 					return true;
 				}
 				return false;

@@ -1,4 +1,7 @@
 <script lang="ts">
+	import test from '$lib/schedule/test';
+
+	test();
 </script>
 
 <div class="flex flex-col gap-2">

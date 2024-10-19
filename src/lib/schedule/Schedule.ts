@@ -23,4 +23,8 @@ export default class Schedule {
 
 		return allowedDates;
 	}
+
+	public get_object(): Object {
+		return this.root.get_object();
+	}
 }

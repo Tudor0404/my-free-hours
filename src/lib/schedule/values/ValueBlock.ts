@@ -15,4 +15,16 @@ export default abstract class ValueBlock<V> implements ValueBlockInterface<V> {
 	}
 
 	abstract verify_date(value: Dayjs): boolean;
+
+	get_object(): Object {
+		return {
+			field: this.field,
+			operator: this.operator,
+			values: this.values
+		};
+	}
+
+	toString(): string {
+		return JSON.stringify(this.get_object(), null);
+	}
 }

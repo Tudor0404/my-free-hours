@@ -44,7 +44,7 @@ export default class YearBlock extends ValueBlock<number> {
 				}
 				return false;
 			case 'BETWEEN':
-				if (this.values[0] >= v && v <= this.values[1]) {
+				if (this.values[0] <= v && v <= this.values[1]) {
 					return true;
 				}
 				return false;
