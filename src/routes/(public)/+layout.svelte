@@ -7,7 +7,7 @@
 	$: ({ supabase } = data);
 </script>
 
-<AppShell>
+<AppShell slotHeader="shadow-sm [&>div]:p-3">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar>

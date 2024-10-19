@@ -64,7 +64,7 @@
 		$page.url.pathname?.includes(href) ? 'bg-primary-active-token' : '';
 </script>
 
-<AppShell>
+<AppShell slotHeader="shadow-sm [&>div]:p-3" slotSidebarLeft="shadow-inner">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar>
@@ -112,5 +112,11 @@
 		</section>
 	</svelte:fragment>
 
-	<slot />
+	<div class="w-full h-full p-4">
+		<div
+			class="card shadow-md container min-h-[50%] flex flex-col gap-4 justify-start items-start p-4"
+		>
+			<slot />
+		</div>
+	</div>
 </AppShell>

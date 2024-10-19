@@ -2,6 +2,9 @@
 	import '../app.postcss';
 	import duration from 'dayjs/plugin/duration';
 	import LocalisedFormat from 'dayjs/plugin/localizedFormat';
+	import isBetween from 'dayjs/plugin/isBetween';
+	import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+	import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 	import dayjs from 'dayjs';
 	import 'dayjs/locale/en-gb';
 	import { invalidate } from '$app/navigation';
@@ -15,6 +18,9 @@
 	//dayjs
 	dayjs.extend(duration);
 	dayjs.extend(LocalisedFormat);
+	dayjs.extend(isBetween);
+	dayjs.extend(isSameOrAfter);
+	dayjs.extend(isSameOrBefore);
 	dayjs.locale('en-gb');
 
 	// Supabase
