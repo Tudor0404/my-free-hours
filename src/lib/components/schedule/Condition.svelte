@@ -12,11 +12,10 @@
 
 	export let onDelete: (() => void) | null = null;
 
-	$: () => {
-		console.log(condition.get_object());
-	};
+	$: condition.rules = [...condition.rules];
 
 	function deleteRule(index: number) {
+		console.log(index);
 		condition.delete_rule(index);
 		condition.rules = [...condition.rules];
 	}
@@ -37,13 +36,16 @@
 		/>
 	</div>
 	<div class="flex relative flex-col ml-4 border-l-2 border-primary-200">
-		{#each condition.rules as rule, i}
-			{#if rule instanceof DayBlock}
-				<DayField block={rule} onDelete={() => deleteRule(i)} />
-			{:else if rule instanceof DayOfWeekBlock}
-				<DayOfWeekField block={rule} onDelete={() => deleteRule(i)} />
-			{/if}
-		{/each}
+		{#key condition.rules.length}
+			{#each condition.rules as rule, i}
+				{#if rule instanceof DayBlock}
+					<DayField bind:block={rule} onDelete={() => deleteRule(i)} />
+				{:else if rule instanceof DayOfWeekBlock}
+					<DayOfWeekField bind:block={rule} onDelete={() => deleteRule(i)} />
+				{/if}
+			{/each}
+		{/key}
+
 		{#if condition.rules.length > 0}
 			<div class="absolute bg-surface-100 w-[2rem] h-[1.25rem] -bottom-[1px] -left-[1rem]"></div>
 		{/if}

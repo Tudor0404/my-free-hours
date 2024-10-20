@@ -52,7 +52,10 @@ export default class ConditionBlock {
 			return false;
 		}
 
-		this.rules = [...this.rules.slice(0, index), ...this.rules.slice(index + 1, this.rules.length)];
+		console.log(this.get_object());
+		this.rules.splice(index, 1);
+		console.log(this.get_object());
+
 		this.cached_rules = null;
 		return true;
 	}

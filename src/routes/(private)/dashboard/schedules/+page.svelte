@@ -7,7 +7,7 @@
 	<h3>Your schedules</h3>
 </div>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 w-full">
 	<h3>Create a new schedule</h3>
 	<form class="flex flex-col gap-2">
 		<label class="label">

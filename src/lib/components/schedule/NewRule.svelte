@@ -5,9 +5,11 @@
 	export let createDay: () => void;
 	export let createWeekDay: () => void;
 
+	let rand = Math.random() * 10000;
+
 	const newRulePopup: PopupSettings = {
 		event: 'click',
-		target: 'newRulePopup',
+		target: 'newRulePopup' + rand,
 		placement: 'right'
 	};
 </script>
@@ -18,7 +20,7 @@
 	use:popup={newRulePopup}><Icon class="w-full h-full" icon="tabler:playlist-add" /></button
 >
 
-<div class="card w-[200px] shadow-xl p-2 space-y-2 z-10" data-popup="newRulePopup">
+<div class="card w-[200px] shadow-xl p-2 space-y-2 z-10" data-popup={'newRulePopup' + rand}>
 	<div>
 		<span class="text-tertiary-900"> Fields </span>
 		<div class="grid grid-cols-2 gap-1 w-full">
