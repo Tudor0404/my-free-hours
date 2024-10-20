@@ -1,31 +1,11 @@
 import type { Operator } from '$types/Schedule.Operator';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import ValueBlock from './ValueBlock';
 
 export default class DayBlock extends ValueBlock<Dayjs> {
 	constructor(operator: 'IN', values: Dayjs[]);
 	constructor(operator: 'BETWEEN', values: [Dayjs, Dayjs]);
 	constructor(operator: Operator, values: Dayjs[]) {
-		if (values.length == 0) {
-			throw new Error('At least one value must be supplied');
-		}
-
-		switch (operator) {
-			case 'IN':
-				if (values.length == 0) {
-					throw new Error('At least one value must be supplied');
-				}
-				break;
-			case 'BETWEEN':
-				if (values.length != 2) {
-					throw new Error('Two values must be supplied with the between operator');
-				}
-				if (values[0] > values[1]) {
-					throw new Error('The first value must be smaller or equal to the second');
-				}
-				break;
-		}
-
 		super(
 			'DAY',
 			operator,

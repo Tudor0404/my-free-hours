@@ -1,36 +1,16 @@
 import type { Operator } from '$types/Schedule.Operator';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import ValueBlock from './ValueBlock';
 
 export default class DayOfWeekBlock extends ValueBlock<number> {
 	constructor(operator: 'IN', values: number[]);
 	constructor(operator: 'BETWEEN', values: [number, number]);
 	constructor(operator: Operator, values: number[]) {
-		if (values.length == 0) {
-			throw new Error('At least one value must be supplied');
-		}
-
 		values.forEach((v) => {
 			if (v < 0 && v > 6) {
 				throw new Error('Supplied values must be within the range 0 to 6');
 			}
 		});
-
-		switch (operator) {
-			case 'IN':
-				if (values.length == 0) {
-					throw new Error('At least one value must be supplied');
-				}
-				break;
-			case 'BETWEEN':
-				if (values.length != 2) {
-					throw new Error('Two values must be supplied with the between operator');
-				}
-				if (values[0] > values[1]) {
-					throw new Error('The first value must be smaller or equal to the second');
-				}
-				break;
-		}
 
 		super('DAY_OF_WEEK', operator, values);
 	}

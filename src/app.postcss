@@ -40,7 +40,11 @@ h6 {
 }
 
 .air-datepicker {
-	@apply !bg-surface-200-700-token  !border-surface-400-500-token !border-token rounded-container-token !text-surface-500-400-token w-[300px] md:w-[280px];
+	@apply !bg-surface-200-700-token  !border-surface-400-500-token !border-token rounded-container-token !text-surface-500-400-token;
+}
+
+.calendar-full .air-datepicker {
+	@apply w-[300px] md:w-[280px];
 }
 
 .air-datepicker-nav {
@@ -52,7 +56,11 @@ h6 {
 }
 
 .air-datepicker-nav--title {
-	@apply hover:bg-surface-hover-token !text-lg;
+	@apply hover:bg-surface-hover-token;
+}
+
+.calendar-full .air-datepicker-nav--title {
+	@apply !text-lg;
 }
 
 .air-datepicker-nav--action {
@@ -63,15 +71,15 @@ h6 {
 	@apply !rounded-token text-base hover:variant-soft select-none;
 }
 
-.air-datepicker-cell.-day- {
+.calendar-full .air-datepicker-cell.-day- {
 	@apply aspect-square;
 }
 
-.air-datepicker-cell.-month- {
+.calendar-full .air-datepicker-cell.-month- {
 	@apply py-2;
 }
 
-.air-datepicker-cell.-year- {
+.calendar-full .air-datepicker-cell.-year- {
 	@apply py-2;
 }
 
@@ -91,14 +99,18 @@ h6 {
 	@apply text-base-token text-base;
 }
 
-.air-datepicker-body--cells {
-	grid-auto-rows: auto !important;
-}
-
-.air-datepicker-nav--title {
+.calendar-full .air-datepicker-body--day-name {
 	@apply text-base;
 }
 
-.air-datepicker-cell {
+.calendar-full .air-datepicker-body--cells {
+	grid-auto-rows: auto !important;
+}
+
+.calendar-full .air-datepicker-nav--title {
+	@apply text-base;
+}
+
+.calendar-full .air-datepicker-cell {
 	@apply text-lg md:text-base;
 }

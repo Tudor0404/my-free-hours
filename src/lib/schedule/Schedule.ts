@@ -1,4 +1,4 @@
-import type { Dayjs } from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import ConditionBlock from './ConditionBlock';
 
 export default class Schedule {

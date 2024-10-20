@@ -72,10 +72,11 @@
 </svelte:head>
 
 <div class="w-full flex flex-col md:flex-row justify-start items-start gap-4">
-	<div id="calendar" class="flex flex-row justify-center md:justify-start w-full md:w-fit"></div>
+	<div
+		id="calendar"
+		class="flex flex-row justify-center md:justify-start w-full md:w-fit calendar-full"
+	></div>
 	<div class="w-full flex flex-col items-end">
-		<!-- <h4>{dayjs(days[selectedDate].day).format('LL')}</h4> -->
-
 		<div
 			class="flex flex-wrap flex-row justify-center md:justify-end items-start gap-2 h-fit w-full"
 		>

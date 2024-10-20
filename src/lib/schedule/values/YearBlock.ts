@@ -1,5 +1,5 @@
 import type { Operator } from '$types/Schedule.Operator';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import ValueBlock from './ValueBlock';
 
 export default class YearBlock extends ValueBlock<number> {

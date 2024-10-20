@@ -7,6 +7,7 @@ export interface ValueBlockInterface<V> {
 	values: V[];
 
 	verify_date(value: Dayjs): boolean;
+	verify_values(): boolean;
 	get_object(): Object;
 	toString(): string;
 }

@@ -1,16 +1,18 @@
 import type { Condition } from '$types/Schedule.Condition';
-import type { Dayjs } from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import ValueBlock from './values/ValueBlock';
+
+type Rule = ConditionBlock | ValueBlock<any> | string;
 
 export default class ConditionBlock {
 	private condition: Condition;
-	private rules: (ConditionBlock | ValueBlock<any> | string)[];
-	private cached_rules: (ConditionBlock | ValueBlock<any> | string)[] | null = null;
+	rules: Rule[];
+	private cached_rules: Rule[] | null = null;
 
 	/**
 	 * Returns the rules array such that ValueBlocks are prioritised (quicker to evaluate)
 	 */
-	get sorted_rules(): (ConditionBlock | ValueBlock<any> | string)[] {
+	private get sorted_rules(): Rule[] {
 		if (this.cached_rules == null) {
 			this.cached_rules = this.rules.toSorted((item1, item2) => {
 				if (item1 instanceof ValueBlock) {
