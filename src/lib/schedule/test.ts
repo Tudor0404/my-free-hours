@@ -11,7 +11,8 @@ export default function test() {
 	const s = new Schedule();
 
 	const c = new ConditionBlock('AND');
-	c.add_rule(new DayOfWeekBlock('BETWEEN', [0, 6]));
+	c.add_rule(new DayOfWeekBlock('BETWEEN', [0, 4]));
+	c.add_rule(new DateBlock('BETWEEN', [0, 15]));
 
 	const c2 = new ConditionBlock('OR');
 	c2.add_rule(new TimeBlock({ hours: 9, minutes: 0 }, { hours: 13, minutes: 0 }));
@@ -22,7 +23,7 @@ export default function test() {
 
 	s.root = c;
 
-	const res = s.get_times_within(dayjs(), dayjs().add(1, 'day'));
+	const res = s.get_times_within(dayjs(), dayjs().add(1, 'year'));
 
 	console.log(res);
 }

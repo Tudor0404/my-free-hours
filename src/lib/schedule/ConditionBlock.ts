@@ -185,7 +185,7 @@ export default class ConditionBlock {
 		return {
 			condition: this.condition,
 			rules: this.rules.map((r) => {
-				if (r instanceof ConditionBlock || r instanceof ValueBlock) {
+				if (r instanceof ConditionBlock || r instanceof ValueBlock || r instanceof TimeBlock) {
 					return r.get_object();
 				} else {
 					return {
