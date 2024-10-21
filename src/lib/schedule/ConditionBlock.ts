@@ -55,7 +55,6 @@ export default class ConditionBlock {
 		}
 
 		this.rules.splice(index, 1);
-
 		this.cached_rules = null;
 		return true;
 	}
@@ -73,6 +72,10 @@ export default class ConditionBlock {
 		let validRanges: TimeRange[] = [];
 		switch (this.condition) {
 			case 'OR':
+				if (this.rules.length == 0) {
+					return [];
+				}
+
 				for (let i = 0; i < this.sorted_rules.length; i++) {
 					const r = this.sorted_rules[i];
 
@@ -102,6 +105,10 @@ export default class ConditionBlock {
 				return validRanges;
 
 			case 'AND':
+				if (this.rules.length == 0) {
+					return [TimeBlock.FULL_TIME_RANGE];
+				}
+
 				for (let i = 0; i < this.sorted_rules.length; i++) {
 					const r = this.sorted_rules[i];
 

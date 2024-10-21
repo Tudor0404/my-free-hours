@@ -21,15 +21,13 @@ export function getAllPossibleTimes(bookings: Booking[]): HoursMinutes[] {
 
 	bookings.forEach((b) => {
 		b.durations.forEach((d) => {
-			if (
-				durations.findIndex((other) => other.hours == d.hours && other.minutes == d.minutes) == -1
-			) {
+			if (durations.findIndex((other) => timeOp(other, '=', d)) == -1) {
 				durations.push(d);
 			}
 		});
 	});
 
-	durations.sort((a, b) => a.hours * 60 + a.minutes - (b.hours * 60 + b.minutes));
+	durations.sort((a, b) => getAbsoluteTime(a) - getAbsoluteTime(b));
 
 	return durations;
 }
@@ -88,4 +86,27 @@ export function areTimeRangesDisjoint(a: TimeRange, b: TimeRange) {
 	const endB = getAbsoluteTime(b.end);
 
 	return endA < startB || endB < startA;
+}
+
+export function createTime(hours: number, minutes: number): HoursMinutes {
+	if (hours < 0 || hours > 24) {
+		throw new Error('Hours must be within the 0 to 24 range');
+	} else if (minutes < 0 || minutes > 59) {
+		throw new Error('Minutes must be within the 0 to 59 range');
+	} else if (hours == 24 && minutes != 0) {
+		throw new Error('When the hours is set to 24, minutes must be 0');
+	}
+
+	return {
+		hours: hours,
+		minutes: minutes
+	};
+}
+
+export function createRange(start: HoursMinutes, end: HoursMinutes): TimeRange {
+	if (timeOp(start, '>', end)) {
+		throw new Error('The start must be smaller or equal than the end');
+	}
+
+	return { start: start, end: end };
 }

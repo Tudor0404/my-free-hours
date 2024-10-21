@@ -1,6 +1,12 @@
 import type { HoursMinutes } from '$types/HoursMinutes';
 import type { TimeRange } from '$types/TimeRange';
-import { areTimeRangesDisjoint, getAbsoluteTime, isTimeRangeWithin, timeOp } from '$utils/time';
+import {
+	areTimeRangesDisjoint,
+	createRange,
+	getAbsoluteTime,
+	isTimeRangeWithin,
+	timeOp
+} from '$utils/time';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class TimeBlock {
@@ -18,10 +24,18 @@ export default class TimeBlock {
 			minutes: 0
 		}
 	};
+	static EARLIEST_TIME: HoursMinutes = {
+		hours: 0,
+		minutes: 0
+	};
+	static LATEST_TIME: HoursMinutes = {
+		hours: 24,
+		minutes: 0
+	};
 
 	constructor(
-		start: HoursMinutes = { hours: 0, minutes: 0 },
-		end: HoursMinutes = { hours: 24, minutes: 0 }
+		start: HoursMinutes = TimeBlock.EARLIEST_TIME,
+		end: HoursMinutes = TimeBlock.LATEST_TIME
 	) {
 		this.uuid = uuidv4();
 		this.start = start;
@@ -29,10 +43,7 @@ export default class TimeBlock {
 	}
 
 	get timeRange(): TimeRange {
-		return {
-			start: this.start,
-			end: this.end
-		};
+		return createRange(this.start, this.end);
 	}
 
 	public static time_conjunction(left: TimeRange[], right: TimeRange[]): TimeRange[] {
@@ -63,18 +74,10 @@ export default class TimeBlock {
 				}
 				// overlap
 				else {
-					console.log('overlap');
-					console.log(l, r);
 					if (timeOp(l.start, '>=', r.start) && timeOp(l.start, '<=', r.end)) {
-						newRanges.push({
-							start: l.start,
-							end: r.end
-						});
+						newRanges.push(createRange(l.start, r.end));
 					} else {
-						newRanges.push({
-							start: r.start,
-							end: l.end
-						});
+						newRanges.push(createRange(r.start, l.end));
 					}
 				}
 			}
@@ -102,10 +105,7 @@ export default class TimeBlock {
 
 		// start
 		if (getAbsoluteTime(ranges[0].start) != 0) {
-			results.push({
-				start: { hours: 0, minutes: 0 },
-				end: ranges[0].start
-			});
+			results.push(createRange(this.EARLIEST_TIME, ranges[0].start));
 		}
 
 		// gaps
@@ -114,17 +114,14 @@ export default class TimeBlock {
 			const nextStart = ranges[i + 1].start;
 
 			if (timeOp(curEnd, '<', nextStart)) {
-				results.push({ start: curEnd, end: nextStart });
+				results.push(createRange(curEnd, nextStart));
 			}
 		}
 
 		//end
 		const lastRange = ranges[ranges.length - 1];
 		if (timeOp(lastRange.end, '!=', { hours: 24, minutes: 0 })) {
-			ranges.push({
-				start: lastRange.end,
-				end: { hours: 24, minutes: 0 }
-			});
+			ranges.push(createRange(lastRange.end, this.LATEST_TIME));
 		}
 
 		return ranges;
@@ -176,7 +173,7 @@ export default class TimeBlock {
 
 			if (time.type == 'end') {
 				if (passedOver.length == 1) {
-					reducedTimes.push({ start: times[curStart].start, end: times[passedOver[0]].end });
+					reducedTimes.push(createRange(times[curStart].start, times[passedOver[0]].end));
 					curStart = -1;
 					passedOver = [];
 				} else {
@@ -189,5 +186,13 @@ export default class TimeBlock {
 		}
 
 		return reducedTimes;
+	}
+
+	get_object(): Object {
+		return {
+			field: 'TIME',
+			operator: 'BETWEEN',
+			values: [this.start, this.end]
+		};
 	}
 }
