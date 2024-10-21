@@ -71,14 +71,14 @@
 	/>
 </svelte:head>
 
-<div class="w-full flex flex-col md:flex-row justify-start items-start gap-4">
+<div class="flex flex-col gap-4 justify-start items-start w-full md:flex-row">
 	<div
 		id="calendar"
-		class="flex flex-row justify-center md:justify-start w-full md:w-fit calendar-full"
+		class="flex flex-row justify-center w-full md:justify-start md:w-fit calendar-full"
 	></div>
-	<div class="w-full flex flex-col items-end">
+	<div class="flex flex-col items-end w-full">
 		<div
-			class="flex flex-wrap flex-row justify-center md:justify-end items-start gap-2 h-fit w-full"
+			class="flex flex-row flex-wrap gap-2 justify-center items-start w-full md:justify-end h-fit"
 		>
 			{#each days[selectedDate].availableTimes as time, i}
 				<button

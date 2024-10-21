@@ -1,6 +1,8 @@
 <script lang="ts">
 	import RootSchedule from '$lib/components/schedule/RootSchedule.svelte';
-	// import test from '$lib/schedule/test';
+	import test from '$lib/schedule/test';
+
+	test();
 </script>
 
 <div class="flex flex-col gap-2">

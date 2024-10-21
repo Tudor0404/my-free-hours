@@ -1,10 +1,10 @@
-import type { HoursMinutes } from './Duration';
-import type { DayTimeRange } from './timeSection';
+import type { HoursMinutes } from './HoursMinutes';
+import type { TimeRange } from './TimeRange';
 
 export type Day = {
 	day: Date;
-	workHours: DayTimeRange;
-	unavailability: DayTimeRange[];
+	workHours: TimeRange;
+	unavailability: TimeRange[];
 	online: Boolean;
 	inPerson: Boolean;
 	availableTimes: HoursMinutes[];

@@ -7,6 +7,11 @@
 	import DayField from './DayField.svelte';
 	import DayOfWeekBlock from '$lib/schedule/values/DayOfWeekBlock';
 	import DayOfWeekField from './DayOfWeekField.svelte';
+	import MonthBlock from '$lib/schedule/values/MonthBlock';
+	import type ValueBlock from '$lib/schedule/values/ValueBlock';
+	import MonthField from './MonthField.svelte';
+	import DateBlock from '$lib/schedule/values/DateBlock';
+	import DateField from './DateField.svelte';
 
 	export let condition: ConditionBlock;
 
@@ -15,8 +20,12 @@
 	$: condition.rules = [...condition.rules];
 
 	function deleteRule(index: number) {
-		console.log(index);
 		condition.delete_rule(index);
+		condition.rules = [...condition.rules];
+	}
+
+	function addRule(block: ValueBlock<any>) {
+		condition.add_rule(block);
 		condition.rules = [...condition.rules];
 	}
 </script>
@@ -25,14 +34,10 @@
 	<div class="flex flex-row gap-2 justify-start items-center">
 		<ConditionSelect />
 		<NewRule
-			createDay={() => {
-				condition.add_rule(new DayBlock('IN', []));
-				condition.rules = [...condition.rules];
-			}}
-			createWeekDay={() => {
-				condition.add_rule(new DayOfWeekBlock('IN', []));
-				condition.rules = [...condition.rules];
-			}}
+			createDay={() => addRule(new DayBlock('IN', []))}
+			createWeekDay={() => addRule(new DayOfWeekBlock('IN', []))}
+			createMonth={() => addRule(new MonthBlock('IN', []))}
+			createDate={() => addRule(new DateBlock('IN', []))}
 		/>
 	</div>
 	<div class="flex relative flex-col ml-4 border-l-2 border-primary-200">
@@ -42,6 +47,10 @@
 					<DayField bind:block={rule} onDelete={() => deleteRule(i)} />
 				{:else if rule instanceof DayOfWeekBlock}
 					<DayOfWeekField bind:block={rule} onDelete={() => deleteRule(i)} />
+				{:else if rule instanceof MonthBlock}
+					<MonthField bind:block={rule} onDelete={() => deleteRule(i)} />
+				{:else if rule instanceof DateBlock}
+					<DateField bind:block={rule} onDelete={() => deleteRule(i)} />
 				{/if}
 			{/each}
 		{/key}

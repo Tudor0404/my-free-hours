@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { ListBox, ListBoxItem, RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 	import type { Booking } from '$types/Booking';
-	import type { HoursMinutes } from '$types/Duration';
-	import { areDurationsEqual, durationToString, getAllPossibleDurations } from '$utils/time';
+	import type { HoursMinutes } from '$types/HoursMinutes';
+	import { durationToString, getAllPossibleTimes, timeOp } from '$utils/time';
 
 	export let bookings: Booking[];
 
-	let allDurations: HoursMinutes[] = getAllPossibleDurations(bookings);
+	let allDurations: HoursMinutes[] = getAllPossibleTimes(bookings);
 
 	let selectedType: number = 0;
 	let selectedDuration: number = 0;
@@ -16,11 +16,11 @@
 	$: {
 		if (
 			bookings[selectedType].durations.findIndex((other) =>
-				areDurationsEqual(other, allDurations[selectedDuration])
+				timeOp(other, '=', allDurations[selectedDuration])
 			) == -1
 		) {
 			selectedDuration = allDurations.findIndex((other) =>
-				areDurationsEqual(other, bookings[selectedType].durations[0])
+				timeOp(other, '=', bookings[selectedType].durations[0])
 			);
 		}
 
@@ -32,7 +32,7 @@
 	}
 </script>
 
-<div class="flex flex-col justify-start items-start w-full gap-4 md:flex-row md:justify-start">
+<div class="flex flex-col gap-4 justify-start items-start w-full md:flex-row md:justify-start">
 	<div class="space-y-2 w-full md:w-fit">
 		<!-- <h3>Type</h3> -->
 
@@ -45,7 +45,7 @@
 		</RadioGroup>
 	</div>
 
-	<div class="w-full flex-1">
+	<div class="flex-1 w-full">
 		<!-- <h3>Duration</h3> -->
 		<RadioGroup class="[&>*]:select-none w-full" flexDirection="md:flex-col flex-row">
 			{#each allDurations as duration, i}
@@ -54,13 +54,13 @@
 					name="justify"
 					value={i}
 					disabled={bookings[selectedType].durations.findIndex((other) =>
-						areDurationsEqual(other, duration)
+						timeOp(other, '=', duration)
 					) == -1}>{durationToString(duration)}</RadioItem
 				>
 			{/each}
 		</RadioGroup>
 	</div>
-	<div class="w-full flex-1">
+	<div class="flex-1 w-full">
 		<!-- <h3>Duration</h3> -->
 		<RadioGroup class="[&>*]:select-none w-full" flexDirection="md:flex-col flex-row">
 			<RadioItem

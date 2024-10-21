@@ -8,9 +8,11 @@
 
 	let comboboxValue: string = conditions[0];
 
+	const rand = Math.random();
+
 	const conditionPopup: PopupSettings = {
 		event: 'click',
-		target: 'conditionPopup',
+		target: 'conditionPopup' + rand,
 		placement: 'bottom',
 		closeQuery: '.listbox-item'
 	};
@@ -27,7 +29,7 @@
 	</button>
 </div>
 
-<div class="card overflow-hidden w-[80px] shadow-xl z-10" data-popup="conditionPopup">
+<div class="card overflow-hidden w-[80px] shadow-xl z-10" data-popup={'conditionPopup' + rand}>
 	<ListBox
 		rounded="rounded-none"
 		padding=""

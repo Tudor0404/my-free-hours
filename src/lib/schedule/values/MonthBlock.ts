@@ -1,36 +1,17 @@
 import type { Operator } from '$types/Schedule.Operator';
 import dayjs, { type Dayjs } from 'dayjs';
 import ValueBlock from './ValueBlock';
+import type { TimeRange } from '$types/TimeRange';
 
 export default class MonthBlock extends ValueBlock<number> {
 	constructor(operator: 'IN', values: number[]);
 	constructor(operator: 'BETWEEN', values: [number, number]);
 	constructor(operator: Operator, values: number[]) {
-		if (values.length == 0) {
-			throw new Error('At least one value must be supplied');
-		}
-
 		values.forEach((v) => {
 			if (v < 0 && v > 11) {
 				throw new Error('Supplied values must be within the range 0 to 11');
 			}
 		});
-
-		switch (operator) {
-			case 'IN':
-				if (values.length == 0) {
-					throw new Error('At least one value must be supplied');
-				}
-				break;
-			case 'BETWEEN':
-				if (values.length != 2) {
-					throw new Error('Two values must be supplied with the between operator');
-				}
-				if (values[0] > values[1]) {
-					throw new Error('The first value must be smaller or equal to the second');
-				}
-				break;
-		}
 
 		super('MONTH', operator, values);
 	}

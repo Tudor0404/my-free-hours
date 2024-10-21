@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Operator } from '$types/Schedule.Operator';
 	import Icon from '@iconify/svelte';
-	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 
 	export let field: string;
 	export let operator: Operator = 'IN';
@@ -26,11 +25,11 @@
 			}}
 		>
 			<span class="">{operator == 'BETWEEN' ? 'between' : 'in'}</span>
-			{#if operator == 'IN'}
+			<!-- {#if operator == 'IN'}
 				<Icon icon="tabler:chevron-up" />
 			{:else}
 				<Icon icon="tabler:chevron-down" />
-			{/if}
+			{/if} -->
 		</button>
 	</div>
 

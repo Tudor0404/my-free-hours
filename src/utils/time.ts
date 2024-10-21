@@ -1,6 +1,7 @@
 import { goto } from '$app/navigation';
-import type { Booking } from 'types/Booking';
-import type { HoursMinutes } from 'types/Duration';
+import type { TimeRange } from '$types/TimeRange';
+import type { Booking } from '$types/Booking';
+import type { HoursMinutes } from '$types/HoursMinutes';
 
 export function durationToString(duration: HoursMinutes): string {
 	let buffer = '';
@@ -15,7 +16,7 @@ export function durationToString(duration: HoursMinutes): string {
 	return buffer;
 }
 
-export function getAllPossibleDurations(bookings: Booking[]): HoursMinutes[] {
+export function getAllPossibleTimes(bookings: Booking[]): HoursMinutes[] {
 	let durations: HoursMinutes[] = [];
 
 	bookings.forEach((b) => {
@@ -33,8 +34,28 @@ export function getAllPossibleDurations(bookings: Booking[]): HoursMinutes[] {
 	return durations;
 }
 
-export function areDurationsEqual(a: HoursMinutes, b: HoursMinutes): boolean {
-	return a.hours == b.hours && a.minutes == b.minutes;
+export function getAbsoluteTime(time: HoursMinutes): number {
+	return time.hours * 60 + time.minutes;
+}
+
+export function timeOp(a: HoursMinutes, op: '=' | '>' | '<' | '<=' | '>=' | '!=', b: HoursMinutes) {
+	const absA = getAbsoluteTime(a);
+	const absB = getAbsoluteTime(b);
+
+	switch (op) {
+		case '=':
+			return absA == absB;
+		case '>':
+			return absA > absB;
+		case '<':
+			return absA < absB;
+		case '<=':
+			return absA <= absB;
+		case '>=':
+			return absA >= absB;
+		case '!=':
+			return absA != absB;
+	}
 }
 
 export function timeToString(time: HoursMinutes) {
@@ -46,4 +67,25 @@ export function timeToString(time: HoursMinutes) {
 
 export function singleOrFirstDayjs(date: Date | Date[]) {
 	return Array.isArray(date) ? date[0] : date;
+}
+
+export function areTimeRangesEqual(r1: TimeRange, r2: TimeRange) {
+	return timeOp(r1.start, '=', r2.start) && timeOp(r1.end, '=', r2.end);
+}
+
+export function isTimeRangeWithin(outer: TimeRange, inner: TimeRange): boolean {
+	const startOuter = getAbsoluteTime(outer.start);
+	const endOuter = getAbsoluteTime(outer.end);
+	const startInner = getAbsoluteTime(inner.start);
+	const endInner = getAbsoluteTime(inner.end);
+	return startOuter <= startInner && endOuter >= endInner;
+}
+
+export function areTimeRangesDisjoint(a: TimeRange, b: TimeRange) {
+	const startA = getAbsoluteTime(a.start);
+	const endA = getAbsoluteTime(a.end);
+	const startB = getAbsoluteTime(b.start);
+	const endB = getAbsoluteTime(b.end);
+
+	return endA < startB || endB < startA;
 }

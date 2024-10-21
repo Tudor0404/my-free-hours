@@ -45,6 +45,7 @@
 		"air-datepicker": "^3.5.3",
 		"dayjs": "^1.11.13",
 		"iconify-icon": "^2.1.0",
-		"svelte-language-server": "^0.17.1"
+		"svelte-language-server": "^0.17.1",
+		"uuid": "^10.0.0"
 	}
 }

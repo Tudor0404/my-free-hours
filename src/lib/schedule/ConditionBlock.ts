@@ -1,8 +1,10 @@
 import type { Condition } from '$types/Schedule.Condition';
 import dayjs, { type Dayjs } from 'dayjs';
 import ValueBlock from './values/ValueBlock';
+import type { TimeRange } from '$types/TimeRange';
+import TimeBlock from './values/TimeBlock';
 
-type Rule = ConditionBlock | ValueBlock<any> | string;
+type Rule = ConditionBlock | ValueBlock<any> | string | TimeBlock;
 
 export default class ConditionBlock {
 	private condition: Condition;
@@ -37,7 +39,7 @@ export default class ConditionBlock {
 		this.rules = [];
 	}
 
-	public add_rule(rule: ConditionBlock | ValueBlock<any>): boolean {
+	public add_rule(rule: Rule): boolean {
 		if (this.condition == 'NOT' && this.rules.length == 1) {
 			return false;
 		}
@@ -52,9 +54,7 @@ export default class ConditionBlock {
 			return false;
 		}
 
-		console.log(this.get_object());
 		this.rules.splice(index, 1);
-		console.log(this.get_object());
 
 		this.cached_rules = null;
 		return true;
@@ -69,59 +69,102 @@ export default class ConditionBlock {
 		return true;
 	}
 
-	public evaluate(date: Dayjs): boolean {
+	public evaluate(date: Dayjs): TimeRange[] {
+		let validRanges: TimeRange[] = [];
 		switch (this.condition) {
 			case 'OR':
 				for (let i = 0; i < this.sorted_rules.length; i++) {
 					const r = this.sorted_rules[i];
 
 					if (r instanceof ConditionBlock) {
-						if (r.evaluate(date)) {
-							return true;
+						const evaluatedRanges = r.evaluate(date);
+
+						if (validRanges.length == 0) {
+							validRanges = evaluatedRanges;
+						} else {
+							validRanges = TimeBlock.time_disjunction(validRanges, evaluatedRanges);
 						}
 					} else if (r instanceof ValueBlock) {
 						if (r.verify_date(date)) {
-							return true;
+							validRanges = [TimeBlock.FULL_TIME_RANGE];
+						}
+					} else if (r instanceof TimeBlock) {
+						if (validRanges.length == 0) {
+							validRanges = [r.timeRange];
+						} else {
+							validRanges = TimeBlock.time_disjunction(validRanges, [r.timeRange]);
 						}
 					} else {
 						throw new Error('Not yet implemented');
 					}
 				}
 
-				return false;
+				return validRanges;
 
 			case 'AND':
 				for (let i = 0; i < this.sorted_rules.length; i++) {
 					const r = this.sorted_rules[i];
 
 					if (r instanceof ConditionBlock) {
-						if (!r.evaluate(date)) {
-							return false;
+						const evaluatedRanges = r.evaluate(date);
+
+						if (evaluatedRanges.length == 0) {
+							return [];
+						} else {
+							if (validRanges.length == 0) {
+								validRanges = evaluatedRanges;
+							} else {
+								validRanges = TimeBlock.time_conjunction(validRanges, evaluatedRanges);
+							}
 						}
 					} else if (r instanceof ValueBlock) {
 						if (!r.verify_date(date)) {
-							return false;
+							return [];
+						} else {
+							if (validRanges.length == 0) {
+								validRanges = [TimeBlock.FULL_TIME_RANGE];
+							} else {
+								validRanges = validRanges;
+							}
+						}
+					} else if (r instanceof TimeBlock) {
+						if (validRanges.length == 0) {
+							validRanges = [r.timeRange];
+						} else {
+							validRanges = TimeBlock.time_conjunction(validRanges, [r.timeRange]);
 						}
 					} else {
 						throw new Error('Not yet implemented');
 					}
 				}
 
-				return true;
+				return validRanges;
 
 			case 'NOT':
 				if (this.rules.length > 1) {
 					throw new Error(`NOT condition can only have one element within`);
 				} else if (this.rules.length == 0) {
-					return true;
+					return [TimeBlock.FULL_TIME_RANGE];
 				}
 
 				const r = this.rules[0];
 
 				if (r instanceof ConditionBlock) {
-					return !r.evaluate(date);
+					const evaluatedRanges = r.evaluate(date);
+
+					if (evaluatedRanges.length == 0) {
+						return [TimeBlock.FULL_TIME_RANGE];
+					} else {
+						return TimeBlock.time_negation(evaluatedRanges);
+					}
 				} else if (r instanceof ValueBlock) {
-					return !r.verify_date(date);
+					if (!r.verify_date(date)) {
+						return [TimeBlock.FULL_TIME_RANGE];
+					} else {
+						return [];
+					}
+				} else if (r instanceof TimeBlock) {
+					return TimeBlock.time_negation([r.timeRange]);
 				} else {
 					throw new Error('Not yet implemented');
 				}

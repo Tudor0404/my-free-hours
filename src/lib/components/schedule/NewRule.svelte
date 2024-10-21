@@ -4,9 +4,10 @@
 
 	export let createDay: () => void;
 	export let createWeekDay: () => void;
+	export let createMonth: () => void;
+	export let createDate: () => void;
 
-	let rand = Math.random() * 10000;
-
+	const rand = Math.random();
 	const newRulePopup: PopupSettings = {
 		event: 'click',
 		target: 'newRulePopup' + rand,
@@ -34,9 +35,16 @@
 				type="button"
 				on:click|preventDefault|stopPropagation={createWeekDay}>Week Day</button
 			>
-			<button class="font-semibold btn btn-sm variant-soft-tertiary" type="button">Date</button>
-			<button class="font-semibold btn btn-sm variant-soft-tertiary" type="button">Month</button>
-			<button class="font-semibold btn btn-sm variant-soft-tertiary" type="button">Year</button>
+			<button
+				class="font-semibold btn btn-sm variant-soft-tertiary"
+				type="button"
+				on:click|preventDefault|stopPropagation={createDate}>Date</button
+			>
+			<button
+				class="font-semibold btn btn-sm variant-soft-tertiary"
+				type="button"
+				on:click|preventDefault|stopPropagation={createMonth}>Month</button
+			>
 		</div>
 	</div>
 	<div>

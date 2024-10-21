@@ -4,7 +4,6 @@
 	import Icon from '@iconify/svelte';
 	import FieldContainer from './FieldContainer.svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import BookingDateTime from '../../../routes/(public)/book/[id]/BookingDateTime.svelte';
 
 	export let block: DayOfWeekBlock;
 	export let onDelete: () => void;
@@ -54,13 +53,12 @@
 		}
 	}
 
-	let rand = Math.random() * 10000;
-
+	const popupUUID = 'weekDayPopup' + block.uuid;
 	const weekDayPopup: PopupSettings = {
 		event: 'click',
-		target: 'weekDayPopup' + rand,
+		target: popupUUID,
 		placement: 'top',
-		closeQuery: ''
+		closeQuery: '.close-popup'
 	};
 </script>
 
@@ -86,17 +84,23 @@
 			>
 		</div>
 
-		<div class="absolute z-10 p-2 mx-2 space-x-1 shadow-xl card" data-popup={'weekDayPopup' + rand}>
+		<div class="absolute z-10 p-2 mx-2 space-x-1 shadow-xl card" data-popup={popupUUID}>
 			{#each [1, 2, 3, 4, 5, 6, 0] as d}
 				<button
 					class={'btn btn-sm py-0.5 w-[35px]  ' +
 						(inDays.indexOf(d) != -1
 							? 'variant-filled'
-							: 'varaint-soft hover:variant-soft-primary')}
+							: 'variant-outline hover:variant-soft-primary')}
 					on:click|preventDefault|stopPropagation={() => toggleInSelection(d)}
-					>{weekDayNumToString(d)}</button
+					type="button">{weekDayNumToString(d)}</button
 				>
 			{/each}
+			<button
+				class="absolute -top-3 -right-3 w-6 h-6 shadow-lg btn-icon variant-filled-error close-popup"
+				type="button"
+			>
+				<Icon icon="tabler:x" />
+			</button>
 		</div>
 	{:else if operator == 'BETWEEN'}
 		<div class="h-6 btn-group-small variant-soft-primary">

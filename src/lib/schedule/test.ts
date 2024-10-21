@@ -4,24 +4,25 @@ import DayOfWeekBlock from './values/DayOfWeekBlock';
 import DateBlock from './values/DateBlock';
 import ConditionBlock from './ConditionBlock';
 import DayBlock from './values/DayBlock';
+import TimeBlock from './values/TimeBlock';
+import ValueBlock from './values/ValueBlock';
 
 export default function test() {
-	let s = new Schedule();
+	const s = new Schedule();
 
-	s.root.add_rule(new DayOfWeekBlock('BETWEEN', [1, 5]));
-	s.root.add_rule(new DateBlock('BETWEEN', [1, 15]));
+	const c = new ConditionBlock('AND');
+	c.add_rule(new DayOfWeekBlock('BETWEEN', [0, 6]));
 
-	let c = new ConditionBlock('NOT');
-	c.add_rule(new DayBlock('IN', [dayjs('5 11 2024', 'D M YYYY', true)]));
+	const c2 = new ConditionBlock('OR');
+	c2.add_rule(new TimeBlock({ hours: 9, minutes: 0 }, { hours: 13, minutes: 0 }));
+	c2.add_rule(new TimeBlock({ hours: 14, minutes: 0 }, { hours: 17, minutes: 0 }));
 
-	s.root.add_rule(c);
+	c.add_rule(c2);
+	c.add_rule(new TimeBlock({ hours: 10, minutes: 0 }, { hours: 16, minutes: 0 }));
 
-	const allowed = s.get_dates(dayjs(), dayjs().add(1, 'year'));
+	s.root = c;
 
-	console.log(JSON.stringify(s.root.get_object(), null, 2));
+	const res = s.get_times_within(dayjs(), dayjs().add(1, 'day'));
 
-	for (let i = 0; i < allowed.length; i++) {
-		const element = allowed[i];
-		console.log(element.format('ddd D/M/YYYY'));
-	}
+	console.log(res);
 }
