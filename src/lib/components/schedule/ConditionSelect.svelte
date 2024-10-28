@@ -4,9 +4,8 @@
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
 	import { ListBox, ListBoxItem, popup } from '@skeletonlabs/skeleton';
 
-	const conditions: Condition[] = ['AND', 'OR', 'NOT'];
-
-	let comboboxValue: string = conditions[0];
+	export let condition: string;
+	export let numRules: number;
 
 	const rand = Math.random();
 
@@ -24,7 +23,7 @@
 		use:popup={conditionPopup}
 		type="button"
 	>
-		<span class="capitalize">{comboboxValue}</span>
+		<span>{condition}</span>
 		<Icon icon="tabler:chevron-down" />
 	</button>
 </div>
@@ -38,8 +37,10 @@
 		hover="hover:variant-soft-primary"
 		spacing=""
 	>
-		{#each conditions as cond}
-			<ListBoxItem bind:group={comboboxValue} name="small" value={cond}>{cond}</ListBoxItem>
-		{/each}
+		<ListBoxItem bind:group={condition} name="small" value={'AND'}>{'AND'}</ListBoxItem>
+		<ListBoxItem bind:group={condition} name="small" value={'OR'}>{'OR'}</ListBoxItem>
+		<ListBoxItem bind:group={condition} name="small" value={'NOT'} disabled={numRules > 1}
+			>{'NOT'}</ListBoxItem
+		>
 	</ListBox>
 </div>

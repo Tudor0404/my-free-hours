@@ -4,10 +4,10 @@ import ValueBlock from './values/ValueBlock';
 import type { TimeRange } from '$types/TimeRange';
 import TimeBlock from './values/TimeBlock';
 
-type Rule = ConditionBlock | ValueBlock<any> | string | TimeBlock;
+export type Rule = ConditionBlock | ValueBlock<any> | string | TimeBlock;
 
 export default class ConditionBlock {
-	private condition: Condition;
+	condition: Condition;
 	rules: Rule[];
 	private cached_rules: Rule[] | null = null;
 
@@ -41,6 +41,7 @@ export default class ConditionBlock {
 
 	public add_rule(rule: Rule): boolean {
 		if (this.condition == 'NOT' && this.rules.length == 1) {
+			console.log(this.rules);
 			return false;
 		}
 

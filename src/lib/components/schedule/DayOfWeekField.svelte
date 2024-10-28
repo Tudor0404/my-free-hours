@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import FieldContainer from './FieldContainer.svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import AddMultiple from '../buttons/AddMultiple.svelte';
 
 	export let block: DayOfWeekBlock;
 	export let onDelete: () => void;
@@ -64,24 +65,12 @@
 
 <FieldContainer field="Week day" bind:operator {onDelete}>
 	{#if operator == 'IN'}
-		<div class="btn-group-small variant-soft-primary">
-			<button type="button" use:popup={weekDayPopup}>
-				{#if inDays.length > 0}
-					<span>
-						{#each inDays
-							.toSorted((e1, e2) => ((e1 + 6) % 7) - ((e2 + 6) % 7))
-							.slice(0, 3) as day, i}
-							<span class="font-semibold">
-								{weekDayNumToString(day) + (i + 1 != inDays.length ? ', ' : '')}
-							</span>
-						{/each}
-						{#if inDays.length > 3}
-							<span>...</span>
-						{/if}
-					</span>
-				{/if}
-				<Icon icon="tabler:plus"></Icon></button
-			>
+		<div use:popup={weekDayPopup}>
+			<AddMultiple
+				values={inDays
+					.toSorted((e1, e2) => ((e1 + 6) % 7) - ((e2 + 6) % 7))
+					.map((e) => weekDayNumToString(e))}
+			/>
 		</div>
 
 		<div class="absolute z-10 p-2 mx-2 space-x-1 shadow-xl card" data-popup={popupUUID}>

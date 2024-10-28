@@ -4,7 +4,7 @@
 	import localeEn from 'air-datepicker/locale/en';
 	import type { Day } from '$types/Day';
 	import dayjs from 'dayjs';
-	import { singleOrFirstDayjs, timeToString } from '$utils/time';
+	import { singleOrFirstDate, timeToString } from '$utils/time';
 	import DateBadge from './DateBadge.svelte';
 
 	export let days: Day[];
@@ -26,7 +26,7 @@
 			toggleSelected: false,
 			onSelect: ({ date }) => {
 				selectedDate = days.findIndex((d) =>
-					dayjs(d.day).isSame(dayjs(singleOrFirstDayjs(date)), 'days')
+					dayjs(d.day).isSame(dayjs(singleOrFirstDate(date)), 'days')
 				);
 				selectedTime = 0;
 			},
@@ -63,13 +63,6 @@
 		});
 	});
 </script>
-
-<svelte:head>
-	<link
-		href=" https://cdn.jsdelivr.net/npm/air-datepicker@3.4.0/air-datepicker.min.css"
-		rel="stylesheet"
-	/>
-</svelte:head>
 
 <div class="flex flex-col gap-4 justify-start items-start w-full md:flex-row">
 	<div

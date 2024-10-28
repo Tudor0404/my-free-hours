@@ -2,8 +2,6 @@
 	export let day: number;
 	export let online: boolean;
 	export let inPerson: boolean;
-
-	console.log(day);
 </script>
 
 <p>

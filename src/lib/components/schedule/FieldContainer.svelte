@@ -1,21 +1,24 @@
 <script lang="ts">
 	import type { Operator } from '$types/Schedule.Operator';
 	import Icon from '@iconify/svelte';
+	import DeleteRule from '../buttons/DeleteRule.svelte';
 
 	export let field: string;
 	export let operator: Operator = 'IN';
+	export let operatorChangeable: boolean = true;
 	export let onDelete: (() => void) | null = null;
 </script>
 
-<div class="h-scd flex flex-row justify-start items-center gap-2 [&>button]:hover:opacity-100">
+<div class="flex flex-row gap-2 justify-start items-center w-full h-scd">
 	<div class="flex flex-row gap-1 justify-start items-center">
 		<div class="w-4 h-0.5 bg-primary-200" />
 		<span class="">
 			{field}
 		</span>
 		<button
-			class="flex flex-row gap-1 justify-start items-center px-0.5 border-b-primary-200 border-y-2 border-t-transparent"
+			class={`flex flex-row gap-1 justify-start items-center px-0.5  ${operatorChangeable ? 'border-b-tertiary-400 border-y-2 border-t-transparent' : ''}`}
 			type="button"
+			disabled={!operatorChangeable}
 			on:click={() => {
 				if (operator == 'IN') {
 					operator = 'BETWEEN';
@@ -34,11 +37,6 @@
 	</div>
 
 	<slot />
-	<button
-		on:click|stopPropagation|preventDefault={onDelete}
-		type="button"
-		class="p-1.5 ml-8 w-7 h-7 opacity-0 btn btn-sm variant-soft-error"
-	>
-		<Icon icon="tabler:trash" class="w-full h-full" />
-	</button>
+	<div class="flex-grow h-0.5 rounded-md bg-primary-100/20"></div>
+	<DeleteRule {onDelete} />
 </div>

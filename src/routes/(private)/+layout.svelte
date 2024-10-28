@@ -69,7 +69,7 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<div class="text-xl flex flex-row gap-2">
+				<div class="flex flex-row gap-2 text-xl">
 					<a href="/">
 						<strong class="text-xl">My Free Hours</strong>
 					</a>
@@ -85,7 +85,7 @@
 		</AppBar>
 	</svelte:fragment>
 	<svelte:fragment slot="sidebarLeft">
-		<section class="p-4 pb-20 space-y-4 overflow-y-auto bg-surface-300 min-h-full">
+		<section class="overflow-y-auto p-4 pb-20 space-y-4 min-h-full bg-surface-300">
 			{#each catalogue as segment, i}
 				<!-- Title -->
 				<h3 class="pl-4 font-semibold text-secondary-800">{segment.title}</h3>
@@ -112,9 +112,9 @@
 		</section>
 	</svelte:fragment>
 
-	<div class="w-full h-full p-4">
+	<div class="p-4 w-full h-full">
 		<div
-			class="card shadow-md container min-h-[50%] flex flex-col gap-4 justify-start items-start p-4"
+			class="card bg-surface-50 shadow-md container min-h-[50%] flex flex-col gap-4 justify-start items-start p-4"
 		>
 			<slot />
 		</div>

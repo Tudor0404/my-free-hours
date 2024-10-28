@@ -24,6 +24,4 @@ export default function test() {
 	s.root = c;
 
 	const res = s.get_times_within(dayjs(), dayjs().add(1, 'year'));
-
-	console.log(res);
 }

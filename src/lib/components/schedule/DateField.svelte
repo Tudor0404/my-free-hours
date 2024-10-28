@@ -4,6 +4,8 @@
 	import FieldContainer from './FieldContainer.svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type DateBlock from '$lib/schedule/values/DateBlock';
+	import AddMultiple from '../buttons/AddMultiple.svelte';
+	import CarrouselButtonGroup from '../buttons/CarrouselButtonGroup.svelte';
 
 	export let block: DateBlock;
 	export let onDelete: () => void;
@@ -12,11 +14,11 @@
 	let betweenEnd: number = 31;
 	let inDate: number[] = block.values;
 
-	function toggleInSelection(month: number) {
-		let index = inDate.indexOf(month);
+	function toggleInSelection(date: number) {
+		let index = inDate.indexOf(date);
 
 		if (index == -1) {
-			inDate = [...inDate, month];
+			inDate = [...inDate, date];
 		} else {
 			inDate = [...inDate.slice(0, index), ...inDate.slice(index + 1, inDate.length)];
 		}
@@ -43,22 +45,8 @@
 
 <FieldContainer field="Date" bind:operator {onDelete}>
 	{#if operator == 'IN'}
-		<div class="btn-group-small variant-soft-primary">
-			<button type="button" use:popup={datePopup}>
-				{#if inDate.length > 0}
-					<span>
-						{#each inDate.toSorted((e1, e2) => e1 - e2).slice(0, 3) as date, i}
-							<span class="font-semibold">
-								{date + (i + 1 != inDate.length ? ', ' : '')}
-							</span>
-						{/each}
-						{#if inDate.length > 3}
-							<span>...</span>
-						{/if}
-					</span>
-				{/if}
-				<Icon icon="tabler:plus"></Icon></button
-			>
+		<div use:popup={datePopup}>
+			<AddMultiple values={inDate.toSorted((e1, e2) => e1 - e2)} />
 		</div>
 
 		<div class="z-10 p-2 shadow-xl card" data-popup={popupUUID}>
@@ -82,45 +70,20 @@
 			</button>
 		</div>
 	{:else if operator == 'BETWEEN'}
-		<div class="h-6 btn-group-small variant-soft-primary">
-			<button
-				type="button"
-				disabled={betweenStart == 1}
-				on:click={() => (betweenStart = betweenStart - 1)}
-			>
-				<Icon icon="tabler:chevron-left" />
-			</button>
-			<button type="button">
-				<span class="text-sm font-semibold w-[20px]">{betweenStart}</span>
-			</button>
-			<button
-				type="button"
-				disabled={betweenEnd == betweenStart}
-				on:click={() => (betweenStart = betweenStart + 1)}
-			>
-				<Icon icon="tabler:chevron-right" />
-			</button>
-		</div>
+		<CarrouselButtonGroup
+			value={betweenStart}
+			onLeftClick={() => (betweenStart = betweenStart - 1)}
+			leftDisabled={betweenStart == 1}
+			onRightClick={() => (betweenStart = betweenStart + 1)}
+			rightDisabled={betweenEnd == betweenStart}
+		/>
 		<span>and</span>
-
-		<div class="h-6 btn-group-small variant-soft-primary">
-			<button
-				type="button"
-				disabled={betweenEnd == betweenStart}
-				on:click={() => (betweenEnd = betweenEnd - 1)}
-			>
-				<Icon icon="tabler:chevron-left" />
-			</button>
-			<button type="button">
-				<span class="text-sm font-semibold w-[20px]">{betweenEnd}</span>
-			</button>
-			<button
-				type="button"
-				disabled={betweenEnd == 31}
-				on:click={() => (betweenEnd = betweenEnd + 1)}
-			>
-				<Icon icon="tabler:chevron-right" />
-			</button>
-		</div>
+		<CarrouselButtonGroup
+			value={betweenEnd}
+			onLeftClick={() => (betweenEnd = betweenEnd - 1)}
+			leftDisabled={betweenEnd == betweenStart}
+			onRightClick={() => (betweenEnd = betweenEnd + 1)}
+			rightDisabled={betweenEnd == 31}
+		/>
 	{/if}
 </FieldContainer>

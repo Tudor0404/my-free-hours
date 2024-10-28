@@ -24,14 +24,18 @@ export default class TimeBlock {
 			minutes: 0
 		}
 	};
-	static EARLIEST_TIME: HoursMinutes = {
-		hours: 0,
-		minutes: 0
-	};
-	static LATEST_TIME: HoursMinutes = {
-		hours: 24,
-		minutes: 0
-	};
+	static get EARLIEST_TIME() {
+		return {
+			hours: 0,
+			minutes: 0
+		};
+	}
+	static get LATEST_TIME() {
+		return {
+			hours: 24,
+			minutes: 0
+		};
+	}
 
 	constructor(
 		start: HoursMinutes = TimeBlock.EARLIEST_TIME,

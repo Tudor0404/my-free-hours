@@ -62,8 +62,11 @@ export function timeToString(time: HoursMinutes) {
 	let minutes = String(time.minutes).padStart(2, '0');
 	return `${hours}:${minutes} ${suffix}`;
 }
+export function timeToMilitaryString(time: HoursMinutes) {
+	return time.hours.toString().padStart(2, '0') + ':' + time.minutes.toString().padStart(2, '0');
+}
 
-export function singleOrFirstDayjs(date: Date | Date[]) {
+export function singleOrFirstDate(date: Date | Date[]) {
 	return Array.isArray(date) ? date[0] : date;
 }
 
