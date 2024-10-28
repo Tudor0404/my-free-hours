@@ -15,6 +15,10 @@
 		placement: 'bottom',
 		closeQuery: '.listbox-item'
 	};
+
+	$: {
+		console.log(condition);
+	}
 </script>
 
 <div class="h-8">

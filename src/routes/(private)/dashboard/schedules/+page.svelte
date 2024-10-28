@@ -15,7 +15,7 @@
 	<AccordionItem>
 		<svelte:fragment slot="summary"><h4>Create a new schedule</h4></svelte:fragment>
 		<svelte:fragment slot="content">
-			<form class="flex flex-col gap-2" use:enhance>
+			<form class="flex flex-col gap-2">
 				<label class="label">
 					<span>Name</span>
 					<input class="input" type="text" placeholder="Name" />

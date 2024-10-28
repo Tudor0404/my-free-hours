@@ -40,7 +40,7 @@
 
 <div class="flex flex-row justify-start mt-2">
 	{#if onDelete}
-		<div class="mt-4 w-4 h-0.5 bg-primary-200" />
+		<div class="mt-4 w-4 h-0.5 bg-primary-200"></div>
 	{/if}
 
 	<div class="flex flex-col w-full">
