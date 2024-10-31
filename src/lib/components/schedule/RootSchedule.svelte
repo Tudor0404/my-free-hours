@@ -11,27 +11,22 @@
 	let schedule: Schedule = new Schedule();
 	let selectedPreview: string;
 	$: selectedTimes = schedule.get_times_at(dayjs(selectedPreview));
-
 	let datepickerContainer: HTMLElement;
 
-	function changeCallback() {
-		console.log(
-			schedule
-				.get_times_within(dayjs().startOf('month'), dayjs().startOf('month').add(1, 'month'))
-				.map((e) => e.day.format('DD-MM-YYYY'))
-		);
-	}
+	export let sendScheduleData: ((data: string) => void) | undefined = undefined;
+	export let readOnly: boolean = false;
 
-	$: {
-		schedule.root;
-		console.log(schedule.get_object());
+	function changeCallback() {
+		if (sendScheduleData) {
+			sendScheduleData(JSON.stringify(schedule.encode_json()));
+		}
 	}
 
 	onMount(() => {
 		const button = datepickerContainer.querySelector('.sdt-clear-btn') as HTMLButtonElement | null;
 
 		if (button) {
-			button.textContent = 'Reset';
+			button.textContent = 'Refresh';
 		}
 	});
 </script>
@@ -39,7 +34,7 @@
 <div class="flex flex-col gap-4 w-full">
 	<div>
 		<span>Schedule</span>
-		<Condition condition={schedule.root} changeCallback={() => changeCallback()} />
+		<Condition {readOnly} condition={schedule.root} changeCallback={() => changeCallback()} />
 	</div>
 
 	<div class="flex flex-col gap-2">

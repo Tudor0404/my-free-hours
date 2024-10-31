@@ -9,7 +9,7 @@ export interface ValueBlockInterface<V> {
 	uuid: string;
 
 	verify_date(value: Dayjs): TimeRange[] | boolean;
-	verify_values(): boolean;
-	get_object(): Object;
+	verify_block(): boolean;
+	encode_json(): Object;
 	toString(): string;
 }

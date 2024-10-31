@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ButtonLoader from '$lib/components/ButtonLoader.svelte';
+	import ButtonLoader from '$lib/components/buttons/ButtonLoader.svelte';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { appBarSubTitle } from '$stores/appbar';
 
@@ -12,7 +12,7 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<div class="text-xl flex flex-row gap-2">
+				<div class="flex flex-row gap-2 text-xl">
 					<a href="/">
 						{#if $appBarSubTitle}
 							<strong class="text-xl">MFH</strong>

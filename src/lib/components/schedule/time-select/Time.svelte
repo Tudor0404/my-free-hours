@@ -8,6 +8,7 @@
 	export let value: HoursMinutes;
 	export let maxValue: HoursMinutes = TimeBlock.LATEST_TIME;
 	export let minValue: HoursMinutes = TimeBlock.EARLIEST_TIME;
+	export let readOnly: boolean = false;
 
 	const popupUUID = 'timePopup' + Math.random();
 	const timePopup: PopupSettings = {
@@ -47,6 +48,7 @@
 			bind:value={value.hours}
 			max={24}
 			min={0}
+			disabled={readOnly}
 			on:input={(e) => {
 				const val = Number.parseInt(e.currentTarget.value);
 				if (val > maxValue.hours) {
@@ -66,7 +68,7 @@
 			max={55}
 			min={0}
 			step={5}
-			disabled={value.hours == 24}
+			disabled={value.hours == 24 || readOnly}
 			on:input={(e) => minuteBounds(Number.parseInt(e.currentTarget.value))}
 		/>
 	</div>

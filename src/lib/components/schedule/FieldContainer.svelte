@@ -6,7 +6,8 @@
 	export let field: string;
 	export let operator: Operator = 'IN';
 	export let operatorChangeable: boolean = true;
-	export let onDelete: (() => void) | null = null;
+	export let onDelete: (() => void) | undefined = undefined;
+	export let readOnly: boolean = false;
 </script>
 
 <div class="flex flex-row gap-2 justify-start items-center w-full h-scd">
@@ -37,6 +38,8 @@
 	</div>
 
 	<slot />
-	<div class="flex-grow h-0.5 rounded-md bg-primary-100/20"></div>
-	<DeleteRule {onDelete} />
+	{#if !readOnly}
+		<div class="flex-grow h-0.5 rounded-md bg-primary-100/20"></div>
+		<DeleteRule {onDelete} />
+	{/if}
 </div>

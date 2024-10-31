@@ -5,15 +5,11 @@
 	import type { Operator } from '$types/Schedule.Operator';
 	import dayjs from 'dayjs';
 	import Icon from '@iconify/svelte';
-	import AirDatepicker from 'air-datepicker';
-	import { singleOrFirstDate } from '$utils/time';
-	import localeEn from 'air-datepicker/locale/en';
-	import { onMount } from 'svelte';
-	import SveltyPicker from 'svelty-picker';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	export let block: DayBlock;
 	export let onDelete: () => void;
+	export let readOnly: boolean = false;
 
 	let operator: Operator = block.operator;
 	let betweenStart = dayjs(block.values[0]).startOf('day');
@@ -59,21 +55,19 @@
 	}
 </script>
 
-<FieldContainer field="Day" bind:operator {onDelete}>
+<FieldContainer field="Day" bind:operator {onDelete} {readOnly}>
 	{#if operator == 'IN'}
-		<div class="">
-			<button
-				type="button"
-				use:popup={dayPopup}
-				class="px-1 py-1 btn btn-sm variant-outline-tertiary hover:variant-filled-tertiary"
-			>
-				<span>{inDays.length} {inDays.length == 1 ? 'day' : 'days'}</span>
+		<button
+			type="button"
+			use:popup={dayPopup}
+			class="px-1 py-1 btn btn-sm variant-outline-tertiary hover:variant-filled-tertiary"
+		>
+			<span>{inDays.length} {inDays.length == 1 ? 'day' : 'days'}</span>
 
-				<div class={`transition-all duration-150' ${isPopupOpen ? 'rotate-180' : 'rotate-0'}`}>
-					<Icon icon="tabler:chevron-up" />
-				</div>
-			</button>
-		</div>
+			<div class={`transition-all duration-150' ${isPopupOpen ? 'rotate-180' : 'rotate-0'}`}>
+				<Icon icon="tabler:chevron-up" />
+			</div>
+		</button>
 
 		<div
 			class="z-10 justify-start items-stretch p-2 shadow-xl card w-[220px]"
@@ -86,10 +80,12 @@
 						class="px-0.5 py-0.5 h-8 text-sm input w-fit"
 						bind:value={inDaysNew}
 						min={dayjs().format('YYYY-MM-DD')}
+						disabled={readOnly}
 					/>
 					<button
 						class="w-full btn btn-sm variant-outline-success hover:variant-filled-tertiary"
 						type="button"
+						disabled={readOnly}
 						on:click={() => {
 							let newDay = dayjs(inDaysNew, 'YYYY-MM-DD', true);
 
@@ -109,6 +105,7 @@
 					>
 						{#each inDays as day, i}
 							<button
+								disabled={readOnly}
 								type="button"
 								class="justify-between w-full btn btn-sm variant-outline hover:variant-outline-error"
 								on:click={() =>
@@ -135,6 +132,7 @@
 			class="px-0.5 py-0.5 h-8 text-sm input w-fit"
 			bind:value={betweenStartInput}
 			max={betweenEndInput}
+			disabled={readOnly}
 		/>
 		<span>and</span>
 		<input
@@ -142,6 +140,7 @@
 			class="px-0.5 py-0.5 h-8 text-sm input w-fit variant-outline"
 			bind:value={betweenEndInput}
 			min={betweenStartInput}
+			disabled={readOnly}
 		/>
 	{/if}</FieldContainer
 >

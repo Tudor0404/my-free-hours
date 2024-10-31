@@ -11,39 +11,18 @@ export default abstract class ValueBlock<V> implements ValueBlockInterface<V> {
 	values: V[];
 	uuid: string;
 
-	constructor(field: Field, operator: Operator, value: V[]) {
+	constructor(field: Field, operator: Operator, value: V[], uuid: string = uuidv4()) {
 		this.field = field;
 		this.operator = operator;
 		this.values = value;
-		this.uuid = uuidv4();
+		this.uuid = uuid;
 	}
 
 	abstract verify_date(value: Dayjs): boolean;
 
-	verify_values(): boolean {
-		switch (this.operator) {
-			case 'IN':
-				if (this.values.length == 0) {
-					throw new Error('At least one value must be supplied');
-				}
-				break;
-			case 'BETWEEN':
-				if (this.values.length != 2) {
-					throw new Error('Two values must be supplied with the between operator');
-				}
-				if (this.values[0] instanceof dayjs.Dayjs && this.values[1] instanceof dayjs.Dayjs) {
-					if (this.values[0].isAfter(this.values[1])) {
-						throw new Error('The first value must be smaller or equal to the second');
-					}
-				} else if (this.values[0] > this.values[1]) {
-					throw new Error('The first value must be smaller or equal to the second');
-				}
-				break;
-		}
-		return true;
-	}
+	abstract verify_block(): boolean;
 
-	get_object(): Object {
+	encode_json(): Record<string, any> {
 		return {
 			field: this.field,
 			operator: this.operator,
@@ -52,6 +31,6 @@ export default abstract class ValueBlock<V> implements ValueBlockInterface<V> {
 	}
 
 	toString(): string {
-		return JSON.stringify(this.get_object(), null);
+		return JSON.stringify(this.encode_json(), null);
 	}
 }

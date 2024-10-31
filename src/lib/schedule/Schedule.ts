@@ -1,6 +1,8 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import ConditionBlock from './ConditionBlock';
 import type { TimeRange } from '$types/TimeRange';
+import { z } from 'zod';
+import type TimeBlock from './values/TimeBlock';
 
 export default class Schedule {
 	root: ConditionBlock;
@@ -42,7 +44,19 @@ export default class Schedule {
 		return this.root.evaluate(day.startOf('day'));
 	}
 
-	public get_object(): Object {
-		return this.root.get_object();
+	public encode_json(): Record<string, any> {
+		return this.root.encode_json();
+	}
+
+	public verify() {
+		return this.root.verify_condition();
+	}
+
+	public static decode_json(obj: Record<string, any>): Schedule {
+		let s = new Schedule();
+
+		s.root = ConditionBlock.decode_json(obj);
+
+		return s;
 	}
 }

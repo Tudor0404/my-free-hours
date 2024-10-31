@@ -21,6 +21,7 @@
 
 	export let onDelete: (() => void) | null = null;
 	export let changeCallback: () => void;
+	export let readOnly: boolean = false;
 
 	$: {
 		condition.rules = [...condition.rules];
@@ -45,9 +46,13 @@
 
 	<div class="flex flex-col w-full">
 		<div class="flex flex-row gap-2 justify-start items-center">
-			<ConditionSelect bind:condition={condition.condition} numRules={condition.rules.length} />
+			<ConditionSelect
+				bind:condition={condition.condition}
+				numRules={condition.rules.length}
+				disabled={readOnly}
+			/>
 			<NewRule
-				disabled={condition.rules.length >= 1 && condition.condition == 'NOT'}
+				disabled={readOnly || (condition.rules.length >= 1 && condition.condition == 'NOT')}
 				createDay={() => addRule(new DayBlock('IN', []))}
 				createWeekDay={() => addRule(new DayOfWeekBlock('IN', []))}
 				createMonth={() => addRule(new MonthBlock('IN', []))}
@@ -57,7 +62,7 @@
 				createOr={() => addRule(new ConditionBlock('OR'))}
 				createNot={() => addRule(new ConditionBlock('NOT'))}
 			/>
-			{#if onDelete}
+			{#if onDelete && !readOnly}
 				<div class="flex-grow h-0.5 rounded-md bg-primary-100/20"></div>
 				<DeleteRule {onDelete} />
 			{/if}
@@ -66,17 +71,22 @@
 			{#key condition.rules.length}
 				{#each condition.rules as rule, i}
 					{#if rule instanceof DayBlock}
-						<DayField bind:block={rule} onDelete={() => deleteRule(i)} />
+						<DayField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
 					{:else if rule instanceof DayOfWeekBlock}
-						<DayOfWeekField bind:block={rule} onDelete={() => deleteRule(i)} />
+						<DayOfWeekField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
 					{:else if rule instanceof MonthBlock}
-						<MonthField bind:block={rule} onDelete={() => deleteRule(i)} />
+						<MonthField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
 					{:else if rule instanceof DateBlock}
-						<DateField bind:block={rule} onDelete={() => deleteRule(i)} />
+						<DateField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
 					{:else if rule instanceof TimeBlock}
-						<TimeField bind:block={rule} onDelete={() => deleteRule(i)} />
+						<TimeField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
 					{:else if rule instanceof ConditionBlock}
-						<svelte:self condition={rule} onDelete={() => deleteRule(i)} {changeCallback} />
+						<svelte:self
+							condition={rule}
+							onDelete={() => deleteRule(i)}
+							{changeCallback}
+							{readOnly}
+						/>
 					{/if}
 				{/each}
 			{/key}

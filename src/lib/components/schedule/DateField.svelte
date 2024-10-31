@@ -9,6 +9,7 @@
 
 	export let block: DateBlock;
 	export let onDelete: () => void;
+	export let readOnly: boolean = false;
 	let operator: Operator = block.operator;
 	let betweenStart: number = 1;
 	let betweenEnd: number = 31;
@@ -43,7 +44,7 @@
 	};
 </script>
 
-<FieldContainer field="Date" bind:operator {onDelete}>
+<FieldContainer field="Date" bind:operator {onDelete} {readOnly}>
 	{#if operator == 'IN'}
 		<div use:popup={datePopup}>
 			<AddMultiple values={inDate.toSorted((e1, e2) => e1 - e2)} />
@@ -53,6 +54,7 @@
 			<div class="!grid grid-cols-7 gap-0.5">
 				{#each Array.from({ length: 31 }, (v, i) => i + 1) as d}
 					<button
+						disabled={readOnly}
 						class={'btn btn-sm py-0.5 w-[35px]  ' +
 							(inDate.indexOf(d) != -1
 								? 'variant-filled'
@@ -76,6 +78,7 @@
 			leftDisabled={betweenStart == 1}
 			onRightClick={() => (betweenStart = betweenStart + 1)}
 			rightDisabled={betweenEnd == betweenStart}
+			{readOnly}
 		/>
 		<span>and</span>
 		<CarrouselButtonGroup
@@ -84,6 +87,7 @@
 			leftDisabled={betweenEnd == betweenStart}
 			onRightClick={() => (betweenEnd = betweenEnd + 1)}
 			rightDisabled={betweenEnd == 31}
+			{readOnly}
 		/>
 	{/if}
 </FieldContainer>

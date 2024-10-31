@@ -6,6 +6,7 @@
 
 	export let condition: string;
 	export let numRules: number;
+	export let disabled: boolean = false;
 
 	const rand = Math.random();
 
@@ -15,10 +16,6 @@
 		placement: 'bottom',
 		closeQuery: '.listbox-item'
 	};
-
-	$: {
-		console.log(condition);
-	}
 </script>
 
 <div class="h-8">
@@ -26,25 +23,17 @@
 		class="btn btn-sm variant-filled-primary w-[80px] justify-between"
 		use:popup={conditionPopup}
 		type="button"
+		{disabled}
 	>
 		<span>{condition}</span>
 		<Icon icon="tabler:chevron-down" />
 	</button>
 </div>
 
-<div class="card overflow-hidden w-[80px] shadow-xl z-10" data-popup={'conditionPopup' + rand}>
-	<ListBox
-		rounded="rounded-none"
-		padding=""
-		regionDefault="w-full py-1 flex justify-center items-center"
-		active="variant-filled-primary"
-		hover="hover:variant-soft-primary"
-		spacing=""
-	>
-		<ListBoxItem bind:group={condition} name="small" value={'AND'}>{'AND'}</ListBoxItem>
-		<ListBoxItem bind:group={condition} name="small" value={'OR'}>{'OR'}</ListBoxItem>
-		<ListBoxItem bind:group={condition} name="small" value={'NOT'} disabled={numRules > 1}
-			>{'NOT'}</ListBoxItem
-		>
-	</ListBox>
+<div class="overflow-hidden z-10 shadow-xl card" data-popup={'conditionPopup' + rand}>
+	<select bind:value={condition} class="overflow-y-hidden px-0.5 select" size="3">
+		<option value={'AND'}>{'AND'}</option>
+		<option value={'OR'}>{'OR'}</option>
+		<option value={'NOT'} disabled={numRules > 1}>{'NOT'}</option>
+	</select>
 </div>

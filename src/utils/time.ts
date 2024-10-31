@@ -113,3 +113,22 @@ export function createRange(start: HoursMinutes, end: HoursMinutes): TimeRange {
 
 	return { start: start, end: end };
 }
+
+export function ObjectToTime(obj: Record<string, any>): HoursMinutes {
+	let hours, minutes: number;
+	if (
+		obj.hasOwnProperty('hours') &&
+		typeof obj['hours'] === 'number' &&
+		obj.hasOwnProperty('minutes') &&
+		typeof obj['minutes'] === 'number'
+	) {
+		hours = obj['hours'] as number;
+		minutes = obj['minutes'] as number;
+	} else {
+		throw new Error(
+			"A time object should have a 'hours' and 'minutes' field that are both numbers"
+		);
+	}
+
+	return createTime(hours, minutes);
+}

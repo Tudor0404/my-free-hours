@@ -5,9 +5,12 @@
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type MonthBlock from '$lib/schedule/values/MonthBlock';
 	import CarrouselButtonGroup from '../buttons/CarrouselButtonGroup.svelte';
+	import AddMultiple from '../buttons/AddMultiple.svelte';
+	import { map } from 'zod';
 
 	export let block: MonthBlock;
 	export let onDelete: () => void;
+	export let readOnly: boolean = false;
 	let operator: Operator = block.operator;
 	let betweenStart: number = 0;
 	let betweenEnd: number = 11;
@@ -73,27 +76,13 @@
 	};
 </script>
 
-<FieldContainer field="Month" bind:operator {onDelete}>
+<FieldContainer field="Month" bind:operator {onDelete} {readOnly}>
 	{#if operator == 'IN'}
-		<button
-			type="button"
-			use:popup={monthPopup}
-			class="btn btn-sm variant-outline-tertiary hover:variant-filled-tertiary h-6 !px-1 !py-0.5"
-		>
-			{#if inMonths.length > 0}
-				<span>
-					{#each inMonths.toSorted((e1, e2) => e1 - e2).slice(0, 3) as month, i}
-						<span class="font-semibold">
-							{monthNumToString(month) + (i + 1 != inMonths.length ? ', ' : '')}
-						</span>
-					{/each}
-					{#if inMonths.length > 3}
-						<span>...</span>
-					{/if}
-				</span>
-			{/if}
-			<Icon icon="tabler:plus"></Icon></button
-		>
+		<div use:popup={monthPopup}>
+			<AddMultiple
+				values={inMonths.toSorted((e1, e2) => e1 - e2).map((m) => monthNumToString(m))}
+			/>
+		</div>
 
 		<div class="z-10 p-2 shadow-xl card" data-popup={popupUUID}>
 			<div class="!grid grid-cols-6 grid-rows-2 gap-0.5">
@@ -104,6 +93,7 @@
 								? 'variant-filled'
 								: 'variant-outline hover:variant-soft-primary')}
 						on:click={() => toggleInSelection(m)}
+						disabled={readOnly}
 						type="button">{monthNumToString(m)}</button
 					>
 				{/each}
@@ -122,6 +112,7 @@
 			leftDisabled={betweenStart == 0}
 			onRightClick={() => (betweenStart = betweenStart + 1)}
 			rightDisabled={betweenEnd == betweenStart}
+			{readOnly}
 		/>
 		<span>and</span>
 
@@ -131,6 +122,7 @@
 			leftDisabled={betweenEnd == betweenStart}
 			onRightClick={() => (betweenEnd = betweenEnd + 1)}
 			rightDisabled={betweenEnd == 11}
+			{readOnly}
 		/>
 	{/if}
 </FieldContainer>

@@ -3,13 +3,25 @@ import dayjs, { type Dayjs } from 'dayjs';
 import ValueBlock from './values/ValueBlock';
 import type { TimeRange } from '$types/TimeRange';
 import TimeBlock from './values/TimeBlock';
+import type { z } from 'zod';
+import type { Field } from '$types/Schedule.Field';
+import DateBlock from './values/DateBlock';
+import ScheduleBlock from './values/ScheduleBlock';
+import DayOfWeekBlock from './values/DayOfWeekBlock';
+import MonthBlock from './values/MonthBlock';
+import DayBlock from './values/DayBlock';
 
-export type Rule = ConditionBlock | ValueBlock<any> | string | TimeBlock;
+export type Rule = ConditionBlock | ValueBlock<any> | ScheduleBlock | TimeBlock;
 
 export default class ConditionBlock {
 	condition: Condition;
 	rules: Rule[];
 	private cached_rules: Rule[] | null = null;
+
+	constructor(condition: Condition = 'AND', rules: Rule[] = []) {
+		this.condition = condition;
+		this.rules = rules;
+	}
 
 	/**
 	 * Returns the rules array such that ValueBlocks are prioritised (quicker to evaluate)
@@ -27,16 +39,6 @@ export default class ConditionBlock {
 		}
 
 		return this.cached_rules;
-	}
-
-	constructor(condition?: Condition) {
-		if (condition === undefined) {
-			this.condition = 'AND';
-		} else {
-			this.condition = condition;
-		}
-
-		this.rules = [];
 	}
 
 	public add_rule(rule: Rule): boolean {
@@ -182,12 +184,29 @@ export default class ConditionBlock {
 		}
 	}
 
-	public get_object(): Object {
+	public verify_condition(): boolean {
+		for (let i = 0; i < this.rules.length; i++) {
+			const rule = this.rules[i];
+			if (rule instanceof ValueBlock) {
+				rule.verify_block();
+			} else if (rule instanceof TimeBlock) {
+				rule.verify();
+			} else if (rule instanceof ConditionBlock) {
+				rule.verify_condition();
+			} else if (rule instanceof ScheduleBlock) {
+				continue;
+			}
+		}
+
+		return true;
+	}
+
+	public encode_json(): Record<string, any> {
 		return {
 			condition: this.condition,
 			rules: this.rules.map((r) => {
 				if (r instanceof ConditionBlock || r instanceof ValueBlock || r instanceof TimeBlock) {
-					return r.get_object();
+					return r.encode_json();
 				} else {
 					return {
 						schedule_id: r
@@ -195,5 +214,61 @@ export default class ConditionBlock {
 				}
 			})
 		};
+	}
+
+	public static decode_json(obj: Record<string, any>): ConditionBlock {
+		let c = new ConditionBlock();
+
+		// get condition
+		if (obj.hasOwnProperty('condition')) {
+			if (['AND', 'OR', 'NOT'].includes(obj['condition'] as Condition)) {
+				c.condition = obj['condition'];
+			} else {
+				throw new Error("Condition in condition block is not 'AND', 'OR', or 'NOT'");
+			}
+		} else {
+			throw new Error("Condition block does not have 'condition' field");
+		}
+
+		// get rules
+		let rules: Rule[] = [];
+		if (obj.hasOwnProperty('rules') && obj['rules'] instanceof Array) {
+			for (let i = 0; i < obj['rules'].length; i++) {
+				const rule = obj['rules'][i];
+
+				if (rule.hasOwnProperty('field')) {
+					switch (rule['field'] as Field) {
+						case 'DATE':
+							rules.push(DateBlock.decode_json(rule));
+							break;
+						case 'DAY_OF_WEEK':
+							rules.push(DayOfWeekBlock.decode_json(rule));
+							break;
+						case 'MONTH':
+							rules.push(MonthBlock.decode_json(rule));
+							break;
+						case 'DAY':
+							rules.push(DayBlock.decode_json(rule));
+							break;
+						case 'TIME':
+							rules.push(TimeBlock.decode_json(rule));
+							break;
+						case 'SCHEDULE':
+							rules.push(ScheduleBlock.decode_json(rule));
+							break;
+					}
+				} else if (rule.hasOwnProperty('condition')) {
+					rules.push(ConditionBlock.decode_json(rule));
+				} else {
+					throw new Error('Unrecognised rule');
+				}
+			}
+		} else {
+			throw new Error('Condition block does not have a rules array');
+		}
+
+		c.rules = rules;
+
+		return c;
 	}
 }

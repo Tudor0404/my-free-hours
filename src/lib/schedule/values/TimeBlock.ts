@@ -1,6 +1,7 @@
 import type { HoursMinutes } from '$types/HoursMinutes';
 import type { TimeRange } from '$types/TimeRange';
 import {
+	ObjectToTime,
 	areTimeRangesDisjoint,
 	createRange,
 	getAbsoluteTime,
@@ -10,6 +11,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 export default class TimeBlock {
+	field = 'TIME';
 	start: HoursMinutes;
 	end: HoursMinutes;
 	uuid: string;
@@ -39,11 +41,12 @@ export default class TimeBlock {
 
 	constructor(
 		start: HoursMinutes = TimeBlock.EARLIEST_TIME,
-		end: HoursMinutes = TimeBlock.LATEST_TIME
+		end: HoursMinutes = TimeBlock.LATEST_TIME,
+		uuid: string = uuidv4()
 	) {
-		this.uuid = uuidv4();
 		this.start = start;
 		this.end = end;
+		this.uuid = uuid;
 	}
 
 	get timeRange(): TimeRange {
@@ -192,11 +195,49 @@ export default class TimeBlock {
 		return reducedTimes;
 	}
 
-	get_object(): Object {
+	public verify(): boolean {
+		if (
+			timeOp(this.start, '<', TimeBlock.EARLIEST_TIME) ||
+			timeOp(this.start, '>', TimeBlock.LATEST_TIME) ||
+			timeOp(this.end, '<', TimeBlock.EARLIEST_TIME) ||
+			timeOp(this.end, '>', TimeBlock.LATEST_TIME)
+		) {
+			throw new Error('Times must be within 00:00 and 24:00');
+		}
+
+		if (timeOp(this.start, '>', this.end)) {
+			throw new Error('The start time must be the same or before the end time');
+		}
+
+		return true;
+	}
+
+	public encode_json(): Record<string, any> {
 		return {
 			field: 'TIME',
 			operator: 'BETWEEN',
 			values: [this.start, this.end]
 		};
+	}
+
+	public static decode_json(obj: Record<string, any>): TimeBlock {
+		let t = new TimeBlock();
+
+		if (!(obj.hasOwnProperty('operator') && obj['operator'] == 'BETWEEN')) {
+			throw new Error('A time block should have an operator with a value of BETWEEN');
+		}
+
+		if (obj.hasOwnProperty('values') && obj['values'] instanceof Array) {
+			if (obj['values'].length == 2) {
+				t.start = ObjectToTime(obj['values'][0]);
+				t.start = ObjectToTime(obj['values'][1]);
+			} else {
+				throw new Error('Only 2 values must be in the values field on a time block');
+			}
+		} else {
+			throw new Error('No values field found on time block');
+		}
+
+		return t;
 	}
 }

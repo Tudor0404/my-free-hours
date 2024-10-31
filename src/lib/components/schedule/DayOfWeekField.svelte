@@ -5,9 +5,11 @@
 	import FieldContainer from './FieldContainer.svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import AddMultiple from '../buttons/AddMultiple.svelte';
+	import CarrouselButtonGroup from '../buttons/CarrouselButtonGroup.svelte';
 
 	export let block: DayOfWeekBlock;
 	export let onDelete: () => void;
+	export let readOnly: boolean = false;
 	let operator: Operator = block.operator;
 	let betweenStart: number = 1;
 	let betweenEnd: number = 0;
@@ -63,7 +65,7 @@
 	};
 </script>
 
-<FieldContainer field="Week day" bind:operator {onDelete}>
+<FieldContainer field="Week day" bind:operator {onDelete} {readOnly}>
 	{#if operator == 'IN'}
 		<div use:popup={weekDayPopup}>
 			<AddMultiple
@@ -76,6 +78,7 @@
 		<div class="absolute z-10 p-2 mx-2 space-x-1 shadow-xl card" data-popup={popupUUID}>
 			{#each [1, 2, 3, 4, 5, 6, 0] as d}
 				<button
+					disabled={readOnly}
 					class={'btn btn-sm py-0.5 w-[35px]  ' +
 						(inDays.indexOf(d) != -1
 							? 'variant-filled'
@@ -92,45 +95,24 @@
 			</button>
 		</div>
 	{:else if operator == 'BETWEEN'}
-		<div class="h-6 btn-group-small variant-soft-primary">
-			<button
-				type="button"
-				disabled={betweenStart == 1}
-				on:click={() => (betweenStart = (betweenStart - 1 + 7) % 7)}
-			>
-				<Icon icon="tabler:chevron-left" />
-			</button>
-			<button type="button">
-				<span class="text-sm font-semibold w-[40px]">{weekDayNumToString(betweenStart)}</span>
-			</button>
-			<button
-				type="button"
-				disabled={betweenEnd == betweenStart}
-				on:click={() => (betweenStart = (betweenStart + 1) % 7)}
-			>
-				<Icon icon="tabler:chevron-right" />
-			</button>
-		</div>
+		<CarrouselButtonGroup
+			value={weekDayNumToString(betweenStart)}
+			onLeftClick={() => (betweenStart = (betweenStart + 6) % 7)}
+			leftDisabled={betweenStart == 1}
+			onRightClick={() => (betweenStart = (betweenStart + 1) % 7)}
+			rightDisabled={betweenEnd == betweenStart}
+			{readOnly}
+		/>
+
 		<span>and</span>
 
-		<div class="h-6 btn-group-small variant-soft-primary">
-			<button
-				type="button"
-				disabled={betweenEnd == betweenStart}
-				on:click={() => (betweenEnd = (betweenEnd - 1 + 7) % 7)}
-			>
-				<Icon icon="tabler:chevron-left" />
-			</button>
-			<button type="button">
-				<span class="text-sm font-semibold w-[40px]">{weekDayNumToString(betweenEnd)}</span>
-			</button>
-			<button
-				type="button"
-				disabled={betweenEnd == 0}
-				on:click={() => (betweenEnd = (betweenEnd + 1) % 7)}
-			>
-				<Icon icon="tabler:chevron-right" />
-			</button>
-		</div>
+		<CarrouselButtonGroup
+			value={weekDayNumToString(betweenEnd)}
+			onLeftClick={() => (betweenEnd = (betweenEnd + 6) % 7)}
+			leftDisabled={betweenEnd == betweenStart}
+			onRightClick={() => (betweenEnd = (betweenEnd + 1) % 7)}
+			rightDisabled={betweenEnd == 0}
+			{readOnly}
+		/>
 	{/if}
 </FieldContainer>
