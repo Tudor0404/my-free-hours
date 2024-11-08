@@ -43,7 +43,6 @@ export default class ConditionBlock {
 
 	public add_rule(rule: Rule): boolean {
 		if (this.condition == 'NOT' && this.rules.length == 1) {
-			console.log(this.rules);
 			return false;
 		}
 

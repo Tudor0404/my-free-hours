@@ -54,7 +54,7 @@
 			title: 'Booking Page',
 			pages: [
 				{ name: 'Details', url: '/dashboard/booking/details', icon: 'tabler:list-details' },
-				{ name: 'Types', url: '/dashboard/booking/types', icon: 'tabler:category' }
+				{ name: 'Meeting Types', url: '/dashboard/booking/types', icon: 'tabler:category' }
 			]
 		}
 	];

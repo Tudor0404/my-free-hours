@@ -145,6 +145,10 @@ export default class TimeBlock {
 			])
 			.toSorted((e1, e2) => getAbsoluteTime(e1.time) - getAbsoluteTime(e2.time));
 
+		if (sortedTimes.length == 0) {
+			return [];
+		}
+
 		if (sortedTimes[0].type == 'end') {
 			throw new Error('Invalid time ranges');
 		}
@@ -230,7 +234,7 @@ export default class TimeBlock {
 		if (obj.hasOwnProperty('values') && obj['values'] instanceof Array) {
 			if (obj['values'].length == 2) {
 				t.start = ObjectToTime(obj['values'][0]);
-				t.start = ObjectToTime(obj['values'][1]);
+				t.end = ObjectToTime(obj['values'][1]);
 			} else {
 				throw new Error('Only 2 values must be in the values field on a time block');
 			}

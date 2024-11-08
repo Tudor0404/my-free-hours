@@ -22,6 +22,4 @@ export default function test() {
 	c.add_rule(new TimeBlock({ hours: 10, minutes: 0 }, { hours: 16, minutes: 0 }));
 
 	s.root = c;
-
-	console.log(Schedule.decode_json(JSON.parse(JSON.stringify(s.encode_json()))));
 }

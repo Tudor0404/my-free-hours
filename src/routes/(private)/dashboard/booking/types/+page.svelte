@@ -1,23 +1,43 @@
 <script lang="ts">
-	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
-	import { superForm } from 'sveltekit-superforms';
+	import { Accordion, AccordionItem, getToastStore } from '@skeletonlabs/skeleton';
+	import { fieldProxy, superForm } from 'sveltekit-superforms';
 	import type { PageData } from './$types';
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
+	import DurationSelect from '$lib/components/input/multi/DurationSelect.svelte';
 
 	export let data: PageData;
+	const toastStore = getToastStore();
+	let durationsValue: string = '';
 
 	const { form, enhance, errors } = superForm(data.form, {
-		taintedMessage: true
+		taintedMessage: true,
+		onResult: ({ result }) => {
+			if (result.type == 'success') {
+				durations = [];
+			}
+		},
+		onError: ({ result }) => {
+			toastStore.trigger({
+				message: result.error.message,
+				background: 'variant-filled-error'
+			});
+		}
 	});
+
+	let durations: number[] = $form.durations || [];
+
+	$: {
+		durationsValue = durations.join(',');
+	}
 </script>
 
 <Accordion>
 	<AccordionItem open>
-		<svelte:fragment slot="summary"><h4>Types</h4></svelte:fragment>
+		<svelte:fragment slot="summary"><h4>Meeting types</h4></svelte:fragment>
 		<svelte:fragment slot="content"></svelte:fragment>
 	</AccordionItem>
 	<AccordionItem>
-		<svelte:fragment slot="summary"><h4>Add new type</h4></svelte:fragment>
+		<svelte:fragment slot="summary"><h4>Craete a new meeting type</h4></svelte:fragment>
 		<svelte:fragment slot="content">
 			<form
 				class="flex flex-col gap-2 max-w-[400px]"
@@ -91,6 +111,13 @@
 					></textarea>
 					<ErrorMessage error={$errors.post_notification} />
 				</label>
+
+				<hr class="my-4 h-0.5 border-t-0 bg-surface-600" />
+
+				<span>Available durations for meeting</span>
+				<DurationSelect bind:value={durations} />
+				<ErrorMessage error={$errors.durations?._errors} />
+				<input class="hidden" bind:value={durationsValue} name="durations" />
 
 				<div class="flex flex-row gap-2">
 					<button type="submit" class="btn btn-md variant-filled-success w-fit">Add</button>

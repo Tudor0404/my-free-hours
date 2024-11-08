@@ -35,7 +35,7 @@
 	}
 </script>
 
-<button class="font-mono btn-schedule" type="button" use:popup={timePopup}>
+<button class="font-mono btn-schedule" type="button" use:popup={timePopup} disabled={readOnly}>
 	{timeToMilitaryString(value)}
 </button>
 

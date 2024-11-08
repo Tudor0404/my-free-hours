@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ButtonLoader from '$lib/components/buttons/ButtonLoader.svelte';
+	import ButtonLoader from '$lib/components/input/buttons/ButtonLoader.svelte';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { appBarSubTitle } from '$stores/appbar';
 

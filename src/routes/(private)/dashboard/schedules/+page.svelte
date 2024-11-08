@@ -1,23 +1,30 @@
 <script lang="ts">
 	import RootSchedule from '$lib/components/schedule/RootSchedule.svelte';
-	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
+	import { Accordion, AccordionItem, getToastStore } from '@skeletonlabs/skeleton';
 	import { superForm } from 'sveltekit-superforms';
 	import type { PageData } from './$types';
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
+	import ScheduleListItem from '$lib/components/schedule/ScheduleListItem.svelte';
 
 	export let data: PageData;
 
 	let scheduleData: string;
 	let scheduleKey: number = 0;
 
-	$: publicSchedules = data.schedules?.filter((s) => s.user_id == null);
-	$: privateSchedules = data.schedules?.filter((s) => s.user_id != null);
+	const toastStore = getToastStore();
+
+	$: privateSchedules = data.schedules?.filter((s) => s.user_id != null) || [];
+	$: publicSchedules = data.schedules?.filter((s) => s.user_id == null) || [];
 
 	const { form, enhance, errors } = superForm(data.form, {
 		taintedMessage: true,
 		onResult: ({ result }) => {
 			if (result.type == 'success') {
 				scheduleKey += 1;
+				toastStore.trigger({
+					message: 'Schedule created successfully!',
+					background: 'variant-filled-success'
+				});
 			}
 		}
 	});
@@ -29,15 +36,37 @@
 
 <Accordion>
 	<AccordionItem open>
-		<svelte:fragment slot="summary"><h4>Your schedules</h4></svelte:fragment>
-		<svelte:fragment slot="content"></svelte:fragment>
+		<svelte:fragment slot="summary"><h4 class="font-medium">Your schedules</h4></svelte:fragment>
+		<svelte:fragment slot="content"
+			><div class="w-full overflow-y-auto max-h-[600px] columns-1 lg:columns-2 gap-2">
+				{#if privateSchedules.length == 0}
+					<span>No private schedules found, go create one!</span>
+				{/if}
+
+				{#each privateSchedules as s (s.id)}
+					<ScheduleListItem data={s} />
+				{/each}
+			</div></svelte:fragment
+		>
 	</AccordionItem>
 	<AccordionItem>
-		<svelte:fragment slot="summary"><h4>Public schedules</h4></svelte:fragment>
-		<svelte:fragment slot="content"></svelte:fragment>
+		<svelte:fragment slot="summary"><h4 class="font-medium">Public schedules</h4></svelte:fragment>
+		<svelte:fragment slot="content"
+			><div class="w-full overflow-y-auto max-h-[600px] columns-1 lg:columns-2 gap-2">
+				{#if publicSchedules.length == 0}
+					<span>No public schedules found</span>
+				{/if}
+
+				{#each publicSchedules as s}
+					<ScheduleListItem data={s} />
+				{/each}
+			</div></svelte:fragment
+		>
 	</AccordionItem>
 	<AccordionItem>
-		<svelte:fragment slot="summary"><h4>Create a new schedule</h4></svelte:fragment>
+		<svelte:fragment slot="summary"
+			><h4 class="font-medium">Create a new schedule</h4></svelte:fragment
+		>
 		<svelte:fragment slot="content">
 			<form class="flex flex-col gap-4" method="post" use:enhance action="?/createSchedule">
 				<label class="label max-w-[400px]">

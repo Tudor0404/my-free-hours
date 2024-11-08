@@ -12,6 +12,17 @@
 	import { onMount } from 'svelte';
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import { Modal, initializeStores } from '@skeletonlabs/skeleton';
+	import type { ModalComponent } from '@skeletonlabs/skeleton';
+	import SchedulePreview from '$lib/components/modal/SchedulePreview.svelte';
+	import { Toast } from '@skeletonlabs/skeleton';
+
+	// Modals and Toasts
+	initializeStores();
+
+	const modalRegistry: Record<string, ModalComponent> = {
+		SchedulePreview: { ref: SchedulePreview }
+	};
 
 	// Floating UI for Popups
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
@@ -46,5 +57,8 @@
 		rel="stylesheet"
 	/>
 </svelte:head>
+
+<Modal components={modalRegistry} />
+<Toast />
 
 <slot />

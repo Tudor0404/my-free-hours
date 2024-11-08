@@ -4,8 +4,8 @@
 	import Icon from '@iconify/svelte';
 	import FieldContainer from './FieldContainer.svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import AddMultiple from '../buttons/AddMultiple.svelte';
-	import CarrouselButtonGroup from '../buttons/CarrouselButtonGroup.svelte';
+	import AddMultiple from '../input/buttons/AddMultiple.svelte';
+	import CarrouselButtonGroup from '../input/buttons/CarrouselButtonGroup.svelte';
 
 	export let block: DayOfWeekBlock;
 	export let onDelete: () => void;

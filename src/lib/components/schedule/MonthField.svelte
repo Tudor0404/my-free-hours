@@ -4,9 +4,8 @@
 	import FieldContainer from './FieldContainer.svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type MonthBlock from '$lib/schedule/values/MonthBlock';
-	import CarrouselButtonGroup from '../buttons/CarrouselButtonGroup.svelte';
-	import AddMultiple from '../buttons/AddMultiple.svelte';
-	import { map } from 'zod';
+	import CarrouselButtonGroup from '../input/buttons/CarrouselButtonGroup.svelte';
+	import AddMultiple from '../input/buttons/AddMultiple.svelte';
 
 	export let block: MonthBlock;
 	export let onDelete: () => void;

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import ConditionBlock from '$lib/schedule/ConditionBlock';
-	import Icon from '@iconify/svelte';
 	import ConditionSelect from './ConditionSelect.svelte';
 	import NewRule from './NewRule.svelte';
 	import DayBlock from '$lib/schedule/values/DayBlock';
@@ -8,14 +7,13 @@
 	import DayOfWeekBlock from '$lib/schedule/values/DayOfWeekBlock';
 	import DayOfWeekField from './DayOfWeekField.svelte';
 	import MonthBlock from '$lib/schedule/values/MonthBlock';
-	import type ValueBlock from '$lib/schedule/values/ValueBlock';
 	import MonthField from './MonthField.svelte';
 	import DateBlock from '$lib/schedule/values/DateBlock';
 	import DateField from './DateField.svelte';
 	import TimeBlock from '$lib/schedule/values/TimeBlock';
 	import type { Rule } from '$lib/schedule/ConditionBlock';
 	import TimeField from './TimeField.svelte';
-	import DeleteRule from '../buttons/DeleteRule.svelte';
+	import DeleteRule from '../input/buttons/DeleteRule.svelte';
 
 	export let condition: ConditionBlock;
 

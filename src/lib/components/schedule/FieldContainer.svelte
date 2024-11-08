@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Operator } from '$types/Schedule.Operator';
 	import Icon from '@iconify/svelte';
-	import DeleteRule from '../buttons/DeleteRule.svelte';
+	import DeleteRule from '../input/buttons/DeleteRule.svelte';
 
 	export let field: string;
 	export let operator: Operator = 'IN';
@@ -12,7 +12,7 @@
 
 <div class="flex flex-row gap-2 justify-start items-center w-full h-scd">
 	<div class="flex flex-row gap-1 justify-start items-center">
-		<div class="w-4 h-0.5 bg-primary-200" />
+		<div class="w-4 h-0.5 bg-primary-200"></div>
 		<span class="">
 			{field}
 		</span>

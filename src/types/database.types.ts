@@ -283,7 +283,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_booking_type_with_durations: {
+        Args: {
+          type_data: Json
+          user_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       meeting_method: "online" | "in_person"

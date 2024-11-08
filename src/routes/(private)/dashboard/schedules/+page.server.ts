@@ -1,24 +1,18 @@
 import Schedule from '$lib/schedule/Schedule.js';
 import { superValidate, fail, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
 import type { PageServerLoad } from './$types';
-
-const schema = z.object({
-	name: z.string(),
-	description: z
-		.string()
-		.max(1000, 'Descriptions cannot be more than 1000 characters in length')
-		.optional(),
-	schedule: z.string()
-});
+import { CreateSchedule, DeleteSchedule } from '$lib/schemas/schedule';
 
 export const load: PageServerLoad = async ({ locals: { supabase, session }, depends }) => {
-	const form = await superValidate(zod(schema));
+	const form = await superValidate(zod(CreateSchedule));
 
 	depends('supabase:db:schedule');
 
-	const { data: schedules } = await supabase.from('schedule').select('*');
+	const { data: schedules } = await supabase
+		.from('schedule')
+		.select('*')
+		.order('created_at', { ascending: false });
 
 	return {
 		schedules,
@@ -29,7 +23,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, session }, depe
 
 export const actions = {
 	createSchedule: async ({ request, locals: { supabase } }) => {
-		const form = await superValidate(request, zod(schema));
+		const form = await superValidate(request, zod(CreateSchedule));
 
 		if (!form.valid) {
 			return fail(400, { form });
@@ -55,6 +49,22 @@ export const actions = {
 				setError(form, 'schedule', 'Unexpected error occured');
 			}
 
+			return fail(500, { form });
+		}
+
+		return { form };
+	},
+	deleteSchedule: async ({ request, locals: { supabase } }) => {
+		const form = await superValidate(request, zod(DeleteSchedule));
+
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		const { error } = await supabase.from('schedule').delete().eq('id', form.id);
+
+		if (error) {
+			setError(form, 'id', 'Unable to delete form');
 			return fail(500, { form });
 		}
 
