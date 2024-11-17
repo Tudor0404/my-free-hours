@@ -7,18 +7,24 @@
 </script>
 
 {#if $modalStore[0]}
-	<div class="flex flex-col gap-2 p-4 card max-h-[90vh] overflow-y-auto w-fit w-modal-wide">
+	<div class="flex flex-col gap-2 p-4 card max-h-[90vh] overflow-y-auto min-w-[40%] max-w-[80%]">
+		{#if $modalStore[0].meta.title}
+			<h3 class="w-fit">
+				{$modalStore[0].meta.title}
+			</h3>
+		{/if}
+
+		{#if $modalStore[0].meta.text}
+			<p>
+				{$modalStore[0].meta.text}
+			</p>
+		{/if}
+
 		<button
-			class="self-end btn btn-sm variant-filled-primary w-fit"
+			class="self-end btn variant-filled w-fit"
 			tabindex="0"
 			type="button"
 			on:click={() => modalStore.close()}>Close</button
 		>
-
-		{#if $modalStore[0].meta.schedule && $modalStore[0].meta.schedule instanceof Schedule}
-			<div class="w-fit">
-				<RootSchedule readOnly schedule={$modalStore[0].meta.schedule} />
-			</div>
-		{/if}
 	</div>
 {/if}

@@ -1,16 +1,14 @@
-import { invalidate } from '$app/navigation';
+import { error } from '@sveltejs/kit';
 
 export async function DELETE({ params, locals: { supabase } }) {
-	const { error } = await supabase.from('schedule').delete().eq('id', params.id);
+	const { error: sError } = await supabase.from('schedule').delete().eq('id', params.id);
 
-	if (error) {
-		if (error.code == '23503') {
-			return new Response('Schedule cannot be deleted because it is used by a page', {
-				status: 405
-			});
+	if (sError) {
+		if (sError.code == '23503') {
+			error(405, 'Schedule cannot be deleted because it is used by a page');
 		}
 
-		return new Response('Unable to delete schedule', { status: 405 });
+		error(405, 'Unable to delete schedule');
 	}
 
 	return new Response('Deleted schedule successfully', {

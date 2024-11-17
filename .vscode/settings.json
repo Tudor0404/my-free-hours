@@ -116,5 +116,6 @@
 		"transition",
 		"width",
 		"zIndex"
-	]
+	],
+	"codetogether.virtualCursorJoin": "ownVirtualCursor"
 }

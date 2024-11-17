@@ -8,27 +8,36 @@
 	export let limit: number = 3;
 	export let max: number = 120;
 
-	let newValue: number;
+	let newValue: number | undefined;
 
 	const toastStore = getToastStore();
 
 	function addValue() {
-		if (newValue == null || newValue == 0) {
+		if (newValue == undefined || newValue == 0 || !Number.isInteger(newValue)) {
+			newValue = undefined;
 			toastStore.trigger({
 				message: 'Invalid duration!',
 				background: 'variant-filled-warning'
 			});
 			return;
+		} else if (value.indexOf(newValue) != -1) {
+			toastStore.trigger({
+				message: 'Duration already entered',
+				background: 'variant-filled-warning'
+			});
+		} else {
+			value = [...value, Math.trunc(newValue)];
 		}
-		value = [...value, newValue];
-		newValue = 0;
+		newValue = undefined;
 	}
 
 	$: {
-		if (newValue < 0) {
-			newValue = 0;
-		} else if (newValue > max) {
-			newValue = max;
+		if (newValue !== undefined) {
+			if (newValue < 0) {
+				newValue = undefined;
+			} else if (newValue > max) {
+				newValue = max;
+			}
 		}
 	}
 </script>

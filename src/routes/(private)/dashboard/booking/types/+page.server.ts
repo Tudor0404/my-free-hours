@@ -1,17 +1,34 @@
-import { fail, message, setError, superValidate } from 'sveltekit-superforms';
+import { fail, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
 import { createType } from '$lib/schemas/bookingTypes';
 import { error } from '@sveltejs/kit';
+import type { BookingTypeWithDurations } from '$types/BookingTypeWithDurations';
 
 export const load: PageServerLoad = async ({ locals: { supabase, session }, depends }) => {
 	depends('supabase:db:booking_type');
 
 	const form = await superValidate(zod(createType));
 
-	const { data } = await supabase.from('booking_type').select('*');
+	let types: BookingTypeWithDurations[] = [];
+
+	if (session?.user?.id) {
+		const { data, error: sError } = (await supabase.rpc('get_booking_types_with_durations', {
+			p_user_id: session.user.id
+		})) as {
+			data: BookingTypeWithDurations[] | null;
+			error: any;
+		};
+
+		if (sError) {
+			error(500, 'Unable to fetch user information');
+		} else if (data) {
+			types = data;
+		}
+	}
 
 	return {
+		types: types || [],
 		session,
 		form
 	};
@@ -31,6 +48,7 @@ export const actions = {
 		}
 
 		try {
+			console.log(form.data.durations);
 			const { data, error: supabaseError } = await supabase.rpc(
 				'create_booking_type_with_durations',
 				{
@@ -48,7 +66,7 @@ export const actions = {
 			);
 
 			if (supabaseError) {
-				if (supabaseError.code === '23505') {
+				if (supabaseError.code === '23505' || supabaseError.code == 'P0001') {
 					setError(form, 'name', 'Booking names must be unique');
 				} else {
 					return error(400, { message: 'Malformed request' });

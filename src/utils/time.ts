@@ -16,6 +16,10 @@ export function durationToString(duration: HoursMinutes): string {
 	return buffer;
 }
 
+export function minutesToDuration(minutes: number): HoursMinutes {
+	return { hours: Math.floor(minutes / 60), minutes: minutes % 60 };
+}
+
 export function getAllPossibleTimes(bookings: Booking[]): HoursMinutes[] {
 	let durations: HoursMinutes[] = [];
 

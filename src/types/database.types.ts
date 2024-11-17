@@ -138,37 +138,40 @@ export type Database = {
       }
       booking_type: {
         Row: {
+          active: boolean
           created_at: string
-          description: string
+          description: string | null
           id: number
           in_person: boolean
           name: string
           online: boolean
           post_notification: string | null
           pre_notification: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
+          active?: boolean
           created_at?: string
-          description?: string
+          description?: string | null
           id?: number
           in_person?: boolean
           name: string
           online?: boolean
           post_notification?: string | null
           pre_notification?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
+          active?: boolean
           created_at?: string
-          description?: string
+          description?: string | null
           id?: number
           in_person?: boolean
           name?: string
           online?: boolean
           post_notification?: string | null
           pre_notification?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -289,6 +292,22 @@ export type Database = {
           user_id: string
         }
         Returns: Json
+      }
+      get_booking_types_with_durations: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: {
+          id: number
+          name: string
+          description: string
+          active: boolean
+          in_person: boolean
+          online: boolean
+          pre_notification: string
+          post_notification: string
+          durations: Json
+        }[]
       }
     }
     Enums: {

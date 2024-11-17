@@ -1,19 +1,26 @@
 <script lang="ts">
 	import { Accordion, AccordionItem, getToastStore } from '@skeletonlabs/skeleton';
-	import { fieldProxy, superForm } from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms';
 	import type { PageData } from './$types';
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
 	import DurationSelect from '$lib/components/input/multi/DurationSelect.svelte';
+	import Info from '$lib/components/misc/Info.svelte';
+	import TypeMeetingListItem from '$lib/components/type/TypeMeetingListItem.svelte';
+	import { invalidate } from '$app/navigation';
+	import ScrollItemList from '$lib/components/container/ScrollItemList.svelte';
 
 	export let data: PageData;
 	const toastStore = getToastStore();
 	let durationsValue: string = '';
 
-	const { form, enhance, errors } = superForm(data.form, {
+	const { form, enhance, errors, reset } = superForm(data.form, {
 		taintedMessage: true,
 		onResult: ({ result }) => {
-			if (result.type == 'success') {
+			// Only clear the form and durations if the submission was successful
+			if (result.type === 'success') {
+				invalidate('supabase:db:booking_type');
 				durations = [];
+				reset();
 			}
 		},
 		onError: ({ result }) => {
@@ -21,23 +28,37 @@
 				message: result.error.message,
 				background: 'variant-filled-error'
 			});
+		},
+		onSubmit: ({ formData }) => {
+			formData.delete('durations');
+			durations.forEach((duration) => {
+				formData.append('durations', duration.toString());
+			});
 		}
 	});
 
 	let durations: number[] = $form.durations || [];
 
-	$: {
-		durationsValue = durations.join(',');
-	}
+	$: durationsValue = durations.join(',');
 </script>
 
 <Accordion>
 	<AccordionItem open>
 		<svelte:fragment slot="summary"><h4>Meeting types</h4></svelte:fragment>
-		<svelte:fragment slot="content"></svelte:fragment>
+		<svelte:fragment slot="content">
+			{#if data.types.length == 0}
+				<span>You have no types currently, go create one!</span>
+			{:else}
+				<ScrollItemList>
+					{#each data.types as type}
+						<TypeMeetingListItem data={type} />
+					{/each}
+				</ScrollItemList>
+			{/if}
+		</svelte:fragment>
 	</AccordionItem>
 	<AccordionItem>
-		<svelte:fragment slot="summary"><h4>Craete a new meeting type</h4></svelte:fragment>
+		<svelte:fragment slot="summary"><h4>Create a new meeting type</h4></svelte:fragment>
 		<svelte:fragment slot="content">
 			<form
 				class="flex flex-col gap-2 max-w-[400px]"
@@ -99,14 +120,20 @@
 				<hr class="my-4 h-0.5 border-t-0 bg-surface-600" />
 
 				<label class="label">
-					<span>Pre-meeting message</span>
+					<span class="flex flex-row gap-2"
+						>Pre-meeting message <Info>Replaces the default message sent before the meeting.</Info
+						></span
+					>
 					<textarea class="textarea" name="preNotifMessage" bind:value={$form.pre_notification}
 					></textarea>
 					<ErrorMessage error={$errors.pre_notification} />
 				</label>
 
 				<label class="label">
-					<span>Post-meeting message</span>
+					<span class="flex flex-row gap-2"
+						>Post-meeting message <Info>Replaces the default message sent after the meeting.</Info
+						></span
+					>
 					<textarea class="textarea" name="postNotifMessage" bind:value={$form.post_notification}
 					></textarea>
 					<ErrorMessage error={$errors.post_notification} />
@@ -114,12 +141,16 @@
 
 				<hr class="my-4 h-0.5 border-t-0 bg-surface-600" />
 
-				<span>Available durations for meeting</span>
+				<span class="flex flex-row gap-2"
+					>Available durations for meeting <Info
+						>Maximum of 3 durations.<br /> Each durations must be within 1 and 120 minutes.</Info
+					>
+				</span>
 				<DurationSelect bind:value={durations} />
 				<ErrorMessage error={$errors.durations?._errors} />
 				<input class="hidden" bind:value={durationsValue} name="durations" />
 
-				<div class="flex flex-row gap-2">
+				<div class="flex flex-row gap-1 mt-4">
 					<button type="submit" class="btn btn-md variant-filled-success w-fit">Add</button>
 					<button type="reset" class="btn btn-md variant-filled-error w-fit">Reset</button>
 				</div>

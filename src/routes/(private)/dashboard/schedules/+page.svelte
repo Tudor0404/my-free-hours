@@ -5,6 +5,7 @@
 	import type { PageData } from './$types';
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
 	import ScheduleListItem from '$lib/components/schedule/ScheduleListItem.svelte';
+	import ScrollItemList from '$lib/components/container/ScrollItemList.svelte';
 
 	export let data: PageData;
 
@@ -36,37 +37,35 @@
 
 <Accordion>
 	<AccordionItem open>
-		<svelte:fragment slot="summary"><h4 class="font-medium">Your schedules</h4></svelte:fragment>
-		<svelte:fragment slot="content"
-			><div class="w-full overflow-y-auto max-h-[600px] columns-1 lg:columns-2 gap-2">
-				{#if privateSchedules.length == 0}
-					<span>No private schedules found, go create one!</span>
-				{/if}
+		<svelte:fragment slot="summary"><h4>Your schedules</h4></svelte:fragment>
+		<svelte:fragment slot="content">
+			{#if privateSchedules.length == 0}
+				<span>No private schedules found, go create one!</span>
+			{/if}
 
+			<ScrollItemList>
 				{#each privateSchedules as s (s.id)}
 					<ScheduleListItem data={s} />
 				{/each}
-			</div></svelte:fragment
-		>
+			</ScrollItemList>
+		</svelte:fragment>
 	</AccordionItem>
 	<AccordionItem>
-		<svelte:fragment slot="summary"><h4 class="font-medium">Public schedules</h4></svelte:fragment>
-		<svelte:fragment slot="content"
-			><div class="w-full overflow-y-auto max-h-[600px] columns-1 lg:columns-2 gap-2">
-				{#if publicSchedules.length == 0}
-					<span>No public schedules found</span>
-				{/if}
+		<svelte:fragment slot="summary"><h4>Public schedules</h4></svelte:fragment>
+		<svelte:fragment slot="content">
+			{#if publicSchedules.length == 0}
+				<span>No public schedules found</span>
+			{/if}
 
-				{#each publicSchedules as s}
+			{#each publicSchedules as s}
+				<ScrollItemList>
 					<ScheduleListItem data={s} />
-				{/each}
-			</div></svelte:fragment
-		>
+				</ScrollItemList>
+			{/each}
+		</svelte:fragment>
 	</AccordionItem>
 	<AccordionItem>
-		<svelte:fragment slot="summary"
-			><h4 class="font-medium">Create a new schedule</h4></svelte:fragment
-		>
+		<svelte:fragment slot="summary"><h4>Create a new schedule</h4></svelte:fragment>
 		<svelte:fragment slot="content">
 			<form class="flex flex-col gap-4" method="post" use:enhance action="?/createSchedule">
 				<label class="label max-w-[400px]">

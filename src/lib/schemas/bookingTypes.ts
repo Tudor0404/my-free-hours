@@ -21,6 +21,11 @@ export const createType = z
 			(val) => {
 				if (!val) return [];
 
+				if (typeof val === 'string') {
+					console.log(val.split(',').map((e) => Number.parseInt(e)));
+					return val.split(',').map((e) => Number.parseInt(e));
+				}
+
 				if (Array.isArray(val) && val.every((item) => typeof item === 'number')) {
 					return val;
 				}
@@ -30,10 +35,6 @@ export const createType = z
 						const num = Number.parseInt(item);
 						return isNaN(num) ? 0 : num;
 					});
-				}
-
-				if (typeof val === 'string') {
-					return val.split(',').map((e) => Number.parseInt(e));
 				}
 
 				return [];
@@ -52,4 +53,15 @@ export const createType = z
 	.refine((data) => data.online || data.in_person, {
 		message: 'A meeting must be able to be held at least in person or online',
 		path: ['online']
-	});
+	})
+	.refine(
+		(data) => {
+			const durations = data.durations;
+			const uniqueDurations = new Set(durations);
+			return uniqueDurations.size === durations.length;
+		},
+		{
+			message: 'All durations must be unique',
+			path: ['durations']
+		}
+	);
