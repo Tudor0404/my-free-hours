@@ -1,6 +1,7 @@
 import Schedule from '$lib/schedule/Schedule.js';
+import { json } from '$lib/utils/json';
 import { absoluteTimeToObject } from '$lib/utils/time.js';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import dayjs from 'dayjs';
 
 export async function GET({ params, locals: { supabase } }) {

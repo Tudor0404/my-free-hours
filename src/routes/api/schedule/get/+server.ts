@@ -1,4 +1,5 @@
-import { error, json } from '@sveltejs/kit';
+import { json } from '$lib/utils/json';
+import { error } from '@sveltejs/kit';
 
 export async function GET({ locals: { supabase } }) {
 	const { error: sError, data } = await supabase.from('schedule').select('*');

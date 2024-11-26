@@ -4,6 +4,35 @@ import { createServerClient } from '@supabase/ssr';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_ANON, PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { gzip } from 'zlib';
+import { promisify } from 'util';
+
+const gzipAsync = promisify(gzip);
+
+export const compression: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+
+	// Check if response should be compressed
+	const acceptEncoding = event.request.headers.get('accept-encoding') || '';
+	const supportsGzip = acceptEncoding.includes('gzip');
+	const contentType = response.headers.get('content-type');
+
+	if (supportsGzip && contentType?.includes('application/json')) {
+		const originalBody = await response.text();
+		const compressedBody = await gzipAsync(originalBody);
+
+		return new Response(compressedBody, {
+			headers: {
+				...Object.fromEntries(response.headers),
+				'Content-Encoding': 'gzip',
+				'Content-Type': 'application/json'
+			},
+			status: response.status
+		});
+	}
+
+	return response;
+};
 
 const supabase: Handle = async ({ event, resolve }) => {
 	/**
@@ -79,4 +108,4 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(supabase, authGuard);
+export const handle: Handle = sequence(supabase, authGuard, compression);
