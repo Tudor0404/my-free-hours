@@ -2,7 +2,7 @@
 	import { ListBox, ListBoxItem, RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 	import type { Booking } from '$types/Booking';
 	import type { HoursMinutes } from '$types/HoursMinutes';
-	import { durationToString, getAllPossibleTimes, timeOp } from '$utils/time';
+	import { durationToString, getAllPossibleTimes, timeOp } from '$lib/utils/time';
 
 	export let bookings: Booking[];
 

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import TimeBlock from '$lib/schedule/values/TimeBlock';
 	import type { HoursMinutes } from '$types/HoursMinutes';
-	import { timeToMilitaryString } from '$utils/time';
+	import { timeToMilitaryString } from '$lib/utils/time';
+	import { flip } from '@floating-ui/dom';
 	import Icon from '@iconify/svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
@@ -15,7 +16,8 @@
 		event: 'click',
 		target: popupUUID,
 		placement: 'top',
-		closeQuery: '.close-popup'
+		closeQuery: '.close-popup',
+		middleware: { flip }
 	};
 
 	$: {

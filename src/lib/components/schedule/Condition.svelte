@@ -50,7 +50,8 @@
 				disabled={readOnly}
 			/>
 			<NewRule
-				disabled={readOnly || (condition.rules.length >= 1 && condition.condition == 'NOT')}
+				{readOnly}
+				disabled={condition.rules.length >= 1 && condition.condition == 'NOT'}
 				createDay={() => addRule(new DayBlock('IN', []))}
 				createWeekDay={() => addRule(new DayOfWeekBlock('IN', []))}
 				createMonth={() => addRule(new MonthBlock('IN', []))}

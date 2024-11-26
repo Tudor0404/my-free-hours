@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Condition } from '$types/Schedule.Condition';
+	import { flip } from '@floating-ui/dom';
 	import Icon from '@iconify/svelte';
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
-	import { ListBox, ListBoxItem, popup } from '@skeletonlabs/skeleton';
+	import { popup } from '@skeletonlabs/skeleton';
 
 	export let condition: string;
 	export let numRules: number;
@@ -14,7 +14,8 @@
 		event: 'click',
 		target: 'conditionPopup' + rand,
 		placement: 'bottom',
-		closeQuery: '.listbox-item'
+		closeQuery: '.listbox-item',
+		middleware: { flip }
 	};
 </script>
 

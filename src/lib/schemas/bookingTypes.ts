@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const createType = z
 	.object({
-		name: z.string(),
+		name: z.string().max(40, 'Maximum 40 characters'),
 		description: z
 			.string()
 			.max(1000, 'Descriptions cannot be more than 1000 characters in length')
@@ -22,7 +22,6 @@ export const createType = z
 				if (!val) return [];
 
 				if (typeof val === 'string') {
-					console.log(val.split(',').map((e) => Number.parseInt(e)));
 					return val.split(',').map((e) => Number.parseInt(e));
 				}
 

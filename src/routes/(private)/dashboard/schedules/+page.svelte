@@ -57,11 +57,11 @@
 				<span>No public schedules found</span>
 			{/if}
 
-			{#each publicSchedules as s}
-				<ScrollItemList>
+			<ScrollItemList>
+				{#each publicSchedules as s}
 					<ScheduleListItem data={s} />
-				</ScrollItemList>
-			{/each}
+				{/each}
+			</ScrollItemList>
 		</svelte:fragment>
 	</AccordionItem>
 	<AccordionItem>

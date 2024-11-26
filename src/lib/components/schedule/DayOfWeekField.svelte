@@ -6,6 +6,7 @@
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import AddMultiple from '../input/buttons/AddMultiple.svelte';
 	import CarrouselButtonGroup from '../input/buttons/CarrouselButtonGroup.svelte';
+	import { flip } from '@floating-ui/dom';
 
 	export let block: DayOfWeekBlock;
 	export let onDelete: () => void;
@@ -61,7 +62,8 @@
 		event: 'click',
 		target: popupUUID,
 		placement: 'top',
-		closeQuery: '.close-popup'
+		closeQuery: '.close-popup',
+		middleware: { flip }
 	};
 </script>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { flip } from '@floating-ui/dom';
 	import Icon from '@iconify/svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
@@ -12,17 +13,19 @@
 	export let createOr: () => void;
 	export let createNot: () => void;
 	export let disabled: boolean = false;
+	export let readOnly: boolean = false;
 
 	const rand = Math.random();
 	const newRulePopup: PopupSettings = {
 		event: 'click',
 		target: 'newRulePopup' + rand,
-		placement: 'right'
+		placement: 'right',
+		middleware: { flip }
 	};
 </script>
 
 <button
-	class="p-1 h-7 btn variant-soft-primary aspect-square"
+	class={'p-1 h-7 btn variant-soft-primary aspect-square ' + (readOnly ? 'hidden' : '')}
 	type="button"
 	{disabled}
 	title={disabled ? 'NOT conditions are limited to 1 rule' : ''}

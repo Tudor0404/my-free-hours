@@ -1,9 +1,8 @@
 import type { Condition } from '$types/Schedule.Condition';
-import dayjs, { type Dayjs } from 'dayjs';
+import { type Dayjs } from 'dayjs';
 import ValueBlock from './values/ValueBlock';
 import type { TimeRange } from '$types/TimeRange';
 import TimeBlock from './values/TimeBlock';
-import type { z } from 'zod';
 import type { Field } from '$types/Schedule.Field';
 import DateBlock from './values/DateBlock';
 import ScheduleBlock from './values/ScheduleBlock';
@@ -23,9 +22,7 @@ export default class ConditionBlock {
 		this.rules = rules;
 	}
 
-	/**
-	 * Returns the rules array such that ValueBlocks are prioritised (quicker to evaluate)
-	 */
+	//Returns the rules array such that ValueBlocks are prioritised (quicker to evaluate)
 	private get sorted_rules(): Rule[] {
 		if (this.cached_rules == null) {
 			this.cached_rules = this.rules.toSorted((item1, item2) => {

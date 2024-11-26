@@ -87,7 +87,7 @@
 		<section class="overflow-y-auto p-4 pb-20 space-y-4 min-h-full bg-surface-300">
 			{#each catalogue as segment, i}
 				<!-- Title -->
-				<h3 class="pl-4 font-semibold text-secondary-800">{segment.title}</h3>
+				<h3 class="pl-4 text-secondary-800">{segment.title}</h3>
 				<!-- Nav List -->
 				<nav class="list-nav">
 					<ul>

@@ -6,11 +6,11 @@
 	import localeEn from 'air-datepicker/locale/en';
 	import SveltyPicker from 'svelty-picker';
 	import { onMount } from 'svelte';
-	import { timeToMilitaryString } from '$utils/time';
+	import { timeToMilitaryString } from '$lib/utils/time';
 
 	export let schedule: Schedule = new Schedule();
 	let selectedPreview: string;
-	$: selectedTimes = schedule.get_times_at(dayjs(selectedPreview));
+	$: selectedTimes = schedule.get_times_at_day(dayjs(selectedPreview));
 	let datepickerContainer: HTMLElement;
 
 	export let sendScheduleData: ((data: string) => void) | undefined = undefined;
@@ -31,19 +31,19 @@
 	});
 </script>
 
-<div class="flex flex-col gap-4 p-2 shadow-inner card w-fit">
+<div class="flex flex-col gap-4 p-2 shadow-inner card">
 	<div>
 		<span class="underline">Schedule</span>
 		<Condition {readOnly} condition={schedule.root} changeCallback={() => changeCallback()} />
 	</div>
 
-	<div class="grid grid-cols-2 gap-2 w-fit">
+	<div class="grid grid-cols-2 gap-4 w-fit">
 		<span class="underline">Date preview</span>
 		<span class="underline">Time preview of selected date</span>
 		<div bind:this={datepickerContainer}>
 			<SveltyPicker
 				bind:value={selectedPreview}
-				disableDatesFn={(date) => schedule.get_times_at(dayjs(date)).length == 0}
+				disableDatesFn={(date) => schedule.get_times_at_day(dayjs(date)).length == 0}
 				pickerOnly
 				todayBtn={false}
 				clearBtn={!readOnly}

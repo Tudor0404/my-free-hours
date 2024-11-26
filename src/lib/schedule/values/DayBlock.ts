@@ -69,7 +69,7 @@ export default class DayBlock extends ValueBlock<Dayjs> {
 
 		if (obj.hasOwnProperty('values') && obj['values'] instanceof Array) {
 			if (d.operator == 'BETWEEN') {
-				if (obj['values'].length == 2) {
+				if (obj['values'].length === 2) {
 					d.values = [dayjs(obj['values'][0]), dayjs(obj['values'][1])];
 				} else {
 					throw new Error('The length of a values array should be 2, if the operator is BETWEEN');

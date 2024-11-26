@@ -6,16 +6,17 @@
 	import dayjs from 'dayjs';
 	import Icon from '@iconify/svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { flip } from '@floating-ui/dom';
 
 	export let block: DayBlock;
 	export let onDelete: () => void;
 	export let readOnly: boolean = false;
 
 	let operator: Operator = block.operator;
-	let betweenStart = dayjs(block.values[0]).startOf('day');
-	let betweenEnd = dayjs(block.values[1]).startOf('day');
+	let betweenStart = block.values[0].startOf('day');
+	let betweenEnd = block.values[1].startOf('day');
 	let betweenStartInput = betweenStart.format('YYYY-MM-DD');
-	let betweenEndInput = betweenStart.format('YYYY-MM-DD');
+	let betweenEndInput = betweenEnd.format('YYYY-MM-DD');
 	let inDaysNew: string;
 	let inDays: Dayjs[] = block.values;
 	let isPopupOpen: boolean = false;
@@ -26,18 +27,19 @@
 		target: popupUUID,
 		placement: 'top',
 		closeQuery: '.close-popup',
-		state: (e) => (isPopupOpen = e.state)
+		state: (e) => (isPopupOpen = e.state),
+		middleware: { flip }
 	};
 
-	function toggleInSelection(day: Dayjs) {
-		let index = inDays.findIndex((d) => d.startOf('day').isSame(day));
+	// function toggleInSelection(day: Dayjs) {
+	// 	let index = inDays.findIndex((d) => d.startOf('day').isSame(day));
 
-		if (index == -1) {
-			inDays = [...inDays, day];
-		} else {
-			inDays = [...inDays.slice(0, index), ...inDays.slice(index + 1, inDays.length)];
-		}
-	}
+	// 	if (index == -1) {
+	// 		inDays = [...inDays, day];
+	// 	} else {
+	// 		inDays = [...inDays.slice(0, index), ...inDays.slice(index + 1, inDays.length)];
+	// 	}
+	// }
 
 	$: {
 		block.operator = operator;

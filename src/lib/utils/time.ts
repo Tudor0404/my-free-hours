@@ -1,7 +1,7 @@
-import { goto } from '$app/navigation';
 import type { TimeRange } from '$types/TimeRange';
 import type { Booking } from '$types/Booking';
 import type { HoursMinutes } from '$types/HoursMinutes';
+import TimeBlock from '$lib/schedule/values/TimeBlock';
 
 export function durationToString(duration: HoursMinutes): string {
 	let buffer = '';
@@ -40,7 +40,37 @@ export function getAbsoluteTime(time: HoursMinutes): number {
 	return time.hours * 60 + time.minutes;
 }
 
-export function timeOp(a: HoursMinutes, op: '=' | '>' | '<' | '<=' | '>=' | '!=', b: HoursMinutes) {
+export function absoluteTimeToObject(n: number): HoursMinutes {
+	return { hours: Math.floor(n / 60), minutes: n % 60 };
+}
+
+export function timeMath(a: HoursMinutes, op: '+' | '-', b: HoursMinutes): HoursMinutes | false {
+	const absA = getAbsoluteTime(a);
+	const absB = getAbsoluteTime(b);
+	let res: number;
+
+	switch (op) {
+		case '+':
+			res = absA + absB;
+			break;
+		case '-':
+			res = absA - absB;
+			break;
+		default:
+			return false;
+	}
+
+	if (res < 0 || res > getAbsoluteTime(TimeBlock.LATEST_TIME)) {
+		return false;
+	}
+	return absoluteTimeToObject(res);
+}
+
+export function timeOp(
+	a: HoursMinutes,
+	op: '=' | '>' | '<' | '<=' | '>=' | '!=',
+	b: HoursMinutes
+): boolean {
 	const absA = getAbsoluteTime(a);
 	const absB = getAbsoluteTime(b);
 

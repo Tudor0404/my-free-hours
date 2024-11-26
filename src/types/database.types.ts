@@ -66,70 +66,67 @@ export type Database = {
           active: boolean
           created_at: string
           id: number
-          "inperson-schedule": number | null
+          inperson_schedule: number | null
           maximum_lead: number
           minimum_lead: number
-          "online-schedule": number | null
-          owner: string
+          online_schedule: number | null
           post_notification: string | null
           post_notification_time: number
           pre_notification: string | null
           pre_notification_time: number
-          required_email_domains: string[] | null
+          required_email_domains: string | null
           requires_email: boolean
           time_increment: number
-          timezone: number | null
-          url_id: string | null
+          url_id: string
+          user_id: string
         }
         Insert: {
           active?: boolean
           created_at?: string
           id?: number
-          "inperson-schedule"?: number | null
+          inperson_schedule?: number | null
           maximum_lead?: number
           minimum_lead?: number
-          "online-schedule"?: number | null
-          owner: string
+          online_schedule?: number | null
           post_notification?: string | null
           post_notification_time?: number
           pre_notification?: string | null
           pre_notification_time?: number
-          required_email_domains?: string[] | null
+          required_email_domains?: string | null
           requires_email?: boolean
           time_increment?: number
-          timezone?: number | null
-          url_id?: string | null
+          url_id?: string
+          user_id?: string
         }
         Update: {
           active?: boolean
           created_at?: string
           id?: number
-          "inperson-schedule"?: number | null
+          inperson_schedule?: number | null
           maximum_lead?: number
           minimum_lead?: number
-          "online-schedule"?: number | null
-          owner?: string
+          online_schedule?: number | null
           post_notification?: string | null
           post_notification_time?: number
           pre_notification?: string | null
           pre_notification_time?: number
-          required_email_domains?: string[] | null
+          required_email_domains?: string | null
           requires_email?: boolean
           time_increment?: number
-          timezone?: number | null
-          url_id?: string | null
+          url_id?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "booking_page_inperson-schedule_fkey"
-            columns: ["inperson-schedule"]
+            foreignKeyName: "booking_page_inperson_schedule_fkey"
+            columns: ["inperson_schedule"]
             isOneToOne: false
             referencedRelation: "schedule"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "booking_page_online-schedule_fkey"
-            columns: ["online-schedule"]
+            foreignKeyName: "booking_page_online_schedule_fkey"
+            columns: ["online_schedule"]
             isOneToOne: false
             referencedRelation: "schedule"
             referencedColumns: ["id"]
@@ -292,6 +289,20 @@ export type Database = {
           user_id: string
         }
         Returns: Json
+      }
+      get_booking_page_details: {
+        Args: {
+          url_id_input: string
+        }
+        Returns: {
+          requires_email: boolean
+          time_increment: number
+          minimum_lead: number
+          maximum_lead: number
+          online_schedule: Json
+          inperson_schedule: Json
+          booking_types: Json
+        }[]
       }
       get_booking_types_with_durations: {
         Args: {

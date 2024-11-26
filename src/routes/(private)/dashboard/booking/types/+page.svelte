@@ -124,7 +124,7 @@
 						>Pre-meeting message <Info>Replaces the default message sent before the meeting.</Info
 						></span
 					>
-					<textarea class="textarea" name="preNotifMessage" bind:value={$form.pre_notification}
+					<textarea class="textarea" name="pre_notification" bind:value={$form.pre_notification}
 					></textarea>
 					<ErrorMessage error={$errors.pre_notification} />
 				</label>
@@ -134,7 +134,7 @@
 						>Post-meeting message <Info>Replaces the default message sent after the meeting.</Info
 						></span
 					>
-					<textarea class="textarea" name="postNotifMessage" bind:value={$form.post_notification}
+					<textarea class="textarea" name="post_notification" bind:value={$form.post_notification}
 					></textarea>
 					<ErrorMessage error={$errors.post_notification} />
 				</label>

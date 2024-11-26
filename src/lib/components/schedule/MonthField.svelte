@@ -6,6 +6,7 @@
 	import type MonthBlock from '$lib/schedule/values/MonthBlock';
 	import CarrouselButtonGroup from '../input/buttons/CarrouselButtonGroup.svelte';
 	import AddMultiple from '../input/buttons/AddMultiple.svelte';
+	import { flip } from '@floating-ui/dom';
 
 	export let block: MonthBlock;
 	export let onDelete: () => void;
@@ -71,7 +72,8 @@
 		event: 'click',
 		target: popupUUID,
 		placement: 'top',
-		closeQuery: '.close-popup'
+		closeQuery: '.close-popup',
+		middleware: { flip }
 	};
 </script>
 

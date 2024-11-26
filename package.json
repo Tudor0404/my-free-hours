@@ -47,6 +47,7 @@
 		"@supabase/ssr": "^0.5.1",
 		"air-datepicker": "^3.5.3",
 		"dayjs": "^1.11.13",
+		"fuse.js": "^7.0.0",
 		"iconify-icon": "^2.1.0",
 		"svelte-language-server": "^0.17.1",
 		"svelty-picker": "^5.2.9",

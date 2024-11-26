@@ -33,8 +33,6 @@
 				method: 'DELETE'
 			});
 
-			console.log(res);
-
 			if (res.status == 200) {
 				toastStore.trigger({
 					message: 'Schedule deleted successfully!',
@@ -45,7 +43,7 @@
 				modalStore.close();
 			} else {
 				toastStore.trigger({
-					message: await res.text(),
+					message: (await res.json()).message,
 					background: 'variant-filled-error'
 				});
 			}
@@ -68,29 +66,29 @@
 	<div class="flex flex-row justify-start items-center">
 		<span class="flex-grow font-medium">{data.name}</span>
 
-		<button
-			class="p-0 btn-icon btn-icon-sm variant-outline-error hover:variant-filled-error"
-			type="button"
-			on:click={() => modalStore.trigger(deleteModal)}
-		>
-			<Icon icon="tabler:trash" />
-		</button>
+		{#if data.user_id}
+			<button
+				class="p-0 btn-icon btn-icon-sm variant-outline-error hover:variant-filled-error"
+				type="button"
+				on:click={() => modalStore.trigger(deleteModal)}
+			>
+				<Icon icon="tabler:trash" />
+			</button>
+		{/if}
 	</div>
 
 	<div class="flex flex-col gap-1">
 		<button
-			class={'chip variant-outline-secondary hover:variant-filled-secondary'}
+			class="chip variant-outline-secondary"
 			on:click={() => modalStore.trigger(previewModal)}
 			type="button"
 		>
 			<span>Schedule</span>
 		</button>
 		<button
-			class={'chip ' +
-				(data.description
-					? 'variant-outline-secondary hover:variant-filled-secondary'
-					: 'variant-outline-surface cursor-default')}
+			class="chip variant-outline-secondary"
 			type="button"
+			disabled={!data.description}
 			on:click={() => modalStore.trigger(descriptionModal)}
 		>
 			<span>Description</span>

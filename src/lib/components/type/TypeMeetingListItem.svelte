@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { BookingTypeWithDurations } from '$types/BookingTypeWithDurations';
-	import { durationToString, minutesToDuration } from '$utils/time';
+	import { durationToString, minutesToDuration } from '$lib/utils/time';
 	import Icon from '@iconify/svelte';
 	import {
 		getModalStore,
@@ -111,7 +111,7 @@
 			size="sm"
 		/>
 		<button
-			class="p-0 btn-icon btn-icon-sm variant-outline-error hover:variant-filled-error"
+			class="flex-shrink-0 p-0 btn-icon btn-icon-sm variant-outline-error hover:variant-filled-error"
 			type="button"
 			on:click={() => modalStore.trigger(deleteModal)}
 		>
@@ -150,31 +150,25 @@
 
 	<div class="grid grid-cols-2 gap-1 mt-2">
 		<button
-			class={'col-span-2 chip ' +
-				(data.description
-					? 'variant-outline-secondary hover:variant-filled-secondary'
-					: 'variant-outline-surface cursor-default')}
+			class="col-span-2 chip variant-outline-secondary active:hover:variant-filled-secondary"
 			type="button"
+			disabled={!data.description}
 			on:click={() => modalStore.trigger(descriptionModal)}
 		>
 			<span>Description</span>
 		</button>
 		<button
-			class={'chip ' +
-				(data.pre_notification
-					? 'variant-outline-secondary hover:variant-filled-secondary'
-					: 'variant-outline-surface cursor-default')}
+			class="chip variant-outline-secondary"
 			type="button"
+			disabled={!data.pre_notification}
 			on:click={() => modalStore.trigger(preModal)}
 		>
 			<span>Pre-notif</span>
 		</button>
 		<button
-			class={'chip ' +
-				(data.post_notification
-					? 'variant-outline-secondary hover:variant-filled-secondary'
-					: 'variant-outline-surface cursor-default')}
+			class="chip variant-outline-secondary"
 			type="button"
+			disabled={!data.post_notification}
 			on:click={() => modalStore.trigger(postModal)}
 		>
 			<span>Post-notif</span>

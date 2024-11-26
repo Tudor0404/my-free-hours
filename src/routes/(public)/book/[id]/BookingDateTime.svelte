@@ -4,7 +4,7 @@
 	import localeEn from 'air-datepicker/locale/en';
 	import type { Day } from '$types/Day';
 	import dayjs from 'dayjs';
-	import { singleOrFirstDate, timeToString } from '$utils/time';
+	import { singleOrFirstDate, timeToString } from '$lib/utils/time';
 	import DateBadge from './DateBadge.svelte';
 
 	export let days: Day[];

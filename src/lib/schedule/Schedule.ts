@@ -1,8 +1,10 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import ConditionBlock from './ConditionBlock';
 import type { TimeRange } from '$types/TimeRange';
-import { z } from 'zod';
-import type TimeBlock from './values/TimeBlock';
+import TimeBlock from './values/TimeBlock';
+import DayBlock from './values/DayBlock';
+import { createTime, timeMath, timeOp } from '$lib/utils/time';
+import type { HoursMinutes } from '$types/HoursMinutes';
 
 export default class Schedule {
 	root: ConditionBlock;
@@ -11,7 +13,7 @@ export default class Schedule {
 		this.root = new ConditionBlock();
 	}
 
-	public get_times_within(
+	public get_times_within_days(
 		start: Dayjs,
 		end: Dayjs,
 		showEmpty = false
@@ -40,8 +42,73 @@ export default class Schedule {
 		return allowedDates;
 	}
 
-	public get_times_at(day: Dayjs): TimeRange[] {
+	public get_times_at_day(day: Dayjs): TimeRange[] {
 		return this.root.evaluate(day.startOf('day'));
+	}
+
+	public get_time_slots_within(
+		start: Dayjs,
+		end: Dayjs,
+		interval: HoursMinutes
+	): { day: Dayjs; times: { start: HoursMinutes; maxDuration: HoursMinutes }[] }[] {
+		let buffer: { day: Dayjs; times: { start: HoursMinutes; maxDuration: HoursMinutes }[] }[] = [];
+
+		// construct new schedule
+		const newSchedule = new Schedule();
+
+		// root AND
+		const rootAnd = new ConditionBlock('AND');
+
+		// original schedule
+		rootAnd.add_rule(this.root);
+
+		// start datetime restriction
+		// If startday, must be within startTime and end of day
+		// X -> Y === ¬ X ∨ Y
+		const startRestriction = new ConditionBlock('OR', [
+			new ConditionBlock('NOT', [new DayBlock('IN', [start])]),
+			new TimeBlock(createTime(start.hour(), start.minute()), TimeBlock.LATEST_TIME)
+		]);
+		rootAnd.add_rule(startRestriction);
+
+		// end datetime restriction
+		// If endDay, must be within start of day and endTime
+		const endRestriction = new ConditionBlock('OR', [
+			new ConditionBlock('NOT', [new DayBlock('IN', [end])]),
+			new TimeBlock(TimeBlock.EARLIEST_TIME, createTime(end.hour(), end.minute()))
+		]);
+		rootAnd.add_rule(endRestriction);
+
+		newSchedule.root = rootAnd;
+
+		const timeRanges = newSchedule.get_times_within_days(start, end);
+
+		for (let i = 0; i < timeRanges.length; i++) {
+			let dayBuffer: { start: HoursMinutes; maxDuration: HoursMinutes }[] = [];
+
+			for (let j = 0; j < timeRanges[i].times.length; j++) {
+				let curTime = timeRanges[i].times[j].start;
+				const endTime = timeRanges[i].times[j].end;
+
+				while (timeOp(curTime, '<', endTime)) {
+					const duration = timeMath(endTime, '-', curTime);
+
+					if (!duration) break;
+
+					dayBuffer.push({ start: curTime, maxDuration: duration });
+
+					const newTime = timeMath(curTime, '+', interval);
+
+					if (!newTime) break;
+
+					curTime = newTime;
+				}
+			}
+
+			buffer.push({ day: timeRanges[i].day, times: dayBuffer });
+		}
+
+		return buffer;
 	}
 
 	public encode_json(): Record<string, any> {

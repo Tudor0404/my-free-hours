@@ -1,10 +1,14 @@
 import { error } from '@sveltejs/kit';
 
 export async function DELETE({ params, locals: { supabase } }) {
-	const { error: sError } = await supabase.from('schedule').delete().eq('id', params.id);
+	const { error: sError, data } = await supabase
+		.from('schedule')
+		.delete()
+		.eq('id', params.id)
+		.select('id');
 
-	if (sError) {
-		if (sError.code == '23503') {
+	if (sError || data.length == 0) {
+		if (sError && sError.code == '23503') {
 			error(405, 'Schedule cannot be deleted because it is used by a page');
 		}
 
