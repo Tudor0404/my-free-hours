@@ -3,8 +3,9 @@ import ConditionBlock from './ConditionBlock';
 import type { TimeRange } from '$types/TimeRange';
 import TimeBlock from './values/TimeBlock';
 import DayBlock from './values/DayBlock';
-import { createTime, timeMath, timeOp } from '$lib/utils/time';
+import { createTime, getAbsoluteTime, timeMath, timeOp } from '$lib/utils/time';
 import type { HoursMinutes } from '$types/HoursMinutes';
+import type { DaySlotTimes } from '$types/DaySlotTimes';
 
 export default class Schedule {
 	root: ConditionBlock;
@@ -46,12 +47,8 @@ export default class Schedule {
 		return this.root.evaluate(day.startOf('day'));
 	}
 
-	public get_time_slots_within(
-		start: Dayjs,
-		end: Dayjs,
-		interval: HoursMinutes
-	): { day: Dayjs; times: { start: HoursMinutes; maxDuration: HoursMinutes }[] }[] {
-		let buffer: { day: Dayjs; times: { start: HoursMinutes; maxDuration: HoursMinutes }[] }[] = [];
+	public get_time_slots_within(start: Dayjs, end: Dayjs, interval: HoursMinutes): DaySlotTimes[] {
+		let buffer: DaySlotTimes[] = [];
 
 		// construct new schedule
 		const newSchedule = new Schedule();
@@ -84,10 +81,20 @@ export default class Schedule {
 		const timeRanges = newSchedule.get_times_within_days(start, end);
 
 		for (let i = 0; i < timeRanges.length; i++) {
-			let dayBuffer: { start: HoursMinutes; maxDuration: HoursMinutes }[] = [];
+			let dayBuffer: { start: HoursMinutes; maxDuration: number }[] = [];
 
 			for (let j = 0; j < timeRanges[i].times.length; j++) {
-				let curTime = timeRanges[i].times[j].start;
+				let curTime: HoursMinutes | false = timeRanges[i].times[j].start;
+				// set curTime to the next interval available
+				if (curTime.minutes !== 0) {
+					curTime = timeMath(curTime, '+', {
+						hours: 0,
+						minutes: getAbsoluteTime(interval) - (curTime.minutes % getAbsoluteTime(interval))
+					});
+				}
+
+				if (!curTime) break;
+
 				const endTime = timeRanges[i].times[j].end;
 
 				while (timeOp(curTime, '<', endTime)) {
@@ -95,7 +102,7 @@ export default class Schedule {
 
 					if (!duration) break;
 
-					dayBuffer.push({ start: curTime, maxDuration: duration });
+					dayBuffer.push({ start: curTime, maxDuration: getAbsoluteTime(duration) });
 
 					const newTime = timeMath(curTime, '+', interval);
 
@@ -105,7 +112,7 @@ export default class Schedule {
 				}
 			}
 
-			buffer.push({ day: timeRanges[i].day, times: dayBuffer });
+			buffer.push({ day: timeRanges[i].day.toDate(), times: dayBuffer });
 		}
 
 		return buffer;

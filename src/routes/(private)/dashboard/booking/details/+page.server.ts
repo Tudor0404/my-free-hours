@@ -3,9 +3,7 @@ import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
-export const load = async ({ locals: { supabase }, depends }) => {
-	// depends('supabase:db:booking_details');
-
+export const load = async ({ locals: { supabase }, url }) => {
 	const { data: page } = await supabase.from('booking_page').select('*').limit(1).single();
 	const { data: schedules } = await supabase.from('schedule').select('*');
 
@@ -15,14 +13,12 @@ export const load = async ({ locals: { supabase }, depends }) => {
 
 	const form = await superValidate(page, zod(createDetails));
 
-	return { form, urlId: page.url_id, schedules };
+	return { form, urlId: page.url_id, schedules, origin: url.origin };
 };
 
 export const actions = {
 	updateDetails: async ({ request, locals: { supabase, session } }) => {
 		const form = await superValidate(request, zod(createDetails));
-
-		console.log(form);
 
 		if (!session) {
 			return fail(400, { message: 'Unable to fetch user' });

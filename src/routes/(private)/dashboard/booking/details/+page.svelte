@@ -60,7 +60,7 @@
 		<button
 			class="ml-auto btn btn-sm variant-glass-secondary hover:variant-filled-secondary"
 			type="button"
-			on:click={() => navigator.clipboard.writeText(data.urlId)}
+			on:click={() => navigator.clipboard.writeText(`${data.origin}/book/${data.urlId}`)}
 			><Icon icon="tabler:link" class="mr-1" />Copy link</button
 		>
 	</div>
@@ -72,7 +72,7 @@
 			bind:checked={$form.requires_email}
 			name="requires_email"
 		/>
-		<p>Requires email</p>
+		<span>Requires email</span>
 
 		<ErrorMessage error={$errors.requires_email} />
 	</label>

@@ -48,7 +48,6 @@ export const actions = {
 		}
 
 		try {
-			console.log(form.data.durations);
 			const { data, error: supabaseError } = await supabase.rpc(
 				'create_booking_type_with_durations',
 				{

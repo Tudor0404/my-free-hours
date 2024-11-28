@@ -3,21 +3,24 @@ import type { Booking } from '$types/Booking';
 import type { HoursMinutes } from '$types/HoursMinutes';
 import TimeBlock from '$lib/schedule/values/TimeBlock';
 
-export function durationToString(duration: HoursMinutes): string {
+export function durationToString(duration: HoursMinutes, long: boolean = false): string {
 	let buffer = '';
 
 	if (duration.hours > 0) {
-		buffer += duration.hours + 'hr';
+		buffer += duration.hours + (long ? ' hour' : 'hr') + (duration.hours > 1 ? 's' : '');
 	}
 	if (duration.minutes > 0) {
-		buffer += duration.minutes + (duration.hours > 0 ? '' : 'min');
+		if (long) {
+			buffer +=
+				(duration.hours > 0 ? ' ' : '') +
+				duration.minutes +
+				(duration.minutes > 1 ? ' minutes' : ' minute');
+		} else {
+			buffer += duration.minutes + (duration.hours > 0 ? '' : 'min');
+		}
 	}
 
 	return buffer;
-}
-
-export function minutesToDuration(minutes: number): HoursMinutes {
-	return { hours: Math.floor(minutes / 60), minutes: minutes % 60 };
 }
 
 export function getAllPossibleTimes(bookings: Booking[]): HoursMinutes[] {

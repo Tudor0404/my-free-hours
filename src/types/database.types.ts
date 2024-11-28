@@ -14,28 +14,34 @@ export type Database = {
           created_at: string
           duration_id: number
           guest_email: string | null
+          guest_name: string
           id: number
           meeting_method: Database["public"]["Enums"]["meeting_method"]
           page_id: number
           type_id: number
+          url_id: string
         }
         Insert: {
           created_at?: string
           duration_id: number
           guest_email?: string | null
+          guest_name: string
           id?: number
           meeting_method: Database["public"]["Enums"]["meeting_method"]
           page_id: number
           type_id: number
+          url_id?: string
         }
         Update: {
           created_at?: string
           duration_id?: number
           guest_email?: string | null
+          guest_name?: string
           id?: number
           meeting_method?: Database["public"]["Enums"]["meeting_method"]
           page_id?: number
           type_id?: number
+          url_id?: string
         }
         Relationships: [
           {
@@ -256,24 +262,18 @@ export type Database = {
       }
       user: {
         Row: {
-          first_name: string
+          display_name: string | null
           id: number
-          last_name: string
-          title: string
           user_id: string
         }
         Insert: {
-          first_name: string
+          display_name?: string | null
           id?: number
-          last_name: string
-          title: string
           user_id: string
         }
         Update: {
-          first_name?: string
+          display_name?: string | null
           id?: number
-          last_name?: string
-          title?: string
           user_id?: string
         }
         Relationships: []
@@ -296,12 +296,14 @@ export type Database = {
         }
         Returns: {
           requires_email: boolean
+          required_email_domains: string
           time_increment: number
           minimum_lead: number
           maximum_lead: number
           online_schedule: Json
           inperson_schedule: Json
           booking_types: Json
+          display_name: string
         }[]
       }
       get_booking_types_with_durations: {

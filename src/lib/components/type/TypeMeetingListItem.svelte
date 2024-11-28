@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { BookingTypeWithDurations } from '$types/BookingTypeWithDurations';
-	import { durationToString, minutesToDuration } from '$lib/utils/time';
+	import { absoluteTimeToObject, durationToString } from '$lib/utils/time';
 	import Icon from '@iconify/svelte';
 	import {
 		getModalStore,
@@ -52,8 +52,6 @@
 			const res = await fetch('/api/booking/type/delete/' + data.id, {
 				method: 'DELETE'
 			});
-
-			console.log(res);
 
 			if (res.status == 200) {
 				toastStore.trigger({
@@ -143,7 +141,7 @@
 	<div class="flex flex-row gap-2">
 		{#each data.durations || [] as duration}
 			<div class="cursor-default chip variant-outline-primary">
-				<span>{durationToString(minutesToDuration(duration.duration))}</span>
+				<span>{durationToString(absoluteTimeToObject(duration.duration))}</span>
 			</div>
 		{/each}
 	</div>

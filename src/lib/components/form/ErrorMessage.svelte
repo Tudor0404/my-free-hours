@@ -3,5 +3,5 @@
 </script>
 
 {#if error}
-	<span class="text-error-500-400-token">{error.join('\n')}</span>
+	<span class="text-error-500-400-token">{error[0]}</span>
 {/if}

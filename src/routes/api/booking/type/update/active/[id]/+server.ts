@@ -16,7 +16,5 @@ export async function PATCH({ params, locals: { supabase }, url }) {
 		error(405, 'Unable to update booking type');
 	}
 
-	console.log(data);
-
 	return new Response('Booking type updated successfully', { status: 200 });
 }

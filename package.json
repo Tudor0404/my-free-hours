@@ -46,6 +46,7 @@
 		"@floating-ui/dom": "^1.6.11",
 		"@supabase/ssr": "^0.5.1",
 		"air-datepicker": "^3.5.3",
+		"axios": "^1.7.8",
 		"dayjs": "^1.11.13",
 		"fuse.js": "^7.0.0",
 		"iconify-icon": "^2.1.0",
