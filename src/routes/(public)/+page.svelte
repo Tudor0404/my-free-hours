@@ -1,7 +1,7 @@
 <!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
 
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div class="space-y-10 text-center flex flex-col items-center">
-		<h2>Welcome to Student Schedule</h2>
+<div class="container flex justify-center items-center mx-auto h-full">
+	<div class="flex flex-col items-center space-y-10 text-center">
+		<h2>Welcome to My Free Hours</h2>
 	</div>
 </div>

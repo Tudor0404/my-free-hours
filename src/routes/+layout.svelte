@@ -17,13 +17,15 @@
 	import SchedulePreview from '$lib/components/modal/SchedulePreview.svelte';
 	import { Toast } from '@skeletonlabs/skeleton';
 	import TextModal from '$lib/components/modal/TextModal.svelte';
+	import BookingModal from '$lib/components/modal/BookingModal.svelte';
 
 	// Modals and Toasts
 	initializeStores();
 
 	const modalRegistry: Record<string, ModalComponent> = {
 		SchedulePreview: { ref: SchedulePreview },
-		Text: { ref: TextModal }
+		Text: { ref: TextModal },
+		Booking: { ref: BookingModal }
 	};
 
 	// Floating UI for Popups

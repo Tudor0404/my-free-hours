@@ -128,10 +128,10 @@ export default class TimeBlock {
 		//end
 		const lastRange = ranges[ranges.length - 1];
 		if (timeOp(lastRange.end, '!=', { hours: 24, minutes: 0 })) {
-			ranges.push(createRange(lastRange.end, this.LATEST_TIME));
+			results.push(createRange(lastRange.end, this.LATEST_TIME));
 		}
 
-		return ranges;
+		return results;
 	}
 
 	public static time_simplification(times: TimeRange[]): TimeRange[] {

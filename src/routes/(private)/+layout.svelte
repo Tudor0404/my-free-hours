@@ -113,7 +113,7 @@
 
 	<div class="p-4 w-full h-full">
 		<div
-			class="card bg-surface-50 shadow-md container min-h-[50%] flex flex-col gap-4 justify-start items-start p-4"
+			class="container flex flex-col gap-4 justify-start items-start p-4 h-full shadow-md card bg-surface-50"
 		>
 			<slot />
 		</div>

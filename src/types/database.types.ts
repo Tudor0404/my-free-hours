@@ -18,6 +18,7 @@ export type Database = {
           id: number
           meeting_method: Database["public"]["Enums"]["meeting_method"]
           page_id: number
+          start_time: string
           type_id: number
           url_id: string
         }
@@ -29,6 +30,7 @@ export type Database = {
           id?: number
           meeting_method: Database["public"]["Enums"]["meeting_method"]
           page_id: number
+          start_time: string
           type_id: number
           url_id?: string
         }
@@ -40,6 +42,7 @@ export type Database = {
           id?: number
           meeting_method?: Database["public"]["Enums"]["meeting_method"]
           page_id?: number
+          start_time?: string
           type_id?: number
           url_id?: string
         }
@@ -50,6 +53,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "duration"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "active_page_schedules"
+            referencedColumns: ["page_id"]
           },
           {
             foreignKeyName: "booking_page_id_fkey"
@@ -231,6 +241,13 @@ export type Database = {
             referencedRelation: "booking"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "online_booking_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings_with_duration"
+            referencedColumns: ["id"]
+          },
         ]
       }
       schedule: {
@@ -280,9 +297,50 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      active_page_schedules: {
+        Row: {
+          inperson_schedule: Json | null
+          online_schedule: Json | null
+          page_id: number | null
+        }
+        Relationships: []
+      }
+      bookings_with_duration: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          guest_email: string | null
+          guest_name: string | null
+          id: number | null
+          meeting_method: Database["public"]["Enums"]["meeting_method"] | null
+          start_time: string | null
+          type_id: number | null
+          url_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "booking_type"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      create_booking: {
+        Args: {
+          p_duration_id: number
+          p_guest_name: string
+          p_meeting_method: string
+          p_type_id: number
+          p_page_id: number
+          p_start_time: string
+          p_guest_email?: string
+        }
+        Returns: string
+      }
       create_booking_type_with_durations: {
         Args: {
           type_data: Json
@@ -290,11 +348,33 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_booking: {
+        Args: {
+          url_id_input: string
+        }
+        Returns: {
+          url_id: string
+        }[]
+      }
+      get_booking: {
+        Args: {
+          url_id_input: string
+        }
+        Returns: {
+          meeting_method: Database["public"]["Enums"]["meeting_method"]
+          start_time: string
+          duration: number
+          meeting_name: string
+          meeting_description: string
+          host_name: string
+        }[]
+      }
       get_booking_page_details: {
         Args: {
           url_id_input: string
         }
         Returns: {
+          id: number
           requires_email: boolean
           required_email_domains: string
           time_increment: number

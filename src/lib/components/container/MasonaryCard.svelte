@@ -1,1 +1,1 @@
-<div class="flex flex-col gap-2 p-2 mb-4 shadow-sm card break-inside-avoid"><slot /></div>
+<div class="flex flex-col gap-2 p-2 shadow-sm card break-inside-avoid h-fit"><slot /></div>

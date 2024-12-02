@@ -13,10 +13,18 @@
 	export let readOnly: boolean = false;
 
 	let operator: Operator = block.operator;
-	let betweenStart = block.values[0].startOf('day');
-	let betweenEnd = block.values[1].startOf('day');
-	let betweenStartInput = betweenStart.format('YYYY-MM-DD');
-	let betweenEndInput = betweenEnd.format('YYYY-MM-DD');
+	let betweenStart: Dayjs;
+	let betweenEnd: Dayjs;
+	let betweenStartInput: string;
+	let betweenEndInput: string;
+
+	if (block.values.length == 2 && operator == 'BETWEEN') {
+		betweenStart = block.values[0].startOf('day');
+		betweenEnd = block.values[1].startOf('day');
+
+		betweenStartInput = betweenStart.format('YYYY-MM-DD');
+		betweenEndInput = betweenEnd.format('YYYY-MM-DD');
+	}
 	let inDaysNew: string;
 	let inDays: Dayjs[] = block.values;
 	let isPopupOpen: boolean = false;

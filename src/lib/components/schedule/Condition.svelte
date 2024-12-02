@@ -14,6 +14,7 @@
 	import type { Rule } from '$lib/schedule/ConditionBlock';
 	import TimeField from './TimeField.svelte';
 	import DeleteRule from '../input/buttons/DeleteRule.svelte';
+	import dayjs from 'dayjs';
 
 	export let condition: ConditionBlock;
 

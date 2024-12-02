@@ -9,6 +9,7 @@
 	import dayjs from 'dayjs';
 	import Icon from '@iconify/svelte';
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
+	import HorizontalRule from '$lib/components/misc/HorizontalRule.svelte';
 
 	export let data;
 
@@ -32,7 +33,8 @@
 					message: 'Booking successfully created!',
 					background: 'variant-filled-success'
 				});
-			} else {
+				console.log(result.data);
+			} else if (result.type !== 'redirect') {
 				toastStore.trigger({
 					message: 'Booking unsuccessfully created!',
 					background: 'variant-filled-error'
@@ -42,7 +44,8 @@
 		invalidateAll: 'force'
 	});
 
-	$: selectableDurations = data.meetingTypes.find((e) => e.id == $form.type_id)?.durations;
+	$: selectedMeetingType = data.meetingTypes.find((e) => e.id == $form.type_id);
+	$: selectableDurations = selectedMeetingType?.durations;
 
 	const meetingTypeProxy = fieldProxy(form, 'type_id');
 	const durationProxy = fieldProxy(form, 'duration');
@@ -255,7 +258,7 @@
 		<ErrorMessage error={$errors.duration} />
 	</div>
 
-	<hr class="w-full h-1 rounded bg-surface-300" />
+	<HorizontalRule />
 
 	<div class="space-y-4">
 		<h3 class="text-center lg:text-left">Select date and time</h3>
@@ -318,38 +321,54 @@
 							class="flex overflow-y-auto flex-row flex-wrap gap-3 h-[200px] border-token rounded p-1 w-full justify-center content-start"
 						>
 							{#if $form.meeting_method === 'in_person'}
-								{#if inpersonSlots[currentInpersonIndex] !== undefined}
-									{#each inpersonSlots[currentInpersonIndex].times as time}
-										<button
-											class={`chip w-[80px] px-3 text-base ${$form.time === timeToMilitaryString(time.start) ? 'variant-filled-tertiary' : 'variant-outline-tertiary'}`}
-											on:click={() => timeProxy.set(timeToMilitaryString(time.start))}
-											type="button"
-										>
-											{timeToMilitaryString(time.start)}
-										</button>
-									{/each}
+								{#if selectedMeetingType?.in_person}
+									{#if inpersonSlots[currentInpersonIndex] !== undefined}
+										{#each inpersonSlots[currentInpersonIndex].times as time}
+											<button
+												class={`chip w-[80px] px-3 text-base ${$form.time === timeToMilitaryString(time.start) ? 'variant-filled-tertiary' : 'variant-outline-tertiary'}`}
+												on:click={() => timeProxy.set(timeToMilitaryString(time.start))}
+												type="button"
+											>
+												{timeToMilitaryString(time.start)}
+											</button>
+										{/each}
+									{:else}
+										<div class="flex justify-center items-center self-center w-full h-full">
+											<span class="text-center text-surface-800"
+												>No in person slots available on this date</span
+											>
+										</div>
+									{/if}
 								{:else}
 									<div class="flex justify-center items-center self-center w-full h-full">
 										<span class="text-center text-surface-800"
-											>No in person slots available on this date</span
+											>This meeting type does not allow in person meetings</span
 										>
 									</div>
 								{/if}
 							{:else if $form.meeting_method === 'online'}
-								{#if onlineSlots[currentOnlineIndex] !== undefined}
-									{#each onlineSlots[currentOnlineIndex].times as time}
-										<button
-											class={`chip w-[80px] px-3 text-base ${$form.time === timeToMilitaryString(time.start) ? 'variant-filled-tertiary' : 'variant-outline-tertiary'}`}
-											on:click={() => timeProxy.set(timeToMilitaryString(time.start))}
-											type="button"
-										>
-											{timeToMilitaryString(time.start)}
-										</button>
-									{/each}
+								{#if selectedMeetingType?.online}
+									{#if onlineSlots[currentOnlineIndex] !== undefined}
+										{#each onlineSlots[currentOnlineIndex].times as time}
+											<button
+												class={`chip w-[80px] px-3 text-base ${$form.time === timeToMilitaryString(time.start) ? 'variant-filled-tertiary' : 'variant-outline-tertiary'}`}
+												on:click={() => timeProxy.set(timeToMilitaryString(time.start))}
+												type="button"
+											>
+												{timeToMilitaryString(time.start)}
+											</button>
+										{/each}
+									{:else}
+										<div class="flex justify-center items-center self-center w-full h-full">
+											<span class="text-center text-surface-800"
+												>No online slots available on this date</span
+											>
+										</div>
+									{/if}
 								{:else}
 									<div class="flex justify-center items-center self-center w-full h-full">
 										<span class="text-center text-surface-800"
-											>No online slots available on this date</span
+											>This meeting type does not allow online meetings</span
 										>
 									</div>
 								{/if}
@@ -374,7 +393,7 @@
 		<ErrorMessage error={$errors.meeting_method} />
 	</div>
 
-	<hr class="w-full h-1 rounded bg-surface-300" />
+	<HorizontalRule />
 
 	<div class="space-y-4">
 		<h3 class="text-center lg:text-left">Personal details</h3>

@@ -2,9 +2,9 @@ import Schedule from '$lib/schedule/Schedule.js';
 import { booking } from '$lib/schemas/booking';
 import { absoluteTimeToObject, createTime, timeOp } from '$lib/utils/time.js';
 import type { BookingTypePublic } from '$types/BookingTypePublic.js';
-import { error } from '@sveltejs/kit';
-import dayjs from 'dayjs';
-import { fail, setError, superValidate } from 'sveltekit-superforms';
+import { error, redirect } from '@sveltejs/kit';
+import dayjs, { type Dayjs } from 'dayjs';
+import { fail, message, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 export async function load({ params, locals: { supabase } }) {
@@ -124,6 +124,8 @@ export const actions = {
 			}
 		}
 
+		let startTime: Dayjs;
+
 		// time and date
 		if (form.data.meeting_method == 'in_person') {
 			const inpersonSchedule = Schedule.decode_json(
@@ -152,6 +154,11 @@ export const actions = {
 				setError(form, 'time', 'Selected time is not valid');
 				return fail(500, { form });
 			}
+
+			startTime = dayjs(form.data.date)
+				.startOf('day')
+				.set('hour', time.hours)
+				.set('minute', time.minutes);
 		} else {
 			const onlineSchedule = Schedule.decode_json(
 				JSON.parse((bookingDetails.online_schedule as string).toString())
@@ -179,8 +186,40 @@ export const actions = {
 				setError(form, 'time', 'Selected time is not valid');
 				return fail(500, { form });
 			}
+
+			startTime = dayjs(form.data.date)
+				.startOf('day')
+				.set('hour', time.hours)
+				.set('minute', time.minutes);
 		}
 
-		return { form };
+		const { data: durationID } = await supabase
+			.from('duration')
+			.select('id')
+			.match({ type_id: selectedType.id, duration: form.data.duration })
+			.single();
+
+		if (durationID === null) {
+			setError(form, 'duration', 'Unable to locate duration');
+			return fail(500, { form });
+		}
+
+		const { data: urlID, error: bookingError } = await supabase.rpc('create_booking', {
+			p_duration_id: durationID.id,
+			p_guest_email: form.data.guest_email || undefined,
+			p_guest_name: form.data.guest_name,
+			p_meeting_method: form.data.meeting_method,
+			p_page_id: bookingDetails.id,
+			p_type_id: selectedType.id,
+			p_start_time: startTime.toISOString()
+		});
+
+		if (urlID === null) {
+			console.log(bookingError, urlID);
+			setError(form, 'time', 'Unable to create meeting');
+			return fail(500, { form });
+		}
+
+		redirect(304, '/booking/' + urlID);
 	}
 };

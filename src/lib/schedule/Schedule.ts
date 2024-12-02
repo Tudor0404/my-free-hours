@@ -1,4 +1,4 @@
-import dayjs, { type Dayjs } from 'dayjs';
+import { type Dayjs } from 'dayjs';
 import ConditionBlock from './ConditionBlock';
 import type { TimeRange } from '$types/TimeRange';
 import TimeBlock from './values/TimeBlock';
@@ -10,8 +10,12 @@ import type { DaySlotTimes } from '$types/DaySlotTimes';
 export default class Schedule {
 	root: ConditionBlock;
 
-	constructor() {
-		this.root = new ConditionBlock();
+	constructor(root?: ConditionBlock) {
+		if (root) {
+			this.root = root;
+		} else {
+			this.root = new ConditionBlock();
+		}
 	}
 
 	public get_times_within_days(

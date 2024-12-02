@@ -10,10 +10,16 @@ body {
 
 :root {
 	--sdt-bg-selected: #4b8981; /* tertiary 700 */
+	--ec-time-height: 30px;
 }
 
 .modal-container {
 	@apply card p-4 w-modal shadow-xl space-y-4;
+}
+
+.ec-time-grid .ec-time,
+.ec-time-grid .ec-line {
+	height: var(--ec-time-height);
 }
 
 /* modern theme */
