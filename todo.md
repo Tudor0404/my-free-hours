@@ -5,5 +5,3 @@
 # Calendar
 
 # Schedule
-
-- Start time makes it the whole day, look into why

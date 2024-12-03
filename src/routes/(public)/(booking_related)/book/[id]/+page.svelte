@@ -33,7 +33,6 @@
 					message: 'Booking successfully created!',
 					background: 'variant-filled-success'
 				});
-				console.log(result.data);
 			} else if (result.type !== 'redirect') {
 				toastStore.trigger({
 					message: 'Booking unsuccessfully created!',

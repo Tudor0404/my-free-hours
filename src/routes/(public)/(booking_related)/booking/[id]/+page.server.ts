@@ -6,7 +6,6 @@ export async function load({ locals: { supabase }, params }) {
 		.single();
 
 	if (!data || sError) {
-		console.log(sError);
 		error(400, 'Unable to get booking');
 	}
 

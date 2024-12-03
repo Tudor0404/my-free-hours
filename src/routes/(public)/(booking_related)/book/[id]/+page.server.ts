@@ -4,7 +4,7 @@ import { absoluteTimeToObject, createTime, timeOp } from '$lib/utils/time.js';
 import type { BookingTypePublic } from '$types/BookingTypePublic.js';
 import { error, redirect } from '@sveltejs/kit';
 import dayjs, { type Dayjs } from 'dayjs';
-import { fail, message, setError, superValidate } from 'sveltekit-superforms';
+import { fail, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 export async function load({ params, locals: { supabase } }) {
@@ -215,7 +215,6 @@ export const actions = {
 		});
 
 		if (urlID === null) {
-			console.log(bookingError, urlID);
 			setError(form, 'time', 'Unable to create meeting');
 			return fail(500, { form });
 		}

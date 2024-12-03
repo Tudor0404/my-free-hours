@@ -81,7 +81,7 @@ export default class ConditionBlock {
 					if (r instanceof ConditionBlock) {
 						const evaluatedRanges = r.evaluate(date);
 
-						if (validRanges.length == 0) {
+						if (validRanges.length === 0) {
 							validRanges = evaluatedRanges;
 						} else {
 							validRanges = TimeBlock.time_disjunction(validRanges, evaluatedRanges);
@@ -91,7 +91,7 @@ export default class ConditionBlock {
 							validRanges = [TimeBlock.FULL_TIME_RANGE];
 						}
 					} else if (r instanceof TimeBlock) {
-						if (validRanges.length == 0) {
+						if (validRanges.length === 0 && i === 0) {
 							validRanges = [r.timeRange];
 						} else {
 							validRanges = TimeBlock.time_disjunction(validRanges, [r.timeRange]);
@@ -117,7 +117,7 @@ export default class ConditionBlock {
 						if (evaluatedRanges.length == 0) {
 							return [];
 						} else {
-							if (validRanges.length == 0) {
+							if (validRanges.length == 0 && i === 0) {
 								validRanges = evaluatedRanges;
 							} else {
 								validRanges = TimeBlock.time_conjunction(validRanges, evaluatedRanges);
@@ -127,14 +127,14 @@ export default class ConditionBlock {
 						if (!r.verify_date(date)) {
 							return [];
 						} else {
-							if (validRanges.length == 0) {
+							if (validRanges.length === 0) {
 								validRanges = [TimeBlock.FULL_TIME_RANGE];
 							} else {
 								validRanges = validRanges;
 							}
 						}
 					} else if (r instanceof TimeBlock) {
-						if (validRanges.length == 0) {
+						if (validRanges.length === 0) {
 							validRanges = [r.timeRange];
 						} else {
 							validRanges = TimeBlock.time_conjunction(validRanges, [r.timeRange]);

@@ -79,7 +79,7 @@
 				tabindex="-1"
 				type="button"
 				on:click={async () => {
-					const res = await fetch('/api/booking/private/delete/' + id, {
+					const res = await fetch('/api/booking/delete/private/' + id, {
 						method: 'DELETE'
 					});
 

@@ -1,25 +1,41 @@
 import dayjs from 'dayjs';
-import Schedule from './Schedule';
-import DayOfWeekBlock from './values/DayOfWeekBlock';
-import DateBlock from './values/DateBlock';
+import Schedule, { ScheduleDebug } from './Schedule';
 import ConditionBlock from './ConditionBlock';
 import DayBlock from './values/DayBlock';
 import TimeBlock from './values/TimeBlock';
-import ValueBlock from './values/ValueBlock';
+import { createTime } from '$lib/utils/time';
 
 export default function test() {
-	const s = new Schedule();
+	const jsonS =
+		'{"condition":"AND","rules":[{"field":"DAY_OF_WEEK","operator":"IN","values":[1,2,4]},{"field":"TIME","operator":"BETWEEN","values":[{"hours":7,"minutes":0},{"hours":13,"minutes":0}]}]}';
+	const s = Schedule.decode_json(JSON.parse(jsonS));
 
-	const c = new ConditionBlock('AND');
-	c.add_rule(new DayOfWeekBlock('BETWEEN', [0, 4]));
-	c.add_rule(new DateBlock('BETWEEN', [0, 15]));
+	const start = dayjs().add(30, 'minutes');
+	const end = dayjs().add(262980, 'minutes');
 
-	const c2 = new ConditionBlock('OR');
-	c2.add_rule(new TimeBlock({ hours: 9, minutes: 0 }, { hours: 13, minutes: 0 }));
-	c2.add_rule(new TimeBlock({ hours: 14, minutes: 0 }, { hours: 17, minutes: 0 }));
+	const newSchedule = new Schedule();
 
-	c.add_rule(c2);
-	c.add_rule(new TimeBlock({ hours: 10, minutes: 0 }, { hours: 16, minutes: 0 }));
+	// root AND
+	const rootAnd = new ConditionBlock('AND');
 
-	s.root = c;
+	// original schedule
+	rootAnd.add_rule(s.root);
+
+	const startRestriction = new ConditionBlock('OR', [
+		new ConditionBlock('NOT', [new DayBlock('IN', [start])]),
+		new TimeBlock(createTime(start.hour(), start.minute()), TimeBlock.LATEST_TIME)
+	]);
+	rootAnd.add_rule(startRestriction);
+
+	const endRestriction = new ConditionBlock('OR', [
+		new ConditionBlock('NOT', [new DayBlock('IN', [end])]),
+		new TimeBlock(TimeBlock.EARLIEST_TIME, createTime(end.hour(), end.minute()))
+	]);
+	rootAnd.add_rule(endRestriction);
+
+	newSchedule.root = rootAnd;
+
+	const data = ScheduleDebug.evaluateSubgraphs(newSchedule, dayjs().startOf('day'));
+
+	console.log(JSON.stringify(data));
 }

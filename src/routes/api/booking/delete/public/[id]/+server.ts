@@ -6,7 +6,6 @@ export async function DELETE({ params, locals: { supabase } }) {
 		.single();
 
 	if (sError || !data.url_id) {
-		console.log(sError);
 		return error(400, 'Unable to delete booking');
 	}
 

@@ -6,6 +6,7 @@ import DayBlock from './values/DayBlock';
 import { createTime, getAbsoluteTime, timeMath, timeOp } from '$lib/utils/time';
 import type { HoursMinutes } from '$types/HoursMinutes';
 import type { DaySlotTimes } from '$types/DaySlotTimes';
+import type { Condition } from '$types/Schedule.Condition';
 
 export default class Schedule {
 	root: ConditionBlock;
@@ -136,5 +137,78 @@ export default class Schedule {
 		s.root = ConditionBlock.decode_json(obj);
 
 		return s;
+	}
+}
+
+interface SubgraphEvaluation {
+	id: string;
+	condition: Condition;
+	schedule: Schedule;
+	times: TimeRange[];
+}
+
+interface SubgraphReturn {
+	id: string;
+	condition: Condition;
+	times: string[];
+	rules?: SubgraphReturn[];
+}
+
+export class ScheduleDebug {
+	static evaluateSubgraphs(schedule: Schedule, date: Dayjs): SubgraphReturn {
+		const root = this.buildSubgraphHierarchy(schedule.root, '1');
+		return this.evaluateHierarchy(root, date);
+	}
+
+	private static formatTime(time: HoursMinutes): string {
+		return `${time.hours.toString().padStart(2, '0')}:${time.minutes.toString().padStart(2, '0')}`;
+	}
+
+	private static formatTimeRange(timeRange: TimeRange): string {
+		return `${this.formatTime(timeRange.start)} - ${this.formatTime(timeRange.end)}`;
+	}
+
+	private static buildSubgraphHierarchy(
+		block: ConditionBlock,
+		id: string
+	): SubgraphEvaluation & { rules?: SubgraphEvaluation[] } {
+		const schedule = new Schedule(block);
+		const node: SubgraphEvaluation & { rules?: SubgraphEvaluation[] } = {
+			id,
+			condition: block.condition,
+			schedule,
+			times: []
+		};
+
+		const childBlocks = block.rules
+			.map((rule, index) =>
+				rule instanceof ConditionBlock
+					? this.buildSubgraphHierarchy(rule, `${id}.${index + 1}`)
+					: null
+			)
+			.filter((x): x is SubgraphEvaluation => x !== null);
+
+		if (childBlocks.length > 0) {
+			node.rules = childBlocks;
+		}
+
+		return node;
+	}
+
+	private static evaluateHierarchy(
+		node: SubgraphEvaluation & { rules?: SubgraphEvaluation[] },
+		date: Dayjs
+	): SubgraphReturn {
+		const result: SubgraphReturn = {
+			id: node.id,
+			condition: node.condition,
+			times: node.schedule.get_times_at_day(date).map((time) => this.formatTimeRange(time))
+		};
+
+		if (node.rules) {
+			result.rules = node.rules.map((child) => this.evaluateHierarchy(child, date));
+		}
+
+		return result;
 	}
 }

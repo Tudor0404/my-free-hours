@@ -87,10 +87,6 @@
 		];
 	}
 
-	$: {
-		console.log(data.bookings);
-	}
-
 	const initialProperties = getCalendarProperties(dayjs().startOf('week'), dayjs().endOf('week'));
 
 	const modalStore = getModalStore();

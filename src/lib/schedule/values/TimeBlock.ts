@@ -54,7 +54,7 @@ export default class TimeBlock {
 	}
 
 	public static time_conjunction(left: TimeRange[], right: TimeRange[]): TimeRange[] {
-		if (left.length == 0) {
+		if (left.length === 0 || right.length === 0) {
 			return [];
 		}
 
