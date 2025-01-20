@@ -1,12 +1,18 @@
-import { type Dayjs } from 'dayjs';
-import ConditionBlock from './ConditionBlock';
-import type { TimeRange } from '$types/TimeRange';
-import TimeBlock from './values/TimeBlock';
-import DayBlock from './values/DayBlock';
-import { createTime, getAbsoluteTime, timeMath, timeOp } from '$lib/utils/time';
-import type { HoursMinutes } from '$types/HoursMinutes';
-import type { DaySlotTimes } from '$types/DaySlotTimes';
-import type { Condition } from '$types/Schedule.Condition';
+import { type Dayjs } from "dayjs";
+import ConditionBlock from "./ConditionBlock";
+import type { TimeRange } from "$types/TimeRange";
+import TimeBlock from "./values/TimeBlock";
+import DayBlock from "./values/DayBlock";
+import {
+	createTime,
+	getAbsoluteTime,
+	timeMath,
+	timeOp,
+	timeToMilitaryString,
+} from "$lib/utils/time";
+import type { HoursMinutes } from "$types/HoursMinutes";
+import type { DaySlotTimes } from "$types/DaySlotTimes";
+import type { Condition } from "$types/Schedule.Condition";
 
 export default class Schedule {
 	root: ConditionBlock;
@@ -22,10 +28,10 @@ export default class Schedule {
 	public get_times_within_days(
 		start: Dayjs,
 		end: Dayjs,
-		showEmpty = false
+		showEmpty = false,
 	): { day: Dayjs; times: TimeRange[] }[] {
-		start = start.startOf('day');
-		end = end.startOf('day');
+		start = start.startOf("day");
+		end = end.startOf("day");
 
 		let allowedDates: { day: Dayjs; times: TimeRange[] }[] = [];
 
@@ -34,32 +40,36 @@ export default class Schedule {
 			if (res.length > 0) {
 				allowedDates.push({
 					day: start,
-					times: res
+					times: res,
 				});
 			} else if (showEmpty) {
 				allowedDates.push({
 					day: start,
-					times: []
+					times: [],
 				});
 			}
-			start = start.add(1, 'day');
+			start = start.add(1, "day");
 		}
 
 		return allowedDates;
 	}
 
 	public get_times_at_day(day: Dayjs): TimeRange[] {
-		return this.root.evaluate(day.startOf('day'));
+		return this.root.evaluate(day.startOf("day"));
 	}
 
-	public get_time_slots_within(start: Dayjs, end: Dayjs, interval: HoursMinutes): DaySlotTimes[] {
+	public get_time_slots_within(
+		start: Dayjs,
+		end: Dayjs,
+		interval: HoursMinutes,
+	): DaySlotTimes[] {
 		let buffer: DaySlotTimes[] = [];
 
 		// construct new schedule
 		const newSchedule = new Schedule();
 
 		// root AND
-		const rootAnd = new ConditionBlock('AND');
+		const rootAnd = new ConditionBlock("AND");
 
 		// original schedule
 		rootAnd.add_rule(this.root);
@@ -67,17 +77,23 @@ export default class Schedule {
 		// start datetime restriction
 		// If startday, must be within startTime and end of day
 		// X -> Y === ¬ X ∨ Y
-		const startRestriction = new ConditionBlock('OR', [
-			new ConditionBlock('NOT', [new DayBlock('IN', [start])]),
-			new TimeBlock(createTime(start.hour(), start.minute()), TimeBlock.LATEST_TIME)
+		const startRestriction = new ConditionBlock("OR", [
+			new ConditionBlock("NOT", [new DayBlock("IN", [start])]),
+			new TimeBlock(
+				createTime(start.hour(), start.minute()),
+				TimeBlock.LATEST_TIME,
+			),
 		]);
 		rootAnd.add_rule(startRestriction);
 
 		// end datetime restriction
 		// If endDay, must be within start of day and endTime
-		const endRestriction = new ConditionBlock('OR', [
-			new ConditionBlock('NOT', [new DayBlock('IN', [end])]),
-			new TimeBlock(TimeBlock.EARLIEST_TIME, createTime(end.hour(), end.minute()))
+		const endRestriction = new ConditionBlock("OR", [
+			new ConditionBlock("NOT", [new DayBlock("IN", [end])]),
+			new TimeBlock(
+				TimeBlock.EARLIEST_TIME,
+				createTime(end.hour(), end.minute()),
+			),
 		]);
 		rootAnd.add_rule(endRestriction);
 
@@ -91,10 +107,11 @@ export default class Schedule {
 			for (let j = 0; j < timeRanges[i].times.length; j++) {
 				let curTime: HoursMinutes | false = timeRanges[i].times[j].start;
 				// set curTime to the next interval available
-				if (curTime.minutes !== 0) {
-					curTime = timeMath(curTime, '+', {
+				if (curTime.minutes % getAbsoluteTime(interval) !== 0) {
+					curTime = timeMath(curTime, "+", {
 						hours: 0,
-						minutes: getAbsoluteTime(interval) - (curTime.minutes % getAbsoluteTime(interval))
+						minutes: getAbsoluteTime(interval) -
+							(curTime.minutes % getAbsoluteTime(interval)),
 					});
 				}
 
@@ -102,14 +119,17 @@ export default class Schedule {
 
 				const endTime = timeRanges[i].times[j].end;
 
-				while (timeOp(curTime, '<', endTime)) {
-					const duration = timeMath(endTime, '-', curTime);
+				while (timeOp(curTime, "<", endTime)) {
+					const duration = timeMath(endTime, "-", curTime);
 
 					if (!duration) break;
 
-					dayBuffer.push({ start: curTime, maxDuration: getAbsoluteTime(duration) });
+					dayBuffer.push({
+						start: curTime,
+						maxDuration: getAbsoluteTime(duration),
+					});
 
-					const newTime = timeMath(curTime, '+', interval);
+					const newTime = timeMath(curTime, "+", interval);
 
 					if (!newTime) break;
 
@@ -128,7 +148,7 @@ export default class Schedule {
 	}
 
 	public verify() {
-		return this.root.verify_condition();
+		return this.root.verify();
 	}
 
 	public static decode_json(obj: Record<string, any>): Schedule {
@@ -156,28 +176,26 @@ interface SubgraphReturn {
 
 export class ScheduleDebug {
 	static evaluateSubgraphs(schedule: Schedule, date: Dayjs): SubgraphReturn {
-		const root = this.buildSubgraphHierarchy(schedule.root, '1');
+		const root = this.buildSubgraphHierarchy(schedule.root, "1");
 		return this.evaluateHierarchy(root, date);
 	}
 
-	private static formatTime(time: HoursMinutes): string {
-		return `${time.hours.toString().padStart(2, '0')}:${time.minutes.toString().padStart(2, '0')}`;
-	}
-
 	private static formatTimeRange(timeRange: TimeRange): string {
-		return `${this.formatTime(timeRange.start)} - ${this.formatTime(timeRange.end)}`;
+		return `${timeToMilitaryString(timeRange.start)} - ${
+			timeToMilitaryString(timeRange.end)
+		}`;
 	}
 
 	private static buildSubgraphHierarchy(
 		block: ConditionBlock,
-		id: string
+		id: string,
 	): SubgraphEvaluation & { rules?: SubgraphEvaluation[] } {
 		const schedule = new Schedule(block);
 		const node: SubgraphEvaluation & { rules?: SubgraphEvaluation[] } = {
 			id,
 			condition: block.condition,
 			schedule,
-			times: []
+			times: [],
 		};
 
 		const childBlocks = block.rules
@@ -197,16 +215,20 @@ export class ScheduleDebug {
 
 	private static evaluateHierarchy(
 		node: SubgraphEvaluation & { rules?: SubgraphEvaluation[] },
-		date: Dayjs
+		date: Dayjs,
 	): SubgraphReturn {
 		const result: SubgraphReturn = {
 			id: node.id,
 			condition: node.condition,
-			times: node.schedule.get_times_at_day(date).map((time) => this.formatTimeRange(time))
+			times: node.schedule.get_times_at_day(date).map((time) =>
+				this.formatTimeRange(time)
+			),
 		};
 
 		if (node.rules) {
-			result.rules = node.rules.map((child) => this.evaluateHierarchy(child, date));
+			result.rules = node.rules.map((child) =>
+				this.evaluateHierarchy(child, date)
+			);
 		}
 
 		return result;

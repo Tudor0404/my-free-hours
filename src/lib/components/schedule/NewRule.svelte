@@ -12,6 +12,7 @@
 	export let createAnd: () => void;
 	export let createOr: () => void;
 	export let createNot: () => void;
+	export let createSchedule: () => void;
 	export let disabled: boolean = false;
 	export let readOnly: boolean = false;
 
@@ -60,6 +61,11 @@
 				class="font-semibold btn btn-sm variant-soft-tertiary"
 				type="button"
 				on:click={createTime}>Time</button
+			>
+			<button
+				class="font-semibold btn btn-sm variant-soft-tertiary"
+				type="button"
+				on:click={createSchedule}>Schedule</button
 			>
 		</div>
 	</div>

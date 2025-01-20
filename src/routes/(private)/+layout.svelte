@@ -1,16 +1,8 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import {
-		AppShell,
-		AppBar,
-		ListBox,
-		ListBoxItem,
-		AppRail,
-		AppRailAnchor,
-		AppRailTile
-	} from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores';
-	import type { SvelteComponent } from 'svelte';
+	import { redirect } from '@sveltejs/kit';
 
 	export let data;
 	$: ({ supabase } = data);
@@ -20,6 +12,7 @@
 		if (error) {
 			console.error(error);
 		}
+		redirect(302, '/');
 	};
 
 	const catalogue: {

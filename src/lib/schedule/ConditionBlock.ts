@@ -1,14 +1,14 @@
-import type { Condition } from '$types/Schedule.Condition';
-import { type Dayjs } from 'dayjs';
-import ValueBlock from './values/ValueBlock';
-import type { TimeRange } from '$types/TimeRange';
-import TimeBlock from './values/TimeBlock';
-import type { Field } from '$types/Schedule.Field';
-import DateBlock from './values/DateBlock';
-import ScheduleBlock from './values/ScheduleBlock';
-import DayOfWeekBlock from './values/DayOfWeekBlock';
-import MonthBlock from './values/MonthBlock';
-import DayBlock from './values/DayBlock';
+import type { Condition } from "$types/Schedule.Condition";
+import { type Dayjs } from "dayjs";
+import ValueBlock from "./values/ValueBlock";
+import type { TimeRange } from "$types/TimeRange";
+import TimeBlock from "./values/TimeBlock";
+import type { Field } from "$types/Schedule.Field";
+import DateBlock from "./values/DateBlock";
+import ScheduleBlock from "./values/ScheduleBlock";
+import DayOfWeekBlock from "./values/DayOfWeekBlock";
+import MonthBlock from "./values/MonthBlock";
+import DayBlock from "./values/DayBlock";
 
 export type Rule = ConditionBlock | ValueBlock<any> | ScheduleBlock | TimeBlock;
 
@@ -17,7 +17,7 @@ export default class ConditionBlock {
 	rules: Rule[];
 	private cached_rules: Rule[] | null = null;
 
-	constructor(condition: Condition = 'AND', rules: Rule[] = []) {
+	constructor(condition: Condition = "AND", rules: Rule[] = []) {
 		this.condition = condition;
 		this.rules = rules;
 	}
@@ -39,7 +39,7 @@ export default class ConditionBlock {
 	}
 
 	public add_rule(rule: Rule): boolean {
-		if (this.condition == 'NOT' && this.rules.length == 1) {
+		if (this.condition == "NOT" && this.rules.length == 1) {
 			return false;
 		}
 
@@ -59,7 +59,7 @@ export default class ConditionBlock {
 	}
 
 	public set_condition(condition: Condition): boolean {
-		if (condition == 'NOT' && this.rules.length > 1) {
+		if (condition == "NOT" && this.rules.length > 1) {
 			return false;
 		}
 
@@ -70,7 +70,7 @@ export default class ConditionBlock {
 	public evaluate(date: Dayjs): TimeRange[] {
 		let validRanges: TimeRange[] = [];
 		switch (this.condition) {
-			case 'OR':
+			case "OR":
 				if (this.rules.length == 0) {
 					return [];
 				}
@@ -78,13 +78,16 @@ export default class ConditionBlock {
 				for (let i = 0; i < this.sorted_rules.length; i++) {
 					const r = this.sorted_rules[i];
 
-					if (r instanceof ConditionBlock) {
+					if (r instanceof ConditionBlock || r instanceof ScheduleBlock) {
 						const evaluatedRanges = r.evaluate(date);
 
 						if (validRanges.length === 0) {
 							validRanges = evaluatedRanges;
 						} else {
-							validRanges = TimeBlock.time_disjunction(validRanges, evaluatedRanges);
+							validRanges = TimeBlock.time_disjunction(
+								validRanges,
+								evaluatedRanges,
+							);
 						}
 					} else if (r instanceof ValueBlock) {
 						if (r.verify_date(date)) {
@@ -94,16 +97,18 @@ export default class ConditionBlock {
 						if (validRanges.length === 0 && i === 0) {
 							validRanges = [r.timeRange];
 						} else {
-							validRanges = TimeBlock.time_disjunction(validRanges, [r.timeRange]);
+							validRanges = TimeBlock.time_disjunction(validRanges, [
+								r.timeRange,
+							]);
 						}
 					} else {
-						throw new Error('Not yet implemented');
+						throw new Error("Not yet implemented");
 					}
 				}
 
 				return validRanges;
 
-			case 'AND':
+			case "AND":
 				if (this.rules.length == 0) {
 					return [TimeBlock.FULL_TIME_RANGE];
 				}
@@ -111,16 +116,19 @@ export default class ConditionBlock {
 				for (let i = 0; i < this.sorted_rules.length; i++) {
 					const r = this.sorted_rules[i];
 
-					if (r instanceof ConditionBlock) {
+					if (r instanceof ConditionBlock || r instanceof ScheduleBlock) {
 						const evaluatedRanges = r.evaluate(date);
 
-						if (evaluatedRanges.length == 0) {
+						if (evaluatedRanges.length === 0) {
 							return [];
 						} else {
-							if (validRanges.length == 0 && i === 0) {
+							if (validRanges.length === 0 && i === 0) {
 								validRanges = evaluatedRanges;
 							} else {
-								validRanges = TimeBlock.time_conjunction(validRanges, evaluatedRanges);
+								validRanges = TimeBlock.time_conjunction(
+									validRanges,
+									evaluatedRanges,
+								);
 							}
 						}
 					} else if (r instanceof ValueBlock) {
@@ -137,16 +145,18 @@ export default class ConditionBlock {
 						if (validRanges.length === 0) {
 							validRanges = [r.timeRange];
 						} else {
-							validRanges = TimeBlock.time_conjunction(validRanges, [r.timeRange]);
+							validRanges = TimeBlock.time_conjunction(validRanges, [
+								r.timeRange,
+							]);
 						}
 					} else {
-						throw new Error('Not yet implemented');
+						throw new Error("Not yet implemented");
 					}
 				}
 
 				return validRanges;
 
-			case 'NOT':
+			case "NOT":
 				if (this.rules.length > 1) {
 					throw new Error(`NOT condition can only have one element within`);
 				} else if (this.rules.length == 0) {
@@ -155,10 +165,10 @@ export default class ConditionBlock {
 
 				const r = this.rules[0];
 
-				if (r instanceof ConditionBlock) {
+				if (r instanceof ConditionBlock || r instanceof ScheduleBlock) {
 					const evaluatedRanges = r.evaluate(date);
 
-					if (evaluatedRanges.length == 0) {
+					if (evaluatedRanges.length === 0) {
 						return [TimeBlock.FULL_TIME_RANGE];
 					} else {
 						return TimeBlock.time_negation(evaluatedRanges);
@@ -172,7 +182,7 @@ export default class ConditionBlock {
 				} else if (r instanceof TimeBlock) {
 					return TimeBlock.time_negation([r.timeRange]);
 				} else {
-					throw new Error('Not yet implemented');
+					throw new Error("Not yet implemented");
 				}
 
 			default:
@@ -180,17 +190,18 @@ export default class ConditionBlock {
 		}
 	}
 
-	public verify_condition(): boolean {
+	public verify(): boolean {
 		for (let i = 0; i < this.rules.length; i++) {
 			const rule = this.rules[i];
-			if (rule instanceof ValueBlock) {
-				rule.verify_block();
-			} else if (rule instanceof TimeBlock) {
-				rule.verify();
-			} else if (rule instanceof ConditionBlock) {
-				rule.verify_condition();
-			} else if (rule instanceof ScheduleBlock) {
-				continue;
+			if (
+				rule instanceof ValueBlock || rule instanceof TimeBlock ||
+				rule instanceof ConditionBlock || rule instanceof ScheduleBlock
+			) {
+				if (!rule.verify()) {
+					return false;
+				}
+			} else {
+				return false;
 			}
 		}
 
@@ -201,14 +212,8 @@ export default class ConditionBlock {
 		return {
 			condition: this.condition,
 			rules: this.rules.map((r) => {
-				if (r instanceof ConditionBlock || r instanceof ValueBlock || r instanceof TimeBlock) {
-					return r.encode_json();
-				} else {
-					return {
-						schedule_id: r
-					};
-				}
-			})
+				return r.encode_json();
+			}),
 		};
 	}
 
@@ -216,11 +221,13 @@ export default class ConditionBlock {
 		let c = new ConditionBlock();
 
 		// get condition
-		if (obj.hasOwnProperty('condition')) {
-			if (['AND', 'OR', 'NOT'].includes(obj['condition'] as Condition)) {
-				c.condition = obj['condition'];
+		if (obj.hasOwnProperty("condition")) {
+			if (["AND", "OR", "NOT"].includes(obj["condition"] as Condition)) {
+				c.condition = obj["condition"];
 			} else {
-				throw new Error("Condition in condition block is not 'AND', 'OR', or 'NOT'");
+				throw new Error(
+					"Condition in condition block is not 'AND', 'OR', or 'NOT'",
+				);
 			}
 		} else {
 			throw new Error("Condition block does not have 'condition' field");
@@ -228,39 +235,39 @@ export default class ConditionBlock {
 
 		// get rules
 		let rules: Rule[] = [];
-		if (obj.hasOwnProperty('rules') && obj['rules'] instanceof Array) {
-			for (let i = 0; i < obj['rules'].length; i++) {
-				const rule = obj['rules'][i];
+		if (obj.hasOwnProperty("rules") && obj["rules"] instanceof Array) {
+			for (let i = 0; i < obj["rules"].length; i++) {
+				const rule = obj["rules"][i];
 
-				if (rule.hasOwnProperty('field')) {
-					switch (rule['field'] as Field) {
-						case 'DATE':
+				if (rule.hasOwnProperty("field")) {
+					switch (rule["field"] as Field) {
+						case "DATE":
 							rules.push(DateBlock.decode_json(rule));
 							break;
-						case 'DAY_OF_WEEK':
+						case "DAY_OF_WEEK":
 							rules.push(DayOfWeekBlock.decode_json(rule));
 							break;
-						case 'MONTH':
+						case "MONTH":
 							rules.push(MonthBlock.decode_json(rule));
 							break;
-						case 'DAY':
+						case "DAY":
 							rules.push(DayBlock.decode_json(rule));
 							break;
-						case 'TIME':
+						case "TIME":
 							rules.push(TimeBlock.decode_json(rule));
 							break;
-						case 'SCHEDULE':
+						case "SCHEDULE":
 							rules.push(ScheduleBlock.decode_json(rule));
 							break;
 					}
-				} else if (rule.hasOwnProperty('condition')) {
+				} else if (rule.hasOwnProperty("condition")) {
 					rules.push(ConditionBlock.decode_json(rule));
 				} else {
-					throw new Error('Unrecognised rule');
+					throw new Error("Unrecognised rule");
 				}
 			}
 		} else {
-			throw new Error('Condition block does not have a rules array');
+			throw new Error("Condition block does not have a rules array");
 		}
 
 		c.rules = rules;

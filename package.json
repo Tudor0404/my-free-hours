@@ -10,7 +10,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"update-types": "npx supabase gen types --lang=typescript --project-id \"yufhojeffwwthvabyuxm\" > src/types/database.types.ts"
+		"update-types": "npx supabase gen types --lang=typescript --project-id \"yufhojeffwwthvabyuxm\" | tee src/types/database.types.ts supabase/functions/_shared/database.types.ts"
 	},
 	"devDependencies": {
 		"@event-calendar/core": "^3.7.1",
@@ -50,11 +50,14 @@
 	"dependencies": {
 		"@floating-ui/dom": "^1.6.11",
 		"@supabase/ssr": "^0.5.1",
+		"@usewaypoint/email-builder": "^0.0.8",
 		"air-datepicker": "^3.5.3",
 		"axios": "^1.7.8",
 		"dayjs": "^1.11.13",
 		"fuse.js": "^7.0.0",
 		"iconify-icon": "^2.1.0",
+		"liquidjs": "^10.20.1",
+		"resend": "^4.0.1",
 		"svelte-language-server": "^0.17.1",
 		"svelty-picker": "^5.2.9",
 		"uuid": "^10.0.0",

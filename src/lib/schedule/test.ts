@@ -1,41 +1,21 @@
-import dayjs from 'dayjs';
-import Schedule, { ScheduleDebug } from './Schedule';
-import ConditionBlock from './ConditionBlock';
-import DayBlock from './values/DayBlock';
-import TimeBlock from './values/TimeBlock';
-import { createTime } from '$lib/utils/time';
+import dayjs from "dayjs";
+import Schedule, { ScheduleDebug } from "./Schedule";
+import ConditionBlock from "./ConditionBlock";
+import DayBlock from "./values/DayBlock";
+import TimeBlock from "./values/TimeBlock";
+import { createTime } from "$lib/utils/time";
 
 export default function test() {
-	const jsonS =
-		'{"condition":"AND","rules":[{"field":"DAY_OF_WEEK","operator":"IN","values":[1,2,4]},{"field":"TIME","operator":"BETWEEN","values":[{"hours":7,"minutes":0},{"hours":13,"minutes":0}]}]}';
-	const s = Schedule.decode_json(JSON.parse(jsonS));
+	const schedule = Schedule.decode_json(
+		JSON.parse(
+			'{"condition":"AND","rules":[{"condition":"AND","rules":[{"condition":"AND","rules":[{"field":"SCHEDULE","operator":"IN","values":[63]},{"field":"SCHEDULE","operator":"IN","values":[46]}]},{"condition":"OR","rules":[{"condition":"NOT","rules":[{"field":"DAY","operator":"IN","values":["2025-01-22T00:00:00.000Z"]}]},{"condition":"NOT","rules":[{"condition":"OR","rules":[{"field":"TIME","operator":"BETWEEN","values":[{"hours":10,"minutes":45},{"hours":11,"minutes":30}]}]}]}]}]},{"condition":"OR","rules":[{"condition":"NOT","rules":[{"field":"DAY","operator":"IN","values":["2025-01-16T00:00:00.000Z"]}]},{"field":"TIME","operator":"BETWEEN","values":[{"hours":17,"minutes":5},{"hours":24,"minutes":0}]}]},{"condition":"OR","rules":[{"condition":"NOT","rules":[{"field":"DAY","operator":"IN","values":["2025-07-17T23:00:00.000Z"]}]},{"field":"TIME","operator":"BETWEEN","values":[{"hours":0,"minutes":0},{"hours":8,"minutes":35}]}]}]}',
+		),
+	);
 
-	const start = dayjs().add(30, 'minutes');
-	const end = dayjs().add(262980, 'minutes');
-
-	const newSchedule = new Schedule();
-
-	// root AND
-	const rootAnd = new ConditionBlock('AND');
-
-	// original schedule
-	rootAnd.add_rule(s.root);
-
-	const startRestriction = new ConditionBlock('OR', [
-		new ConditionBlock('NOT', [new DayBlock('IN', [start])]),
-		new TimeBlock(createTime(start.hour(), start.minute()), TimeBlock.LATEST_TIME)
-	]);
-	rootAnd.add_rule(startRestriction);
-
-	const endRestriction = new ConditionBlock('OR', [
-		new ConditionBlock('NOT', [new DayBlock('IN', [end])]),
-		new TimeBlock(TimeBlock.EARLIEST_TIME, createTime(end.hour(), end.minute()))
-	]);
-	rootAnd.add_rule(endRestriction);
-
-	newSchedule.root = rootAnd;
-
-	const data = ScheduleDebug.evaluateSubgraphs(newSchedule, dayjs().startOf('day'));
+	const data = ScheduleDebug.evaluateSubgraphs(
+		schedule,
+		dayjs().startOf("day").set("date", 21),
+	);
 
 	console.log(JSON.stringify(data));
 }

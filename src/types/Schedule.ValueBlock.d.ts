@@ -1,6 +1,6 @@
-import type { Field } from './Schedule.Field';
-import type { Operator } from './Schedule.Operator';
-import type { TimeRange } from './TimeRange';
+import type { Field } from "./Schedule.Field";
+import type { Operator } from "./Schedule.Operator";
+import type { TimeRange } from "./TimeRange";
 
 export interface ValueBlockInterface<V> {
 	field: Field;
@@ -9,7 +9,7 @@ export interface ValueBlockInterface<V> {
 	uuid: string;
 
 	verify_date(value: Dayjs): TimeRange[] | boolean;
-	verify_block(): boolean;
+	verify(): boolean;
 	encode_json(): Object;
 	toString(): string;
 }

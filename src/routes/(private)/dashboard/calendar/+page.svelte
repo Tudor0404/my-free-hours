@@ -11,6 +11,8 @@
 	import List from '@event-calendar/list';
 	import dayjs, { type Dayjs } from 'dayjs';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { onMount } from 'svelte';
+	import { schedulesStore } from '$lib/stores/schedules.js';
 
 	export let data;
 
@@ -87,117 +89,123 @@
 		];
 	}
 
-	const initialProperties = getCalendarProperties(dayjs().startOf('week'), dayjs().endOf('week'));
-
 	const modalStore = getModalStore();
 
 	let ec: any;
 	let plugins = [TimeGrid, List];
-	let options = {
-		view: 'timeGridWeek',
-		allDaySlot: false,
-		headerToolbar: {
-			start: 'prev,next today',
-			center: 'title',
-			end: 'timeGridWeek,timeGridDay,listWeek'
-		},
-		slotMinTime: initialProperties[0],
-		slotMaxTime: initialProperties[1],
-		firstDay: 1 as Calendar.dayOfWeek,
-		nowIndicator: true,
-		height: '100%',
-		slotHeight: initialProperties[2],
-		eventClick: (info: any) => {
-			const currentBooking = data.bookings.find((e) => e.id === Number.parseInt(info.event.id));
-			const bookingTypeIndex = getBookingTypeIndex(currentBooking?.type_id || null);
+	let options: any;
 
-			new Promise<boolean>((resolve) => {
-				const bookingModal: ModalSettings = {
-					type: 'component',
-					component: 'Booking',
-					meta: {
-						id: currentBooking?.id || undefined,
-						startTime: dayjs(currentBooking?.start_time),
-						duration: currentBooking?.duration,
-						guestName: currentBooking?.guest_name,
-						guestEmail: currentBooking?.guest_email,
-						meetingMethod: currentBooking?.meeting_method,
-						createdAt: currentBooking?.created_at,
-						meetingType:
-							bookingTypeIndex === -1 ? undefined : data.booking_types[bookingTypeIndex].name
-					},
-					response: (r: boolean) => {
-						resolve(r);
+	onMount(() => {
+		const initialProperties = getCalendarProperties(dayjs().startOf('week'), dayjs().endOf('week'));
+
+		options = {
+			view: 'timeGridWeek',
+			allDaySlot: false,
+			headerToolbar: {
+				start: 'prev,next today',
+				center: 'title',
+				end: 'timeGridWeek,timeGridDay,listWeek'
+			},
+			slotMinTime: initialProperties[0],
+			slotMaxTime: initialProperties[1],
+			firstDay: 1 as Calendar.dayOfWeek,
+			nowIndicator: true,
+			height: '100%',
+			slotHeight: initialProperties[2],
+			eventClick: (info: any) => {
+				const currentBooking = data.bookings.find((e) => e.id === Number.parseInt(info.event.id));
+				const bookingTypeIndex = getBookingTypeIndex(currentBooking?.type_id || null);
+
+				new Promise<boolean>((resolve) => {
+					const bookingModal: ModalSettings = {
+						type: 'component',
+						component: 'Booking',
+						meta: {
+							id: currentBooking?.id || undefined,
+							startTime: dayjs(currentBooking?.start_time),
+							duration: currentBooking?.duration,
+							guestName: currentBooking?.guest_name,
+							guestEmail: currentBooking?.guest_email,
+							meetingMethod: currentBooking?.meeting_method,
+							createdAt: currentBooking?.created_at,
+							meetingType:
+								bookingTypeIndex === -1 ? undefined : data.booking_types[bookingTypeIndex].name
+						},
+						response: (r: boolean) => {
+							resolve(r);
+						}
+					};
+
+					modalStore.trigger(bookingModal);
+				}).then((r: any) => {
+					if (r) {
+						ec.removeEventById(info.event.id);
 					}
-				};
+				});
+			},
+			eventSources: [
+				{
+					events: (fetchInfo: any, successCallback: any, failureCallback: any) => {
+						const start = dayjs(fetchInfo.start).startOf('day');
+						const end = dayjs(fetchInfo.end).startOf('day');
 
-				modalStore.trigger(bookingModal);
-			}).then((r: any) => {
-				if (r) {
-					ec.removeEventById(info.event.id);
-				}
-			});
-		},
-		eventSources: [
-			{
-				events: (fetchInfo: any, successCallback: any, failureCallback: any) => {
-					const start = dayjs(fetchInfo.start).startOf('day');
-					const end = dayjs(fetchInfo.end).startOf('day');
+						const bookings = data.bookings
+							.filter((e) => dayjs(e.start_time).isBetween(start, end))
+							.map((e) => {
+								const bookingTypeIndex = getBookingTypeIndex(e.type_id);
 
-					const bookings = data.bookings
-						.filter((e) => dayjs(e.start_time).isBetween(start, end))
-						.map((e) => {
-							const bookingTypeIndex = getBookingTypeIndex(e.type_id);
-
-							return {
-								start: dayjs(e.start_time).toDate(),
-								end: dayjs(e.start_time)
-									.add(e.duration as number, 'minute')
-									.toDate(),
-								id: e.id,
-								title: `${bookingTypeIndex == -1 ? '' : data.booking_types[bookingTypeIndex].name + ' w/ '} ${e.guest_name}`,
-								backgroundColor: colours[(bookingTypeIndex + 26) % 26]
-							};
-						});
-
-					const unavailability = unavailableSchedule
-						.get_times_within_days(start, end)
-						.flatMap((e) => {
-							return e.times.map((t) => {
 								return {
-									start: e.day.set('hour', t.start.hours).set('minute', t.start.minutes).toDate(),
-									end: e.day.set('hour', t.end.hours).set('minute', t.end.minutes).toDate(),
-									display: 'background'
+									start: dayjs(e.start_time).toDate(),
+									end: dayjs(e.start_time)
+										.add(e.duration as number, 'minute')
+										.toDate(),
+									id: e.id,
+									title: `${bookingTypeIndex == -1 ? '' : data.booking_types[bookingTypeIndex].name + ' w/ '} ${e.guest_name}`,
+									backgroundColor: colours[(bookingTypeIndex + 26) % 26]
 								};
 							});
-						});
 
-					if (ec !== undefined) {
-						const [min, max, slotHeight] = getCalendarProperties(
-							start,
-							end,
-							bookings.map((e) => {
-								return {
-									start: createTime(e.start.getHours(), e.start.getMinutes()),
-									end: createTime(e.end.getHours(), e.end.getMinutes())
-								};
-							})
-						);
+						const unavailability = unavailableSchedule
+							.get_times_within_days(start, end)
+							.flatMap((e) => {
+								return e.times.map((t) => {
+									return {
+										start: e.day.set('hour', t.start.hours).set('minute', t.start.minutes).toDate(),
+										end: e.day.set('hour', t.end.hours).set('minute', t.end.minutes).toDate(),
+										display: 'background'
+									};
+								});
+							});
 
-						ec.setOption('slotMinTime', min);
-						ec.setOption('slotMaxTime', max);
-						ec.setOption('slotHeight', slotHeight);
+						if (ec !== undefined) {
+							const [min, max, slotHeight] = getCalendarProperties(
+								start,
+								end,
+								bookings.map((e) => {
+									return {
+										start: createTime(e.start.getHours(), e.start.getMinutes()),
+										end: createTime(e.end.getHours(), e.end.getMinutes())
+									};
+								})
+							);
+
+							ec.setOption('slotMinTime', min);
+							ec.setOption('slotMaxTime', max);
+							ec.setOption('slotHeight', slotHeight);
+						}
+
+						successCallback([...bookings, ...unavailability]);
 					}
-
-					successCallback([...bookings, ...unavailability]);
 				}
-			}
-		]
-	};
+			]
+		};
+	});
 </script>
 
 <div class="w-full min-h-full">
-	<Calendar bind:this={ec} {plugins} {options} />
+	{#if options}
+		<Calendar bind:this={ec} {plugins} {options} />
+	{/if}
 </div>
 
 <style>

@@ -6,6 +6,8 @@
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
 	import ScheduleListItem from '$lib/components/schedule/ScheduleListItem.svelte';
 	import ScrollItemList from '$lib/components/container/ScrollItemList.svelte';
+	import { schedulesStore } from '$lib/stores/schedules';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 
@@ -13,6 +15,10 @@
 	let scheduleKey: number = 0;
 
 	const toastStore = getToastStore();
+
+	onMount(async () => {
+		await schedulesStore.refresh();
+	});
 
 	$: privateSchedules = data.schedules?.filter((s) => s.user_id != null) || [];
 	$: publicSchedules = data.schedules?.filter((s) => s.user_id == null) || [];
@@ -86,7 +92,7 @@
 				</label>
 
 				{#key scheduleKey}
-					<RootSchedule sendScheduleData={recieveSchedule} />
+					<RootSchedule sendScheduleData={recieveSchedule} schedules={data.schedules} />
 				{/key}
 				<ErrorMessage error={$errors.schedule} />
 

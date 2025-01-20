@@ -267,8 +267,10 @@
 					<div class="place-self-center">
 						<SveltyPicker
 							disableDatesFn={(date) =>
-								inpersonSlots.findIndex((e) => dayjs(e.day).isSame(dayjs(date), 'day')) == -1 &&
-								onlineSlots.findIndex((e) => dayjs(e.day).isSame(dayjs(date), 'day')) == -1}
+								(inpersonSlots.findIndex((e) => dayjs(e.day).isSame(dayjs(date), 'day')) === -1 ||
+									!selectedMeetingType?.in_person) &&
+								(onlineSlots.findIndex((e) => dayjs(e.day).isSame(dayjs(date), 'day')) === -1 ||
+									!selectedMeetingType?.online)}
 							pickerOnly
 							todayBtn={false}
 							startDate={getFirstDate()}

@@ -14,13 +14,16 @@
 	import type { Rule } from '$lib/schedule/ConditionBlock';
 	import TimeField from './TimeField.svelte';
 	import DeleteRule from '../input/buttons/DeleteRule.svelte';
-	import dayjs from 'dayjs';
+	import ScheduleBlock from '$lib/schedule/values/ScheduleBlock';
+	import ScheduleField from './ScheduleField.svelte';
+	import type { Database } from '$types/database.types';
 
 	export let condition: ConditionBlock;
 
 	export let onDelete: (() => void) | null = null;
 	export let changeCallback: () => void;
 	export let readOnly: boolean = false;
+	export let schedules: Database['public']['Tables']['schedule']['Row'][] | null = [];
 
 	$: {
 		condition.rules = [...condition.rules];
@@ -61,6 +64,7 @@
 				createAnd={() => addRule(new ConditionBlock('AND'))}
 				createOr={() => addRule(new ConditionBlock('OR'))}
 				createNot={() => addRule(new ConditionBlock('NOT'))}
+				createSchedule={() => addRule(new ScheduleBlock(-1))}
 			/>
 			{#if onDelete && !readOnly}
 				<div class="flex-grow h-0.5 rounded-md bg-primary-100/20"></div>
@@ -80,12 +84,20 @@
 						<DateField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
 					{:else if rule instanceof TimeBlock}
 						<TimeField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
+					{:else if rule instanceof ScheduleBlock}
+						<ScheduleField
+							bind:block={rule}
+							onDelete={() => deleteRule(i)}
+							{readOnly}
+							{schedules}
+						/>
 					{:else if rule instanceof ConditionBlock}
 						<svelte:self
 							condition={rule}
 							onDelete={() => deleteRule(i)}
 							{changeCallback}
 							{readOnly}
+							{schedules}
 						/>
 					{/if}
 				{/each}

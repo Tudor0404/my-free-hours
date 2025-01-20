@@ -2,11 +2,10 @@
 	import Schedule from '$lib/schedule/Schedule';
 	import dayjs from 'dayjs';
 	import Condition from './Condition.svelte';
-	import AirDatepicker from 'air-datepicker';
-	import localeEn from 'air-datepicker/locale/en';
 	import SveltyPicker from 'svelty-picker';
 	import { onMount } from 'svelte';
 	import { timeToMilitaryString } from '$lib/utils/time';
+	import type { Database } from '$types/database.types';
 
 	export let schedule: Schedule = new Schedule();
 	let selectedPreview: string;
@@ -15,6 +14,7 @@
 
 	export let sendScheduleData: ((data: string) => void) | undefined = undefined;
 	export let readOnly: boolean = false;
+	export let schedules: Database['public']['Tables']['schedule']['Row'][] | null = [];
 
 	function changeCallback() {
 		if (sendScheduleData) {
@@ -34,7 +34,12 @@
 <div class="flex flex-col gap-4 p-2 shadow-inner card">
 	<div>
 		<span class="underline">Schedule</span>
-		<Condition {readOnly} condition={schedule.root} changeCallback={() => changeCallback()} />
+		<Condition
+			{readOnly}
+			condition={schedule.root}
+			changeCallback={() => changeCallback()}
+			{schedules}
+		/>
 	</div>
 
 	<div class="grid grid-cols-2 gap-4 w-fit">

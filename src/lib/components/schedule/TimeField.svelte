@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type TimeBlock from '$lib/schedule/values/TimeBlock';
 	import type { HoursMinutes } from '$types/HoursMinutes';
-	import { timeToMilitaryString } from '$lib/utils/time';
 	import FieldContainer from './FieldContainer.svelte';
 	import Time from '../input/Time.svelte';
 
