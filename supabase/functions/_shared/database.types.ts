@@ -9,8 +9,24 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      blacklisted_days: {
+        Row: {
+          date: string
+          user_id: string
+        }
+        Insert: {
+          date: string
+          user_id?: string
+        }
+        Update: {
+          date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       booking: {
         Row: {
+          calendar_id: string
           created_at: string
           duration_id: number
           guest_email: string | null
@@ -23,6 +39,7 @@ export type Database = {
           url_id: string
         }
         Insert: {
+          calendar_id?: string
           created_at?: string
           duration_id: number
           guest_email?: string | null
@@ -35,6 +52,7 @@ export type Database = {
           url_id?: string
         }
         Update: {
+          calendar_id?: string
           created_at?: string
           duration_id?: number
           guest_email?: string | null
@@ -73,6 +91,13 @@ export type Database = {
             columns: ["type_id"]
             isOneToOne: false
             referencedRelation: "booking_type"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "booking_types_with_durations"
             referencedColumns: ["id"]
           },
         ]
@@ -116,6 +141,7 @@ export type Database = {
       booking_page: {
         Row: {
           active: boolean
+          calendar_id: string
           created_at: string
           id: number
           inperson_schedule: number | null
@@ -134,6 +160,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          calendar_id?: string
           created_at?: string
           id?: number
           inperson_schedule?: number | null
@@ -152,6 +179,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          calendar_id?: string
           created_at?: string
           id?: number
           inperson_schedule?: number | null
@@ -224,18 +252,66 @@ export type Database = {
         }
         Relationships: []
       }
+      deleted_booking: {
+        Row: {
+          calendar_id: string
+          deletion_date: string | null
+          duration: number
+          id: number
+          page_id: number
+          start_time: string
+          type_name: string
+        }
+        Insert: {
+          calendar_id: string
+          deletion_date?: string | null
+          duration: number
+          id?: number
+          page_id: number
+          start_time: string
+          type_name: string
+        }
+        Update: {
+          calendar_id?: string
+          deletion_date?: string | null
+          duration?: number
+          id?: number
+          page_id?: number
+          start_time?: string
+          type_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deleted_booking_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "active_page_schedules"
+            referencedColumns: ["page_id"]
+          },
+          {
+            foreignKeyName: "deleted_booking_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "booking_page"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       duration: {
         Row: {
+          active: boolean
           duration: number
           id: number
           type_id: number
         }
         Insert: {
+          active?: boolean
           duration: number
           id?: number
           type_id: number
         }
         Update: {
+          active?: boolean
           duration?: number
           id?: number
           type_id?: number
@@ -246,6 +322,13 @@ export type Database = {
             columns: ["type_id"]
             isOneToOne: false
             referencedRelation: "booking_type"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duration_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "booking_types_with_durations"
             referencedColumns: ["id"]
           },
         ]
@@ -347,16 +430,28 @@ export type Database = {
         Row: {
           display_name: string | null
           id: number
+          ms_provider_refresh_token: string | null
+          ms_provider_token: string | null
+          ms_sync_calendar: boolean
+          ms_teams_meetings: boolean
           user_id: string
         }
         Insert: {
           display_name?: string | null
           id?: number
+          ms_provider_refresh_token?: string | null
+          ms_provider_token?: string | null
+          ms_sync_calendar?: boolean
+          ms_teams_meetings?: boolean
           user_id: string
         }
         Update: {
           display_name?: string | null
           id?: number
+          ms_provider_refresh_token?: string | null
+          ms_provider_token?: string | null
+          ms_sync_calendar?: boolean
+          ms_teams_meetings?: boolean
           user_id?: string
         }
         Relationships: []
@@ -368,6 +463,21 @@ export type Database = {
           inperson_schedule: Json | null
           online_schedule: Json | null
           page_id: number | null
+        }
+        Relationships: []
+      }
+      booking_types_with_durations: {
+        Row: {
+          active: boolean | null
+          description: string | null
+          durations: number[] | null
+          id: number | null
+          in_person: boolean | null
+          name: string | null
+          online: boolean | null
+          post_notification: string | null
+          pre_notification: string | null
+          user_id: string | null
         }
         Relationships: []
       }
@@ -391,7 +501,37 @@ export type Database = {
             referencedRelation: "booking_type"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "booking_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "booking_types_with_durations"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      combined_bookings: {
+        Row: {
+          booking_calendar_id: string | null
+          duration: number | null
+          guest_email: string | null
+          guest_name: string | null
+          host_email: string | null
+          host_name: string | null
+          id: number | null
+          is_deleted: boolean | null
+          meeting_method: Database["public"]["Enums"]["meeting_method"] | null
+          page_calendar_id: string | null
+          page_post_notification: string | null
+          page_pre_notification: string | null
+          start_time: string | null
+          type_description: string | null
+          type_name: string | null
+          type_post_notification: string | null
+          type_pre_notification: string | null
+          url_id: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
@@ -414,6 +554,12 @@ export type Database = {
         }
         Returns: Json
       }
+      decode_schedule_json: {
+        Args: {
+          schedule_json: Json
+        }
+        Returns: Json
+      }
       delete_booking: {
         Args: {
           url_id_input: string
@@ -422,14 +568,24 @@ export type Database = {
           url_id: string
         }[]
       }
-      find_schedule_references: {
-        Args: {
-          schedule_json: Json
-        }
-        Returns: {
-          referenced_id: number
-        }[]
-      }
+      find_schedule_references:
+        | {
+            Args: {
+              schedule_json: Json
+            }
+            Returns: {
+              referenced_id: number
+            }[]
+          }
+        | {
+            Args: {
+              schedule_json: Json
+              current_schedule_id: number
+            }
+            Returns: {
+              referenced_id: number
+            }[]
+          }
       get_booking: {
         Args: {
           url_id_input: string
@@ -459,6 +615,7 @@ export type Database = {
           booking_types: Json
           display_name: string
           booked_slots: Json
+          blacklisted_dates: string[]
         }[]
       }
       get_booking_types_with_durations: {
@@ -477,6 +634,58 @@ export type Database = {
           durations: Json
         }[]
       }
+      get_bookings_by_calendar_id: {
+        Args: {
+          p_calendar_id: string
+        }
+        Returns: {
+          booking_calendar_id: string
+          duration: number
+          guest_email: string
+          guest_name: string
+          host_email: string
+          host_name: string
+          is_deleted: boolean
+          meeting_method: string
+          page_calendar_id: string
+          page_post_notification: string
+          page_pre_notification: string
+          start_time: string
+          type_description: string
+          type_name: string
+          type_post_notification: string
+          type_pre_notification: string
+          url_id: string
+        }[]
+      }
+      get_bookings_count_by_dates: {
+        Args: {
+          dates: string[]
+        }
+        Returns: number
+      }
+      has_circular_reference:
+        | {
+            Args: {
+              schedule_id: number
+              new_schedule: Json
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              schedule_id: number
+              schedule_json: Json
+            }
+            Returns: boolean
+          }
+      has_self_reference: {
+        Args: {
+          p_schedule_id: number
+          schedule_json: Json
+        }
+        Returns: boolean
+      }
       process_schedule_rules: {
         Args: {
           rules: Json
@@ -489,6 +698,45 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      show_schedule_references: {
+        Args: {
+          p_schedule_id?: number
+        }
+        Returns: {
+          source_id: number
+          referenced_id: number
+          reference_chain: string
+        }[]
+      }
+      update_blacklisted_dates: {
+        Args: {
+          p_dates_to_delete: string[]
+          p_dates_to_insert: string[]
+          p_delete_meetings: boolean
+        }
+        Returns: undefined
+      }
+      update_booking_type_with_durations:
+        | {
+            Args: {
+              p_id: number
+              p_name: string
+              p_description: string
+              p_online: boolean
+              p_in_person: boolean
+              p_pre_notification: string
+              p_post_notification: string
+              p_durations: number[]
+              p_user_id: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              type_data: Json
+            }
+            Returns: Json
+          }
     }
     Enums: {
       email_type: "new_booking"

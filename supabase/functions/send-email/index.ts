@@ -107,7 +107,7 @@ serve(async (req: Request) => {
   const engine = new Liquid();
   const resend = new Resend(Deno.env.get("RESEND"));
 
-  let { data } = await supabaseClient.schema("pgmq_public").rpc("read", {
+  const { data } = await supabaseClient.schema("pgmq_public").rpc("read", {
     queue_name: "email",
     sleep_seconds: 0,
     n: 50,

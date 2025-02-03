@@ -44,5 +44,35 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		data: { user },
 	} = await supabase.auth.getUser();
 
+	supabase.auth.onAuthStateChange((_, session) => {
+		let provider_token = null;
+		let provider_refresh_token = null;
+
+		if (session && session.provider_token) {
+			provider_token = session.provider_token;
+		}
+
+		if (session && session.provider_refresh_token) {
+			provider_refresh_token = session.provider_refresh_token;
+		}
+
+		setTimeout(async () => {
+			if (provider_token && provider_refresh_token) {
+				await supabase.from("user").update({
+					ms_provider_token: provider_token,
+					ms_provider_refresh_token: provider_refresh_token,
+				}).eq("user_id", user?.id || "");
+			} else if (provider_token) {
+				await supabase.from("user").update({
+					ms_provider_token: provider_token,
+				}).eq("user_id", user?.id || "");
+			} else if (provider_refresh_token) {
+				await supabase.from("user").update({
+					ms_provider_refresh_token: provider_refresh_token,
+				}).eq("user_id", user?.id || "");
+			}
+		}, 0);
+	});
+
 	return { session, supabase, user };
 };

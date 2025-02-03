@@ -12,13 +12,13 @@
 	$: selectedTimes = schedule.get_times_at_day(dayjs(selectedPreview));
 	let datepickerContainer: HTMLElement;
 
-	export let sendScheduleData: ((data: string) => void) | undefined = undefined;
+	export let scheduleCallback: ((data: string) => void) | undefined = undefined;
 	export let readOnly: boolean = false;
 	export let schedules: Database['public']['Tables']['schedule']['Row'][] | null = [];
 
 	function changeCallback() {
-		if (sendScheduleData) {
-			sendScheduleData(JSON.stringify(schedule.encode_json()));
+		if (scheduleCallback) {
+			scheduleCallback(JSON.stringify(schedule.encode_json()));
 		}
 	}
 

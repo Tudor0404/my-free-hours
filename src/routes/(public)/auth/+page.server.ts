@@ -30,13 +30,16 @@ export const actions: Actions = {
 			redirect(303, "/dashboard");
 		}
 	},
-	loginMicrosoft: async ({ request, locals: { supabase } }) => {
+	loginMicrosoft: async ({ request, locals: { supabase }, url }) => {
 		const { data, error } = await supabase.auth.signInWithOAuth({
 			provider: "azure",
 			options: {
-				scopes: "email",
+				scopes: "email offline_access",
+				redirectTo: url.origin + "/auth/callback",
 			},
 		});
+
+		console.log(data);
 
 		if (error) {
 			console.error("Azure OAuth Login Error:", error);
@@ -45,7 +48,7 @@ export const actions: Actions = {
 
 		if (data?.url) {
 			// Redirect the user to the Azure OAuth consent screen
-			throw redirect(303, data.url);
+			redirect(303, data.url);
 		}
 	},
 };

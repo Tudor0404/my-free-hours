@@ -4,7 +4,6 @@ import { createServerClient } from "@supabase/ssr";
 import { type Handle, redirect } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 import { PUBLIC_SUPABASE_ANON, PUBLIC_SUPABASE_URL } from "$env/static/public";
-import { promisify } from "util";
 
 const supabase: Handle = async ({ event, resolve }) => {
 	/**

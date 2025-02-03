@@ -3,6 +3,7 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores';
 	import { redirect } from '@sveltejs/kit';
+	import { goto } from '$app/navigation';
 
 	export let data;
 	$: ({ supabase } = data);
@@ -12,7 +13,7 @@
 		if (error) {
 			console.error(error);
 		}
-		redirect(302, '/');
+		goto('/');
 	};
 
 	const catalogue: {

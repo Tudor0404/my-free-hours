@@ -1,7 +1,4 @@
-import ConditionBlock from "$lib/schedule/ConditionBlock.js";
 import Schedule from "$lib/schedule/Schedule.js";
-import DayBlock from "$lib/schedule/values/DayBlock.js";
-import TimeBlock from "$lib/schedule/values/TimeBlock.js";
 import { booking } from "$lib/schemas/booking";
 import { schedulesStore } from "$lib/stores/schedules.js";
 import { absoluteTimeToObject, createTime, timeOp } from "$lib/utils/time.js";
@@ -25,8 +22,6 @@ export async function load({ params, locals: { supabase } }) {
     error(405, "Unable to get booking page");
   }
 
-  console.log(schedulesStore.getAsArray());
-
   const inpersonSchedule = Schedule.decode_json(
     JSON.parse((data.inperson_schedule as string).toString()),
   );
@@ -34,80 +29,26 @@ export async function load({ params, locals: { supabase } }) {
     JSON.parse((data.online_schedule as string).toString()),
   );
 
-  // add booked slots into schedule
+  const blacklistedDays = (data.blacklisted_dates.map((e) => dayjs(e))).filter((
+    e,
+  ) => e.isValid());
 
-  const booked_slots =
-    (data.booked_slots as { start: string; end: string }[] || [])
-      .map((e) => ({
-        start: dayjs(e.start),
-        end: dayjs(e.end),
-      }))
-      .reduce(
-        (
-          acc: {
-            date: dayjs.Dayjs;
-            times: { start: dayjs.Dayjs; end: dayjs.Dayjs }[];
-          }[],
-          slot,
-        ) => {
-          const dateStr = slot.start.format("YYYY-MM-DD");
-          const existingDay = acc.find((day) =>
-            day.date.format("YYYY-MM-DD") === dateStr
-          );
+  const bookedSlots = (data.booked_slots as { start: string; end: string }[])
+    .map((e) => ({
+      start: dayjs(e.start),
+      end: dayjs(e.end),
+    }));
 
-          if (existingDay) {
-            existingDay.times.push(slot);
-          } else {
-            acc.push({
-              date: dayjs(dateStr),
-              times: [slot],
-            });
-          }
+  inpersonSchedule.set_restrictions(blacklistedDays, bookedSlots);
+  onlineSchedule.set_restrictions(blacklistedDays, bookedSlots);
 
-          return acc;
-        },
-        [],
-      )
-      .sort((a, b) => a.date.valueOf() - b.date.valueOf());
-
-  const compositeInpersonSchedule = new Schedule(
-    new ConditionBlock("AND", [inpersonSchedule.root]),
-  );
-  const compositeOnlineSchedule = new Schedule(
-    new ConditionBlock("AND", [onlineSchedule.root]),
-  );
-
-  for (let i = 0; i < booked_slots.length; i++) {
-    const element = booked_slots[i];
-
-    // start datetime restriction
-    // If date, must be outside time section
-    // X -> ¬ Y === ¬ X ∨ ¬ Y
-    const bookingRestriction = new ConditionBlock("OR", [
-      new ConditionBlock("NOT", [new DayBlock("IN", [element.date])]),
-      new ConditionBlock("NOT", [
-        new ConditionBlock(
-          "OR",
-          element.times.map((e) =>
-            new TimeBlock(
-              createTime(e.start.hour(), e.start.minute()),
-              createTime(e.end.hour(), e.end.minute()),
-            )
-          ),
-        ),
-      ]),
-    ]);
-    compositeInpersonSchedule.root.add_rule(bookingRestriction);
-    compositeOnlineSchedule.root.add_rule(bookingRestriction);
-  }
-
-  const inpersonSlots = compositeInpersonSchedule.get_time_slots_within(
+  const inpersonSlots = inpersonSchedule.get_time_slots_within(
     dayjs().add(data.minimum_lead, "minutes"),
     dayjs().add(data.maximum_lead, "minutes"),
     absoluteTimeToObject(data.time_increment),
   );
 
-  const onlineSlots = compositeOnlineSchedule.get_time_slots_within(
+  const onlineSlots = onlineSchedule.get_time_slots_within(
     dayjs().add(data.minimum_lead, "minutes"),
     dayjs().add(data.maximum_lead, "minutes"),
     absoluteTimeToObject(data.time_increment),
@@ -217,11 +158,25 @@ export const actions = {
 
     let startTime: Dayjs;
 
+    const blacklistedDays =
+      (bookingDetails.blacklisted_dates.map((e) => dayjs(e))).filter(
+        (e) => e.isValid(),
+      );
+
+    const bookedSlots =
+      (bookingDetails.booked_slots as { start: string; end: string }[])
+        .map((e) => ({
+          start: dayjs(e.start),
+          end: dayjs(e.end),
+        }));
+
     // time and date
     if (form.data.meeting_method == "in_person") {
       const inpersonSchedule = Schedule.decode_json(
         JSON.parse((bookingDetails.inperson_schedule as string).toString()),
       );
+
+      inpersonSchedule.set_restrictions(blacklistedDays, bookedSlots);
 
       const inpersonSlots = inpersonSchedule.get_time_slots_within(
         dayjs().add(bookingDetails.minimum_lead, "minutes"),
@@ -261,6 +216,8 @@ export const actions = {
       const onlineSchedule = Schedule.decode_json(
         JSON.parse((bookingDetails.online_schedule as string).toString()),
       );
+
+      onlineSchedule.set_restrictions(blacklistedDays, bookedSlots);
 
       const onlineSlots = onlineSchedule.get_time_slots_within(
         dayjs().add(bookingDetails.minimum_lead, "minutes"),
@@ -342,7 +299,6 @@ export const actions = {
     const hasOverlap = existingBookings.some((booking) => {
       // Ensure both booking.duration and booking.duration.duration exist
       if (!booking.duration?.duration) {
-        console.error("Missing duration for booking:", booking.id);
         return false; // Skip this booking if duration is missing
       }
 

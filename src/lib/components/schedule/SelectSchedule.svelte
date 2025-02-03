@@ -2,7 +2,7 @@
 	import type { Database } from '$types/database.types';
 	import { flip } from '@floating-ui/dom';
 	import Icon from '@iconify/svelte';
-	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { filter, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import Fuse from 'fuse.js';
 	import ScheduleSelectListItem from './ScheduleSelectListItem.svelte';
 	import { onMount } from 'svelte';
@@ -95,7 +95,7 @@
 				{/each}
 			{:else}
 				<div class="flex justify-center items-center h-full">
-					<span class="text-surface-700">Try another search query!</span>
+					<span class="text-surface-700">Try another search query</span>
 				</div>
 			{/if}
 		{:else}

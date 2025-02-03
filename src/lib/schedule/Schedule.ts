@@ -1,4 +1,4 @@
-import { type Dayjs } from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
 import ConditionBlock from "./ConditionBlock";
 import type { TimeRange } from "$types/TimeRange";
 import TimeBlock from "./values/TimeBlock";
@@ -23,6 +23,78 @@ export default class Schedule {
 		} else {
 			this.root = new ConditionBlock();
 		}
+	}
+
+	public set_restrictions(
+		blacklistedDays: Dayjs[],
+		bookingSlots: { start: Dayjs; end: Dayjs }[],
+	) {
+		if (bookingSlots.length === 0 && blacklistedDays.length === 0) {
+			return;
+		}
+
+		const newRoot = new ConditionBlock("AND", [this.root]);
+
+		if (bookingSlots.length > 0) {
+			const booked_slots = bookingSlots.reduce(
+				(
+					acc: {
+						date: dayjs.Dayjs;
+						times: { start: dayjs.Dayjs; end: dayjs.Dayjs }[];
+					}[],
+					slot,
+				) => {
+					const dateStr = slot.start.format("YYYY-MM-DD");
+					const existingDay = acc.find((day) =>
+						day.date.format("YYYY-MM-DD") === dateStr
+					);
+
+					if (existingDay) {
+						existingDay.times.push(slot);
+					} else {
+						acc.push({
+							date: dayjs(dateStr),
+							times: [slot],
+						});
+					}
+
+					return acc;
+				},
+				[],
+			)
+				.sort((a, b) => a.date.valueOf() - b.date.valueOf());
+
+			for (let i = 0; i < booked_slots.length; i++) {
+				const element = booked_slots[i];
+
+				// start datetime restriction
+				// If date, must be outside time section
+				// X -> ¬ Y === ¬ X ∨ ¬ Y
+				const bookingRestriction = new ConditionBlock("OR", [
+					new ConditionBlock("NOT", [new DayBlock("IN", [element.date])]),
+					new ConditionBlock("NOT", [
+						new ConditionBlock(
+							"OR",
+							element.times.map((e) =>
+								new TimeBlock(
+									createTime(e.start.hour(), e.start.minute()),
+									createTime(e.end.hour(), e.end.minute()),
+								)
+							),
+						),
+					]),
+				]);
+				newRoot.add_rule(bookingRestriction);
+			}
+		}
+
+		if (blacklistedDays.length > 0) {
+			newRoot.add_rule(
+				new ConditionBlock("NOT", [new DayBlock("IN", blacklistedDays)]),
+			);
+		}
+
+		this.root = newRoot;
 	}
 
 	public get_times_within_days(

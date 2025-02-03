@@ -16,8 +16,6 @@
 		block.set_schedule(scheduleID);
 		block.id = block.id;
 	}
-
-	console.log(schedules);
 </script>
 
 <FieldContainer

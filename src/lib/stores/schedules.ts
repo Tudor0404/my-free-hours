@@ -42,7 +42,6 @@ function createCounterStore() {
     },
     refresh: async () => {
       const data = await getNewData();
-      console.log("new data", data);
       set(data);
     },
     setFromArray: (s: ScheduleRow[]) => {

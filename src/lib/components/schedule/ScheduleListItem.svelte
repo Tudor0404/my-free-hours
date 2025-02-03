@@ -7,20 +7,9 @@
 	import { invalidate } from '$app/navigation';
 
 	export let data: Database['public']['Tables']['schedule']['Row'];
+	export let editCallback: (() => void) | null = null;
 
 	const toastStore = getToastStore();
-
-	const previewModal: ModalSettings = {
-		type: 'component',
-		component: 'SchedulePreview',
-		meta: {
-			schedule: Schedule.decode_json(JSON.parse((data.schedule as string).toString())),
-			name: data.name,
-			description: data.description,
-			created_at: data.created_at,
-			id: data.id
-		}
-	};
 
 	const deleteModal: ModalSettings = {
 		type: 'confirm',
@@ -50,48 +39,37 @@
 		}
 	};
 
-	const descriptionModal: ModalSettings = {
-		type: 'component',
-		component: 'Text',
-		meta: {
-			text: data.description,
-			title: 'Description'
-		}
-	};
-
 	const modalStore = getModalStore();
 </script>
 
 <MasonaryCard>
-	<div class="flex flex-row justify-start items-center">
+	<div class="flex flex-row gap-1 justify-start items-center">
 		<span class="flex-grow font-medium">{data.name}</span>
-
-		{#if data.user_id}
-			<button
-				class="p-0 btn-icon btn-icon-sm variant-outline-error hover:variant-filled-error"
-				type="button"
-				on:click={() => modalStore.trigger(deleteModal)}
-			>
-				<Icon icon="tabler:trash" />
-			</button>
-		{/if}
-	</div>
-
-	<div class="flex flex-col gap-1">
 		<button
-			class="chip variant-outline-secondary"
-			on:click={() => modalStore.trigger(previewModal)}
+			class="p-1.5 btn btn-sm aspect-square variant-glass-error enabled:hover:variant-filled-error"
 			type="button"
+			disabled={!data.user_id}
+			on:click={() => modalStore.trigger(deleteModal)}
 		>
-			<span>Schedule</span>
+			<Icon icon="tabler:trash" />
 		</button>
 		<button
-			class="chip variant-outline-secondary"
-			type="button"
-			disabled={!data.description}
-			on:click={() => modalStore.trigger(descriptionModal)}
+			class="p-1.5 btn btn-sm aspect-square variant-glass-warning enabled:hover:variant-filled-warning"
+			on:click={editCallback}
+			disabled={!editCallback}
 		>
-			<span>Description</span>
+			<Icon icon="tabler:edit" />
 		</button>
+
+		<a
+			class="p-1.5 btn btn-sm aspect-square variant-glass-success hover:variant-filled-success"
+			href={`/dashboard/schedules/${data.id}`}
+		>
+			<Icon icon="tabler:external-link" />
+		</a>
 	</div>
+
+	{#if data.description}
+		<p class="mt-1 font-light line-clamp-3">{data.description}</p>
+	{/if}
 </MasonaryCard>

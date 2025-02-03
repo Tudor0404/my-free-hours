@@ -4,9 +4,7 @@
 	import FieldContainer from './FieldContainer.svelte';
 	import type { Operator } from '$types/Schedule.Operator';
 	import dayjs from 'dayjs';
-	import Icon from '@iconify/svelte';
-	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import { flip } from '@floating-ui/dom';
+	import DateSelect from '../input/multi/DateSelect.svelte';
 
 	export let block: DayBlock;
 	export let onDelete: () => void;
@@ -25,29 +23,7 @@
 		betweenStartInput = betweenStart.format('YYYY-MM-DD');
 		betweenEndInput = betweenEnd.format('YYYY-MM-DD');
 	}
-	let inDaysNew: string;
 	let inDays: Dayjs[] = block.values;
-	let isPopupOpen: boolean = false;
-
-	const popupUUID = 'datePopup' + block.uuid;
-	const dayPopup: PopupSettings = {
-		event: 'click',
-		target: popupUUID,
-		placement: 'top',
-		closeQuery: '.close-popup',
-		state: (e) => (isPopupOpen = e.state),
-		middleware: { flip }
-	};
-
-	// function toggleInSelection(day: Dayjs) {
-	// 	let index = inDays.findIndex((d) => d.startOf('day').isSame(day));
-
-	// 	if (index == -1) {
-	// 		inDays = [...inDays, day];
-	// 	} else {
-	// 		inDays = [...inDays.slice(0, index), ...inDays.slice(index + 1, inDays.length)];
-	// 	}
-	// }
 
 	$: {
 		block.operator = operator;
@@ -67,7 +43,9 @@
 
 <FieldContainer field="Day" bind:operator {onDelete} {readOnly}>
 	{#if operator == 'IN'}
-		<button
+		<DateSelect bind:days={inDays} disabled={readOnly} />
+
+		<!-- <button
 			type="button"
 			use:popup={dayPopup}
 			class="px-1 py-1 btn btn-sm variant-outline-tertiary hover:variant-filled-tertiary"
@@ -135,7 +113,7 @@
 			>
 				<Icon icon="tabler:x" />
 			</button>
-		</div>
+		</div> -->
 	{:else if operator == 'BETWEEN'}
 		<input
 			type="date"
