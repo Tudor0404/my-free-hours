@@ -252,6 +252,30 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_event: {
+        Row: {
+          booking_url: string | null
+          duration: number
+          id: string
+          start_time: string
+          user_id: string
+        }
+        Insert: {
+          booking_url?: string | null
+          duration: number
+          id: string
+          start_time: string
+          user_id: string
+        }
+        Update: {
+          booking_url?: string | null
+          duration?: number
+          id?: string
+          start_time?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deleted_booking: {
         Row: {
           calendar_id: string
@@ -428,30 +452,30 @@ export type Database = {
       }
       user: {
         Row: {
+          delta_expiry: string | null
+          delta_link: string | null
           display_name: string | null
           id: number
           ms_provider_refresh_token: string | null
           ms_provider_token: string | null
-          ms_sync_calendar: boolean
-          ms_teams_meetings: boolean
           user_id: string
         }
         Insert: {
+          delta_expiry?: string | null
+          delta_link?: string | null
           display_name?: string | null
           id?: number
           ms_provider_refresh_token?: string | null
           ms_provider_token?: string | null
-          ms_sync_calendar?: boolean
-          ms_teams_meetings?: boolean
           user_id: string
         }
         Update: {
+          delta_expiry?: string | null
+          delta_link?: string | null
           display_name?: string | null
           id?: number
           ms_provider_refresh_token?: string | null
           ms_provider_token?: string | null
-          ms_sync_calendar?: boolean
-          ms_teams_meetings?: boolean
           user_id?: string
         }
         Relationships: []
@@ -568,6 +592,10 @@ export type Database = {
           url_id: string
         }[]
       }
+      delete_expired_deltas: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       find_schedule_references:
         | {
             Args: {
@@ -616,6 +644,7 @@ export type Database = {
           display_name: string
           booked_slots: Json
           blacklisted_dates: string[]
+          calendar_events: Json
         }[]
       }
       get_booking_types_with_durations: {
@@ -686,6 +715,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      initial_ms_calendar: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       process_schedule_rules: {
         Args: {
           rules: Json
@@ -695,6 +728,10 @@ export type Database = {
         }[]
       }
       refresh_all_schedule_references: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      refresh_ms_tokens: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

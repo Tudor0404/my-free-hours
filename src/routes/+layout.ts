@@ -44,7 +44,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		data: { user },
 	} = await supabase.auth.getUser();
 
-	supabase.auth.onAuthStateChange((_, session) => {
+	supabase.auth.onAuthStateChange((event, session) => {
 		let provider_token = null;
 		let provider_refresh_token = null;
 

@@ -149,6 +149,15 @@
 							const { error } = await supabase.auth.unlinkIdentity(id);
 							invalidate('supabase:auth:identities');
 
+							if (data.user) {
+								await supabase
+									.from('user')
+									.update({ ms_provider_refresh_token: null, ms_provider_token: null })
+									.eq('user_id', data.user.id);
+
+								await supabase.auth.refreshSession();
+							}
+
 							if (error) {
 								toastStore.trigger({
 									message: 'Unsuccessfuly unlinked azure to account',
