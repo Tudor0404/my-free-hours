@@ -13,7 +13,7 @@
     "update-types": "npx supabase gen types --lang=typescript --project-id \"yufhojeffwwthvabyuxm\" | tee src/types/database.types.ts supabase/functions/_shared/database.types.ts"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   },
   "devDependencies": {
     "@event-calendar/core": "^3.7.1",
