@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: Login</title>
+</svelte:head>
+
 <script>
 	import HorizontalRule from '$lib/components/misc/HorizontalRule.svelte';
 
@@ -25,7 +29,7 @@
 		<HorizontalRule />
 		<form method="POST" action="?/loginMicrosoft" class="w-full">
 			<button class="space-x-3 w-full btn variant-glass-tertiary"
-				><img src={msSVG} alt="Example Icon" /> <span>Sign in with Microsoft</span></button
+			><img src={msSVG} alt="Example Icon" /> <span>Sign in with Microsoft</span></button
 			>
 		</form>
 	</div>

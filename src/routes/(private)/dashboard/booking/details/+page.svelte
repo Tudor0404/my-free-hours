@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: Booking Page Details</title>
+</svelte:head>
+
 <script lang="ts">
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
 	import Info from '$lib/components/misc/Info.svelte';
@@ -61,7 +65,10 @@
 			class="ml-auto btn btn-sm variant-glass-secondary hover:variant-filled-secondary"
 			type="button"
 			on:click={() => navigator.clipboard.writeText(`${data.origin}/book/${data.urlId}`)}
-			><Icon icon="tabler:link" class="mr-1" />Copy link</button
+		>
+			<Icon icon="tabler:link" class="mr-1" />
+			Copy link
+		</button
 		>
 	</div>
 
@@ -80,7 +87,8 @@
 	<label class="label">
 		<span>Required email domains </span>
 		<Info
-			>Comma separated list of acceptable email domains.<br />Leave empty to accept all domains.</Info
+		>Comma separated list of acceptable email domains.<br />Leave empty to accept all domains.
+		</Info
 		>
 		<input
 			class="input"
@@ -96,8 +104,9 @@
 	<label class="label">
 		<span>Time increment</span>
 		<Info
-			>Time increment at which slots are offered. E.g., if set to 15 minutes and the schedule starts
-			at 10:00,<br /> the following will be offered: 10:00, 10:15, 10:30, ...</Info
+		>Time increment at which slots are offered. E.g., if set to 15 minutes and the schedule starts
+			at 10:00,<br /> the following will be offered: 10:00, 10:15, 10:30, ...
+		</Info
 		>
 		<select class="select" bind:value={$form.time_increment} name="time_increment">
 			<option value={5}>5 minutes</option>
@@ -149,7 +158,8 @@
 		<label class="label">
 			<span>Pre-meeting message delay</span>
 			<Info
-				>How much time before the meeting starts, that the pre-notification message is to be sent.</Info
+			>How much time before the meeting starts, that the pre-notification message is to be sent.
+			</Info
 			>
 			<select class="select" bind:value={$form.pre_notification_time} name="pre_notification_time">
 				<option value={30}>30 minutes</option>
@@ -167,7 +177,8 @@
 		<label class="label">
 			<span>Post-meeting message delay</span>
 			<Info
-				>How much time after the meeting end, that the post-notification message is to be sent.</Info
+			>How much time after the meeting end, that the post-notification message is to be sent.
+			</Info
 			>
 			<select
 				class="select"
@@ -188,7 +199,8 @@
 
 		<label class="label">
 			<span>Default pre-meeting message</span>
-			<Info>Pre-meeting message to be sent if none is specified for the specific meeting type.</Info
+			<Info>Pre-meeting message to be sent if none is specified for the specific meeting type.
+			</Info
 			>
 			<textarea
 				class="textarea"
@@ -204,7 +216,8 @@
 		<label class="label">
 			<span>Default post-meeting message</span>
 			<Info
-				>Post-meeting message to be sent if none is specified for the specific meeting type.</Info
+			>Post-meeting message to be sent if none is specified for the specific meeting type.
+			</Info
 			>
 			<textarea
 				class="textarea"

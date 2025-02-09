@@ -49,6 +49,7 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "^1.6.11",
+		"@microsoft/microsoft-graph-types": "^2.40.0",
 		"@supabase/ssr": "^0.5.1",
 		"@usewaypoint/email-builder": "^0.0.8",
 		"air-datepicker": "^3.5.3",

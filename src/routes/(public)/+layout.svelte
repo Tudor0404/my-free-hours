@@ -25,7 +25,7 @@
 					{/if}
 				</div>
 			</svelte:fragment>
-			<!-- <svelte:fragment slot="trail">
+			<svelte:fragment slot="trail">
 				{#await supabase.auth.getUser()}
 					<ButtonLoader class="btn-sm variant-filled-primary" text="Dashboard" />
 				{:then user}
@@ -43,7 +43,7 @@
 						>
 					{/if}
 				{/await}
-			</svelte:fragment> -->
+			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 	<!-- Page Route Content -->

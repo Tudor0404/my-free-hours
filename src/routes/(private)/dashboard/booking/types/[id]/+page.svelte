@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: '{data.type?.name}' Meeting type</title>
+</svelte:head>
+
 <script lang="ts">
 	import { absoluteTimeToObject, durationToString } from '$lib/utils/time';
 	import Icon from '@iconify/svelte';
@@ -8,7 +12,9 @@
 <div>
 	<h3>
 		<a href="/dashboard/booking/types" class="flex flex-row gap-2 justify-start items-center"
-			><Icon icon="tabler:arrow-left" /> Back to all meeting types</a
+		>
+			<Icon icon="tabler:arrow-left" />
+			Back to all meeting types</a
 		>
 	</h3>
 </div>
@@ -18,7 +24,7 @@
 		<h4 class="font-medium">
 			{data.type.name}
 			<span class={data.type.active ? 'text-success-600' : 'text-error-600'}
-				>({data.type.active ? 'active' : 'inactive'})</span
+			>({data.type.active ? 'active' : 'inactive'})</span
 			>
 		</h4>
 
@@ -26,23 +32,28 @@
 			<div class="flex flex-row gap-2">
 				{#if data.type.online}
 					<div class="space-x-2 cursor-default chip variant-outline-success">
-						<Icon icon="tabler:check" class="text-success-700-200-token" /> <span>online</span>
+						<Icon icon="tabler:check" class="text-success-700-200-token" />
+						<span>online</span>
 					</div>
 				{:else}
 					<div class="space-x-2 cursor-default chip variant-outline-error">
-						<Icon icon="tabler:x" class="text-error-700-200-token" /><span>online</span>
+						<Icon icon="tabler:x" class="text-error-700-200-token" />
+						<span>online</span>
 					</div>
 				{/if}
 
 				{#if data.type.in_person}
 					<div class="space-x-2 cursor-default chip variant-outline-success">
-						<Icon icon="tabler:check" class="text-success-700-200-token" /> <span>in person</span>
+						<Icon icon="tabler:check" class="text-success-700-200-token" />
+						<span>in person</span>
 					</div>
 				{:else}
 					<div class="space-x-2 cursor-default chip variant-outline-error">
-						<Icon icon="tabler:x" class="text-error-700-200-token" /> <span>in person</span>
+						<Icon icon="tabler:x" class="text-error-700-200-token" />
+						<span>in person</span>
 					</div>
 				{/if}
+
 			</div>
 
 			<div class="flex flex-row gap-2">

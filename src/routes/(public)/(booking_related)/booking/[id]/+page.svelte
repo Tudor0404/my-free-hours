@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: Booking with {data.bookingInfo.host_name}</title>
+</svelte:head>
+
 <script lang="ts">
 	import HorizontalRule from '$lib/components/misc/HorizontalRule.svelte';
 	import { absoluteTimeToObject, durationToString } from '$lib/utils/time';
@@ -46,8 +50,8 @@
 	<div class="flex flex-col gap-4 items-center px-10 py-8 w-full">
 		<h3 class="text-center">
 			{startTime.format('dddd, DD MMMM YYYY')}, {startTime.format('HH:mm')} to {startTime
-				.add(data.bookingInfo.duration, 'minute')
-				.format('HH:mm')}
+			.add(data.bookingInfo.duration, 'minute')
+			.format('HH:mm')}
 		</h3>
 		<HorizontalRule />
 		<div class="grid grid-cols-2 gap-x-4 w-fit">
@@ -69,11 +73,45 @@
 			<HorizontalRule />
 			<p><strong>Meeting description: </strong> {data.bookingInfo.meeting_description}</p>
 		{/if}
+		<HorizontalRule />
 
-		<button
-			class="btn variant-filled-error"
-			type="button"
-			on:click={() => modalStore.trigger(deleteModal)}>Cancel meeting</button
-		>
+		<p class="max-w-lg text-center">This meeting that can be cancelled at any time before the start of it. Press the
+			'copy link' button to save the website link to your clipboard.</p>
+
+		<div class="flex flex-col gap-2 items-center">
+
+
+			<div class="flex flex-row gap-2">
+
+
+				{#if data.bookingInfo.meeting_url}
+					<a
+						class="btn variant-filled-primary"
+						href={data.bookingInfo.meeting_url}
+						target="_blank">Open Meeting</a
+					>
+				{/if}
+				<button
+					class="btn variant-filled-primary"
+					type="button"
+					on:click={() => {window.navigator.clipboard.writeText(window.location.href);}}>
+					Copy link
+				</button>
+
+				<form action="https://yufhojeffwwthvabyuxm.supabase.co/functions/v1/get-single-ics" method="post">
+					<!-- Replace with your dynamic booking id if needed -->
+					<input type="hidden" name="id" value={data.urlID}>
+					<button class="btn variant-filled-primary" type="submit">Download ICS File</button>
+				</form>
+
+			</div>
+			<button
+				class="btn variant-filled-error w-fit"
+				type="button"
+				on:click={() => modalStore.trigger(deleteModal)}>Cancel meeting
+			</button
+			>
+		</div>
 	</div>
+
 </div>

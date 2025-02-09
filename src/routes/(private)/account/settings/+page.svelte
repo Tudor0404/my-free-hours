@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: User Settings</title>
+</svelte:head>
+
 <script lang="ts">
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
 	import HorizontalRule from '$lib/components/misc/HorizontalRule.svelte';
@@ -9,6 +13,7 @@
 	import Info from '$lib/components/misc/Info.svelte';
 	import dayjs, { type Dayjs } from 'dayjs';
 	import DateSelect from '$lib/components/input/multi/DateSelect.svelte';
+
 	let msSVG = '/media/ms-symbol.svg';
 
 	const toastStore = getToastStore();
@@ -136,7 +141,8 @@
 				{:else}
 					<Icon icon="tabler:x" class="text-error-700"></Icon>
 				{/if}
-			</div></svelte:fragment
+			</div>
+		</svelte:fragment
 		>
 		<svelte:fragment slot="content">
 			{#if data.identities && azureIdentity}

@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: Book meeting with {data.display_name}</title>
+</svelte:head>
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { appBarSubTitle } from '$stores/appbar';
@@ -238,7 +242,7 @@
 			{:else}
 				<span
 					class="flex justify-center items-center p-4 h-full text-lg text-center text-surface-800"
-					>Select a meeting type to view duration options</span
+				>Select a meeting type to view duration options</span
 				>
 			{/if}
 		</label>
@@ -290,10 +294,12 @@
 								type="button"
 								on:click={previousDate}
 								disabled={availableDates.indexOf($form.date) <= 0}
-								><Icon
+							>
+								<Icon
 									icon="tabler:chevron-left"
 									class="w-full h-full text-on-tertiary-token"
-								/></button
+								/>
+							</button
 							>
 							<h4 class="underline decoration-secondary-600 underline-offset-3 decoration-2">
 								{selectedDateString}
@@ -304,18 +310,22 @@
 								type="button"
 								on:click={nextDate}
 								disabled={availableDates.indexOf($form.date) >= availableDates.length - 1}
-								><Icon
+							>
+								<Icon
 									icon="tabler:chevron-right"
 									class="w-full h-full text-on-tertiary-token"
-								/></button
+								/>
+							</button
 							>
 						</div>
 						<RadioGroup active="variant-filled-tertiary" hover="hover:variant-soft-tertiary">
 							<RadioItem bind:group={$form.meeting_method} name="meeting_method" value={'in_person'}
-								>in person</RadioItem
+							>in person
+							</RadioItem
 							>
 							<RadioItem bind:group={$form.meeting_method} name="meeting_method" value={'online'}
-								>online</RadioItem
+							>online
+							</RadioItem
 							>
 						</RadioGroup>
 						<div
@@ -336,14 +346,14 @@
 									{:else}
 										<div class="flex justify-center items-center self-center w-full h-full">
 											<span class="text-center text-surface-800"
-												>No in person slots available on this date</span
+											>No in person slots available on this date</span
 											>
 										</div>
 									{/if}
 								{:else}
 									<div class="flex justify-center items-center self-center w-full h-full">
 										<span class="text-center text-surface-800"
-											>This meeting type does not allow in person meetings</span
+										>This meeting type does not allow in person meetings</span
 										>
 									</div>
 								{/if}
@@ -362,14 +372,14 @@
 									{:else}
 										<div class="flex justify-center items-center self-center w-full h-full">
 											<span class="text-center text-surface-800"
-												>No online slots available on this date</span
+											>No online slots available on this date</span
 											>
 										</div>
 									{/if}
 								{:else}
 									<div class="flex justify-center items-center self-center w-full h-full">
 										<span class="text-center text-surface-800"
-											>This meeting type does not allow online meetings</span
+										>This meeting type does not allow online meetings</span
 										>
 									</div>
 								{/if}

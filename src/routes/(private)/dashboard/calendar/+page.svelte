@@ -1,18 +1,21 @@
+<svelte:head>
+	<title>MFH: Calendar</title>
+</svelte:head>
+
 <script lang="ts">
 	import ConditionBlock from '$lib/schedule/ConditionBlock';
 	import Schedule from '$lib/schedule/Schedule';
 	import TimeBlock from '$lib/schedule/values/TimeBlock.js';
 	import { shuffleWithKey } from '$lib/utils/shuffle.js';
 	import { createTime, getAbsoluteTime, timeMath, timeToMilitaryString } from '$lib/utils/time.js';
-	import type { TimeRange } from '$types/TimeRange.js';
+	import type { TimeRange } from '$types/TimeRange';
 	import Calendar from '@event-calendar/core';
 	import TimeGrid from '@event-calendar/time-grid';
-	// import DayGrid from '@event-calendar/day-grid';
 	import List from '@event-calendar/list';
 	import dayjs, { type Dayjs } from 'dayjs';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
-	import { schedulesStore } from '$lib/stores/schedules.js';
+	import { invalidate } from '\$app/navigation';
 
 	export let data;
 
@@ -62,10 +65,10 @@
 			.flatMap((e) => e.times)
 			.concat(eventRanges || []);
 
-		const startSorted = slots.toSorted(
+		const startSorted = [...slots].sort(
 			(a, b) => getAbsoluteTime(a.start) - getAbsoluteTime(b.start)
 		);
-		const endSorted = slots.toSorted((a, b) => getAbsoluteTime(b.end) - getAbsoluteTime(a.end));
+		const endSorted = [...slots].sort((a, b) => getAbsoluteTime(b.end) - getAbsoluteTime(a.end));
 
 		if (startSorted.length == 0) {
 			document.documentElement.style.setProperty('--ec-time-height', `${40}px`);
@@ -113,6 +116,10 @@
 			height: '100%',
 			slotHeight: initialProperties[2],
 			eventClick: (info: any) => {
+				if (info.event.id.startsWith('outlookevent')) {
+					return;
+				}
+
 				const currentBooking = data.bookings.find((e) => e.id === Number.parseInt(info.event.id));
 				const bookingTypeIndex = getBookingTypeIndex(currentBooking?.type_id || null);
 
@@ -141,6 +148,7 @@
 					if (r) {
 						ec.removeEventById(info.event.id);
 					}
+					invalidate('supabase:db:booking_calendar');
 				});
 			},
 			eventSources: [
@@ -164,6 +172,16 @@
 									backgroundColor: colours[(bookingTypeIndex + 26) % 26]
 								};
 							});
+
+						const calendarEvents = data.calendar_events.filter((e) => dayjs(e.start_time).isBetween(start, end) && !e.booking_url).map(e => {
+							return {
+								start: dayjs(e.start_time).toDate(),
+								end: dayjs(e.end_time).toDate(),
+								id: 'outlookevent' + e.id,
+								title: 'Outlook Event',
+								backgroundColor: '#808080'
+							};
+						});
 
 						const unavailability = unavailableSchedule
 							.get_times_within_days(start, end)
@@ -194,7 +212,7 @@
 							ec.setOption('slotHeight', slotHeight);
 						}
 
-						successCallback([...bookings, ...unavailability]);
+						successCallback([...bookings, ...calendarEvents, ...unavailability]);
 					}
 				}
 			]
@@ -209,12 +227,12 @@
 </div>
 
 <style>
-	:root {
-		--ec-time-height: 50px;
-	}
+    :root {
+        --ec-time-height: 50px;
+    }
 
-	.ec-time-grid .ec-time,
-	.ec-time-grid .ec-line {
-		height: 50px !important;
-	}
+    .ec-time-grid .ec-time,
+    .ec-time-grid .ec-line {
+        height: 50px !important;
+    }
 </style>

@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: '{data.schedule?.name}' Schedule</title>
+</svelte:head>
+
 <script lang="ts">
 	import RootSchedule from '$lib/components/schedule/RootSchedule.svelte';
 	import Schedule from '$lib/schedule/Schedule';
@@ -17,7 +21,9 @@
 <div>
 	<h3>
 		<a href="/dashboard/schedules" class="flex flex-row gap-2 justify-start items-center"
-			><Icon icon="tabler:arrow-left" /> Back to all schedules</a
+		>
+			<Icon icon="tabler:arrow-left" />
+			Back to all schedules</a
 		>
 	</h3>
 </div>

@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: Schedules</title>
+</svelte:head>
+
 <script lang="ts">
 	import RootSchedule from '$lib/components/schedule/RootSchedule.svelte';
 	import { Accordion, AccordionItem, getToastStore } from '@skeletonlabs/skeleton';
@@ -140,10 +144,10 @@
 
 	<div class="flex flex-row gap-2 justify-start items-center">
 		<button class="btn variant-filled-success w-fit" type="submit"
-			>{$form.id ? 'Update' : 'Create'}</button
+		>{$form.id ? 'Update' : 'Create'}</button
 		>
 		<button class="btn variant-filled-warning w-fit" type="reset" on:click={resetForm}
-			>{$form.id ? 'Cancel Edit' : 'Reset'}</button
+		>{$form.id ? 'Cancel Edit' : 'Reset'}</button
 		>
 	</div>
 </form>

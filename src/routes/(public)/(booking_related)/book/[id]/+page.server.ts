@@ -7,6 +7,8 @@ import { error, redirect } from '@sveltejs/kit';
 import dayjs, { type Dayjs } from 'dayjs';
 import { fail, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
+import type { Event } from '@microsoft/microsoft-graph-types';
+import { SERVICE_TOKEN } from '$env/static/private';
 
 export async function load({ params, locals: { supabase } }) {
 	const { data: schedules } = await supabase.from('schedule').select('*');
@@ -31,10 +33,17 @@ export async function load({ params, locals: { supabase } }) {
 
 	const blacklistedDays = data.blacklisted_dates.map((e) => dayjs(e)).filter((e) => e.isValid());
 
-	const bookedSlots = (data.booked_slots as { start: string; end: string }[]).map((e) => ({
-		start: dayjs(e.start),
-		end: dayjs(e.end)
-	}));
+	const bookedSlots = (data.booked_slots as { start: string; end: string }[])
+		.concat(
+			data.calendar_events as {
+				start: string;
+				end: string;
+			}[]
+		)
+		.map((e) => ({
+			start: dayjs(e.start),
+			end: dayjs(e.end)
+		}));
 
 	inpersonSchedule.set_restrictions(blacklistedDays, bookedSlots);
 	onlineSchedule.set_restrictions(blacklistedDays, bookedSlots);
@@ -64,7 +73,7 @@ export async function load({ params, locals: { supabase } }) {
 }
 
 export const actions = {
-	createBooking: async ({ request, locals: { supabase, session }, params }) => {
+	createBooking: async ({ request, locals: { supabase, user }, params }) => {
 		const form = await superValidate(request, zod(booking));
 
 		if (!form.valid) {
@@ -144,12 +153,17 @@ export const actions = {
 			.map((e) => dayjs(e))
 			.filter((e) => e.isValid());
 
-		const bookedSlots = (bookingDetails.booked_slots as { start: string; end: string }[]).map(
-			(e) => ({
+		const bookedSlots = (
+			bookingDetails.booked_slots as {
+				start: string;
+				end: string;
+			}[]
+		)
+			.concat(bookingDetails.calendar_events as { start: string; end: string }[])
+			.map((e) => ({
 				start: dayjs(e.start),
 				end: dayjs(e.end)
-			})
-		);
+			}));
 
 		// time and date
 		if (form.data.meeting_method == 'in_person') {
@@ -305,6 +319,52 @@ export const actions = {
 			return fail(500, { form });
 		}
 
-		redirect(304, '/booking/' + urlID);
+		// create online meeting
+		const { error: refreshError } = await supabase
+			.from('user')
+			.select('*')
+			.neq('ms_provider_refresh_token', null)
+			.single();
+
+		if (refreshError) {
+			if (form.data.meeting_method === 'online') {
+				setError(form, 'meeting_method', 'Unable to create online meeting');
+				return fail(500, { form });
+			}
+
+			redirect(304, '/booking/' + urlID);
+		}
+
+		// cosnt createMeetingRes = await fetch("https://yufhojeffwwthvabyuxm.supabase.co/functions/v1/ms-create-event", {
+		// 	method: "POST",
+		// 	body: JSON.stringify()
+		// })
+
+		const { data: createMeetingData, error: createMeetingError } = await supabase.functions.invoke(
+			'ms-create-event',
+			{
+				body: {
+					start: startTime.toISOString(),
+					end: endTime.toISOString(),
+					subject: 'Meeting with ' + form.data.guest_name,
+					body: `${form.data.meeting_method === 'online' ? 'Online' : 'In person'} '${selectedType.name}' meeting with ${form.data.guest_name}${form.data.guest_email ? `(${form.data.guest_email})` : ''} at ${startTime.format('MMMM D, YYYY [at] h:mm A\n')} until ${endTime.format('MMMM D, YYYY [at] h:mm A\n')} (${form.data.duration} minutes).`,
+					isOnline: form.data.meeting_method === 'online',
+					guestEmail: form.data.guest_email,
+					guestName: form.data.guest_name,
+					url_id: params.id,
+					bookingUrl: urlID
+				},
+				headers: {
+					Authorization: 'Bearer ' + SERVICE_TOKEN
+				}
+			}
+		);
+
+		if (createMeetingError) {
+			console.log('Unable to create meeting ' + createMeetingError + createMeetingData);
+			redirect(304, '/booking/' + urlID);
+		}
+
+		if (urlID) redirect(304, '/booking/' + urlID);
 	}
 };

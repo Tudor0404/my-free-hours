@@ -1,0 +1,5 @@
+{
+	"imports": {
+		"@microsoft/microsoft-graph-types": "npm:@microsoft/microsoft-graph-types"
+	}
+}

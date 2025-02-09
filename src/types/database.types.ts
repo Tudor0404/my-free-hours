@@ -255,21 +255,21 @@ export type Database = {
       calendar_event: {
         Row: {
           booking_url: string | null
-          duration: number
+          end_time: string
           id: string
           start_time: string
           user_id: string
         }
         Insert: {
           booking_url?: string | null
-          duration: number
+          end_time: string
           id: string
           start_time: string
           user_id: string
         }
         Update: {
           booking_url?: string | null
-          duration?: number
+          end_time?: string
           id?: string
           start_time?: string
           user_id?: string
@@ -361,20 +361,20 @@ export type Database = {
         Row: {
           booking_id: number | null
           id: number
-          service: string | null
-          url: string
+          ms_id: string
+          url: string | null
         }
         Insert: {
           booking_id?: number | null
           id?: number
-          service?: string | null
-          url: string
+          ms_id: string
+          url?: string | null
         }
         Update: {
           booking_id?: number | null
           id?: number
-          service?: string | null
-          url?: string
+          ms_id?: string
+          url?: string | null
         }
         Relationships: [
           {
@@ -545,6 +545,7 @@ export type Database = {
           id: number | null
           is_deleted: boolean | null
           meeting_method: Database["public"]["Enums"]["meeting_method"] | null
+          meeting_url: string | null
           page_calendar_id: string | null
           page_post_notification: string | null
           page_pre_notification: string | null
@@ -596,6 +597,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      delta_ms_calendar: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       find_schedule_references:
         | {
             Args: {
@@ -625,6 +630,31 @@ export type Database = {
           meeting_name: string
           meeting_description: string
           host_name: string
+          meeting_url: string
+        }[]
+      }
+      get_booking_by_url_id: {
+        Args: {
+          p_url_id: string
+        }
+        Returns: {
+          booking_calendar_id: string
+          duration: number
+          guest_email: string
+          guest_name: string
+          host_email: string
+          host_name: string
+          is_deleted: boolean
+          meeting_method: string
+          page_calendar_id: string
+          page_post_notification: string
+          page_pre_notification: string
+          start_time: string
+          type_description: string
+          type_name: string
+          type_post_notification: string
+          type_pre_notification: string
+          url_id: string
         }[]
       }
       get_booking_page_details: {
@@ -645,6 +675,7 @@ export type Database = {
           booked_slots: Json
           blacklisted_dates: string[]
           calendar_events: Json
+          host_id: string
         }[]
       }
       get_booking_types_with_durations: {

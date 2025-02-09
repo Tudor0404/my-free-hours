@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MFH: Meeting types</title>
+</svelte:head>
+
 <script lang="ts">
 	import { Accordion, AccordionItem, getToastStore } from '@skeletonlabs/skeleton';
 	import { superForm } from 'sveltekit-superforms';
@@ -143,12 +147,16 @@
 
 		<ErrorMessage error={$errors.in_person} />
 	</div>
+	<p class="opacity-50">Meetings will only be able to be held online, if connected to <a
+		class="underline" href="/account/settings">microsoft</a>.
+	</p>
+
 
 	<hr class="my-4 h-0.5 border-t-0 bg-surface-600" />
 
 	<label class="label">
 		<span class="flex flex-row gap-2"
-			>Pre-meeting message <Info>Replaces the default message sent before the meeting.</Info></span
+		>Pre-meeting message <Info>Replaces the default message sent before the meeting.</Info></span
 		>
 		<textarea class="textarea" name="pre_notification" bind:value={$form.pre_notification}
 		></textarea>
@@ -157,7 +165,7 @@
 
 	<label class="label">
 		<span class="flex flex-row gap-2"
-			>Post-meeting message <Info>Replaces the default message sent after the meeting.</Info></span
+		>Post-meeting message <Info>Replaces the default message sent after the meeting.</Info></span
 		>
 		<textarea class="textarea" name="post_notification" bind:value={$form.post_notification}
 		></textarea>
@@ -167,9 +175,9 @@
 	<hr class="my-4 h-0.5 border-t-0 bg-surface-600" />
 
 	<span class="flex flex-row gap-2"
-		>Available durations for meeting <Info
-			>Maximum of 3 durations.<br /> Each durations must be within 1 and 120 minutes.</Info
-		>
+	>Available durations for meeting <Info
+	>Maximum of 3 durations.<br /> Each durations must be within 1 and 120 minutes.</Info
+	>
 	</span>
 	<DurationSelect bind:value={durations} />
 	<ErrorMessage error={$errors.durations?._errors} />
@@ -177,10 +185,10 @@
 
 	<div class="flex flex-row gap-1 mt-4">
 		<button type="submit" class="btn btn-md variant-filled-success w-fit"
-			>{$form.id ? 'Update' : 'Create'}</button
+		>{$form.id ? 'Update' : 'Create'}</button
 		>
 		<button type="reset" class="btn btn-md variant-filled-warning w-fit" on:click={resetForm}
-			>{$form.id ? 'Cancel Edit' : 'Reset'}</button
+		>{$form.id ? 'Cancel Edit' : 'Reset'}</button
 		>
 	</div>
 </form>
