@@ -60,13 +60,24 @@ export async function load({ params, locals: { supabase } }) {
 		absoluteTimeToObject(data.time_increment)
 	);
 
-	const form = await superValidate(zod(booking));
+	if (!data.booking_types || (data.booking_types as BookingTypePublic[]).length === 0) {
+		throw new Error('No booking type found.');
+	}
+	// @ts-ignore
+	const form = await superValidate(zod(booking), {
+		defaults: {
+			type_id: (data.booking_types as BookingTypePublic[])[0].id,
+			meeting_method: (data.booking_types as BookingTypePublic[])[0].in_person
+				? 'in_person'
+				: 'online'
+		}
+	});
 
 	return {
 		onlineSlots: onlineSlots,
 		inpersonSlots: inpersonSlots,
 		requiresEmail: data.requires_email,
-		meetingTypes: data.booking_types as BookingTypePublic[],
+		meetingTypes: (data.booking_types || []) as BookingTypePublic[],
 		display_name: data.display_name,
 		form
 	};

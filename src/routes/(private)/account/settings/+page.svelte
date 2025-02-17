@@ -5,10 +5,10 @@
 <script lang="ts">
 	import ErrorMessage from '$lib/components/form/ErrorMessage.svelte';
 	import HorizontalRule from '$lib/components/misc/HorizontalRule.svelte';
-	import { Accordion, AccordionItem, getToastStore } from '@skeletonlabs/skeleton';
+	import { Accordion, AccordionItem, getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { superForm, arrayProxy, fieldProxy } from 'sveltekit-superforms';
 	import { page } from '$app/stores';
-	import { invalidate } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import Icon from '@iconify/svelte';
 	import Info from '$lib/components/misc/Info.svelte';
 	import dayjs, { type Dayjs } from 'dayjs';
@@ -45,6 +45,25 @@
 		},
 		invalidateAll: 'force'
 	});
+
+	const deleteModal: ModalSettings = {
+		type: 'confirm',
+		title: 'Confirm Delete',
+		body: 'Are you sure you want to delete your account?',
+		response: async (r: boolean) => {
+			if (!r) return;
+
+			const data1 = await data.supabase.rpc('delete_user');
+
+			const data2 = await data.supabase.auth.signOut();
+
+			console.log(data1, data2);
+
+			goto('/');
+		}
+	};
+
+	const modalStore = getModalStore();
 
 	const {
 		form: blacklistForm,
@@ -267,6 +286,13 @@
 	</AccordionItem>
 	<AccordionItem>
 		<svelte:fragment slot="summary"><h4>Delete Account</h4></svelte:fragment>
-		<svelte:fragment slot="content"></svelte:fragment>
+		<svelte:fragment slot="content">
+			<button
+				class="flex flex-row gap-2 justify-start items-center btn variant-filled-error w-fit"
+				on:click={() => modalStore.trigger(deleteModal)}
+			>
+				Delete Account
+			</button>
+		</svelte:fragment>
 	</AccordionItem>
 </Accordion>

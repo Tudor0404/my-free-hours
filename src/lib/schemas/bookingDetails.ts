@@ -80,4 +80,16 @@ export const createDetails = z
 			message: 'Invalid email domain format',
 			path: ['required_email_domains']
 		}
+	)
+	.refine(
+		(data) => {
+			if (data.active) {
+				return data.online_schedule !== null && data.inperson_schedule !== null;
+			}
+			return true;
+		},
+		{
+			message: 'Both schedules must be set when activating the booking page',
+			path: ['active']
+		}
 	);

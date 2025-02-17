@@ -15,7 +15,7 @@
 	import dayjs, { type Dayjs } from 'dayjs';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
-	import { invalidate } from '\$app/navigation';
+	import { invalidate } from '$app/navigation';
 
 	export let data;
 
@@ -71,19 +71,14 @@
 		const endSorted = [...slots].sort((a, b) => getAbsoluteTime(b.end) - getAbsoluteTime(a.end));
 
 		if (startSorted.length == 0) {
-			document.documentElement.style.setProperty('--ec-time-height', `${40}px`);
 			return ['09:00', '16:00', 40];
 		}
 
 		const firstTime = createTime(startSorted[0].start.hours, 0);
-
 		const lastTime = createTime(endSorted[0].end.hours, 0);
-
 		const hours = lastTime.hours - firstTime.hours;
 		const maxHeight = 300;
 		const slotHeight = Math.trunc(Math.min(Math.max(maxHeight / hours, 24), 50));
-
-		document.documentElement.style.setProperty('--ec-time-height', `${slotHeight}px`);
 
 		return [
 			timeToMilitaryString(timeMath(firstTime, '-', createTime(1, 0)) || TimeBlock.EARLIEST_TIME),
@@ -93,13 +88,18 @@
 	}
 
 	const modalStore = getModalStore();
-
 	let ec: any;
 	let plugins = [TimeGrid, List];
 	let options: any;
+	let currentSlotHeight = 50;
+
+	$: if (currentSlotHeight) {
+		document.documentElement.style.setProperty('--ec-time-height', `${currentSlotHeight}px`);
+	}
 
 	onMount(() => {
 		const initialProperties = getCalendarProperties(dayjs().startOf('week'), dayjs().endOf('week'));
+		currentSlotHeight = initialProperties[2];
 
 		options = {
 			view: 'timeGridWeek',
@@ -173,15 +173,17 @@
 								};
 							});
 
-						const calendarEvents = data.calendar_events.filter((e) => dayjs(e.start_time).isBetween(start, end) && !e.booking_url).map(e => {
-							return {
-								start: dayjs(e.start_time).toDate(),
-								end: dayjs(e.end_time).toDate(),
-								id: 'outlookevent' + e.id,
-								title: 'Outlook Event',
-								backgroundColor: '#808080'
-							};
-						});
+						const calendarEvents = data.calendar_events
+							.filter((e) => dayjs(e.start_time).isBetween(start, end) && !e.booking_url)
+							.map(e => {
+								return {
+									start: dayjs(e.start_time).toDate(),
+									end: dayjs(e.end_time).toDate(),
+									id: 'outlookevent' + e.id,
+									title: 'Outlook Event',
+									backgroundColor: '#808080'
+								};
+							});
 
 						const unavailability = unavailableSchedule
 							.get_times_within_days(start, end)
@@ -207,6 +209,7 @@
 								})
 							);
 
+							currentSlotHeight = slotHeight;
 							ec.setOption('slotMinTime', min);
 							ec.setOption('slotMaxTime', max);
 							ec.setOption('slotHeight', slotHeight);
@@ -227,12 +230,24 @@
 </div>
 
 <style>
-    :root {
+    :global(:root) {
         --ec-time-height: 50px;
     }
 
-    .ec-time-grid .ec-time,
-    .ec-time-grid .ec-line {
-        height: 50px !important;
+    :global(.ec-time-grid .ec-time),
+    :global(.ec-time-grid .ec-line) {
+        height: var(--ec-time-height) !important;
+    }
+
+    :global(.ec-header > div:nth-child(1)) {
+        height: 0px;
+    }
+
+    :global(.ec-days) {
+        height: fit-content;
+    }
+
+    :global(.ec-header .ec-day) {
+        padding: 0.25em;
     }
 </style>

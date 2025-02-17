@@ -1,5 +1,3 @@
-import { error } from '@sveltejs/kit';
-
 export const ssr = false;
 
 export async function load({ locals: { supabase }, depends }) {
@@ -7,26 +5,32 @@ export async function load({ locals: { supabase }, depends }) {
 
 	depends('supabase:db:booking_calendar');
 
+	console.log((await supabase.auth.getUser()).data.user?.confirmed_at);
+
 	if (bookings === null) {
-		return error(400, "Unable to fetch the hosts's bookings");
+		throw new Error("Unable to fetch the hosts's bookings");
 	}
 
 	const { data: schedules } = await supabase.from('active_page_schedules').select('*').single();
-
-	if (schedules === null) {
-		return error(400, 'Unable to get used schedules');
+	
+	if (
+		schedules === null ||
+		schedules.online_schedule === null ||
+		schedules.inperson_schedule === null
+	) {
+		throw new Error('Unable to get used schedules');
 	}
 
 	const { data: booking_types } = await supabase.from('booking_type').select('*');
 
 	if (booking_types === null) {
-		return error(400, 'Unable to get booking types');
+		throw new Error('Unable to get booking types');
 	}
 
 	const { data: calendar_events } = await supabase.from('calendar_event').select('*');
 
 	if (calendar_events === null) {
-		return error(400, 'Unable to get calendar events');
+		throw new Error('Unable to get calendar events');
 	}
 
 	return {

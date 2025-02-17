@@ -19,7 +19,7 @@ export const load = async ({ locals: { supabase }, url }) => {
 export const actions = {
 	updateDetails: async ({ request, locals: { supabase, session } }) => {
 		const form = await superValidate(request, zod(createDetails));
-
+		
 		if (!session) {
 			return fail(400, { message: 'Unable to fetch user' });
 		}

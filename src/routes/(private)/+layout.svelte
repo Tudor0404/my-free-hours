@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { redirect } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
+	import { ProgressBar } from '@prgm/sveltekit-progress-bar';
 
 	export let data;
 	$: ({ supabase } = data);
@@ -15,7 +16,7 @@
 		}
 		goto('/');
 	};
-
+	
 	const catalogue: {
 		title: string;
 		pages: {
@@ -56,7 +57,7 @@
 	$: listboxItemActive = (href: string) =>
 		$page.url.pathname?.includes(href) ? 'bg-primary-active-token' : '';
 </script>
-
+<ProgressBar class="text-primary-600" />
 <AppShell slotHeader="shadow-sm [&>div]:p-3" slotSidebarLeft="shadow-inner">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
@@ -67,15 +68,18 @@
 						<strong class="text-xl">My Free Hours</strong>
 					</a>
 				</div>
+
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<button
 					class="btn btn-sm variant-filled-primary"
 					data-sveltekit-preload-data="hover"
-					on:click={logout}>Sign out</button
+					on:click={logout}>Sign out
+				</button
 				>
 			</svelte:fragment>
 		</AppBar>
+
 	</svelte:fragment>
 	<svelte:fragment slot="sidebarLeft">
 		<section class="overflow-y-auto p-4 pb-20 space-y-4 min-h-full bg-surface-300">

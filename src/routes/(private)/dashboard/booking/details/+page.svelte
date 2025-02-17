@@ -61,6 +61,7 @@
 			label={$form.active ? 'active' : 'not active'}
 		/>
 
+
 		<button
 			class="ml-auto btn btn-sm variant-glass-secondary hover:variant-filled-secondary"
 			type="button"
@@ -71,6 +72,7 @@
 		</button
 		>
 	</div>
+	<ErrorMessage error={$errors.active} />
 
 	<label class="flex items-center space-x-2">
 		<input

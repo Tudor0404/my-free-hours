@@ -18,6 +18,7 @@
 	import { Toast } from '@skeletonlabs/skeleton';
 	import TextModal from '$lib/components/modal/TextModal.svelte';
 	import BookingModal from '$lib/components/modal/BookingModal.svelte';
+	import { ProgressBar } from '@prgm/sveltekit-progress-bar';
 
 	// Modals and Toasts
 	initializeStores();

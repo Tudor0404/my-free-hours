@@ -2,11 +2,13 @@
 	import ButtonLoader from '$lib/components/input/buttons/ButtonLoader.svelte';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { appBarSubTitle } from '$stores/appbar';
+	import { ProgressBar } from '@prgm/sveltekit-progress-bar';
 
 	export let data;
 	$: ({ supabase } = data);
 </script>
 
+<ProgressBar class="text-primary-600" />
 <AppShell slotHeader="shadow-sm [&>div]:p-3">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
