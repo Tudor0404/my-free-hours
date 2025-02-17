@@ -304,7 +304,8 @@ serve(async (req: Request) => {
 								end_time: dayjs(messageData['end_time']).format('DD/MM/YYYY, h:mm a'),
 								duration: messageData['duration'] + ' minutes',
 								online_url: messageData['online_url'] || '-',
-								meeting_url: Deno.env.get('WEBSITE_URL') + 'booking/' + messageData['url_id']
+								meeting_url: Deno.env.get('WEBSITE_URL') + 'booking/' + messageData['url_id'],
+								date_time: dayjs(messageData['start_time']).format('DD/MM/YYYY, h:mm a')
 							});
 						} else {
 							guestEmail = renderToStaticMarkup(preMeetingGuestWithNotification, {
@@ -321,7 +322,8 @@ serve(async (req: Request) => {
 								duration: messageData['duration'] + ' minutes',
 								online_url: messageData['online_url'] || '-',
 								meeting_url: Deno.env.get('WEBSITE_URL') + 'booking/' + messageData['url_id'],
-								pre_meeting_notif: messageData['pre_meeting_notif']
+								pre_meeting_notif: messageData['pre_meeting_notif'],
+								date_time: dayjs(messageData['start_time']).format('DD/MM/YYYY, h:mm a')
 							});
 						}
 
@@ -359,7 +361,8 @@ serve(async (req: Request) => {
 						online_url: messageData['online_url'] || '-',
 						dashboard_url: Deno.env.get('WEBSITE_URL') + 'dashboard',
 						guest_email: messageData['guest_email'] || 'not given',
-						meeting_url: Deno.env.get('WEBSITE_URL') + 'booking/' + messageData['url_id']
+						meeting_url: Deno.env.get('WEBSITE_URL') + 'booking/' + messageData['url_id'],
+						date_time: dayjs(messageData['start_time']).format('DD/MM/YYYY, h:mm a')
 					});
 
 					const { error: emailErrorHost } = await resend.emails.send({
