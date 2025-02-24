@@ -130,7 +130,7 @@
 
 	<div class="space-y-2">
 		<label class="flex items-center space-x-2">
-			<input class="checkbox" type="checkbox" name="online" bind:value={$form.online} checked />
+			<input class="checkbox" type="checkbox" name="online" bind:checked={$form.online} />
 			<p>Online</p>
 		</label>
 		<label class="flex items-center space-x-2">
@@ -138,8 +138,7 @@
 				class="checkbox"
 				type="checkbox"
 				name="in_person"
-				bind:value={$form.in_person}
-				checked
+				bind:checked={$form.in_person}
 			/>
 			<p>In person</p>
 		</label>

@@ -8,6 +8,7 @@
 
 	export let block: DayBlock;
 	export let onDelete: () => void;
+	export let onDuplicate: () => void;
 	export let readOnly: boolean = false;
 
 	let operator: Operator = block.operator;
@@ -41,79 +42,9 @@
 	}
 </script>
 
-<FieldContainer field="Day" bind:operator {onDelete} {readOnly}>
+<FieldContainer field="Date" bind:operator {onDelete} {readOnly} {onDuplicate}>
 	{#if operator == 'IN'}
 		<DateSelect bind:days={inDays} disabled={readOnly} />
-
-		<!-- <button
-			type="button"
-			use:popup={dayPopup}
-			class="px-1 py-1 btn btn-sm variant-outline-tertiary hover:variant-filled-tertiary"
-		>
-			<span>{inDays.length} {inDays.length == 1 ? 'day' : 'days'}</span>
-
-			<div class={`transition-all duration-150' ${isPopupOpen ? 'rotate-180' : 'rotate-0'}`}>
-				<Icon icon="tabler:chevron-up" />
-			</div>
-		</button>
-
-		<div
-			class="z-10 justify-start items-stretch p-2 shadow-xl card w-[220px]"
-			data-popup={popupUUID}
-		>
-			<div class="flex flex-col gap-2">
-				<div class="flex flex-row gap-1">
-					<input
-						type="date"
-						class="px-0.5 py-0.5 h-8 text-sm input w-fit"
-						bind:value={inDaysNew}
-						min={dayjs().format('YYYY-MM-DD')}
-						disabled={readOnly}
-					/>
-					<button
-						class="w-full btn btn-sm variant-outline-success hover:variant-filled-tertiary"
-						type="button"
-						disabled={readOnly}
-						on:click={() => {
-							let newDay = dayjs(inDaysNew, 'YYYY-MM-DD', true);
-
-							if (newDay.isValid()) {
-								if (inDays.findIndex((d) => d.isSame(newDay)) == -1) {
-									inDays = [...inDays, newDay];
-								}
-								inDaysNew = '';
-							}
-						}}>Add</button
-					>
-				</div>
-				<div class="p-1 space-y-1">
-					<span>{inDays.length} Days selected</span>
-					<div
-						class="max-h-[150px] flex flex-col justify-start items-stretch gap-1 overflow-y-scroll hide-scrollbar"
-					>
-						{#each inDays as day, i}
-							<button
-								disabled={readOnly}
-								type="button"
-								class="justify-between w-full btn btn-sm variant-outline hover:variant-outline-error"
-								on:click={() =>
-									(inDays = [...inDays.slice(0, i), ...inDays.slice(i + 1, inDays.length)])}
-							>
-								<span>{day.format('DD/MM/YYYY')}</span>
-								<span><Icon icon="tabler:x" /></span>
-							</button>
-						{/each}
-					</div>
-				</div>
-			</div>
-
-			<button
-				class="absolute -top-3 -right-3 w-6 h-6 shadow-lg btn-icon variant-filled-error close-popup"
-				type="button"
-			>
-				<Icon icon="tabler:x" />
-			</button>
-		</div> -->
 	{:else if operator == 'BETWEEN'}
 		<input
 			type="date"
@@ -130,5 +61,6 @@
 			min={betweenStartInput}
 			disabled={readOnly}
 		/>
-	{/if}</FieldContainer
+	{/if}
+</FieldContainer
 >

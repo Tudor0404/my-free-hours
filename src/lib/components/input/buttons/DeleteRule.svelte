@@ -2,8 +2,8 @@
 	import Icon from '@iconify/svelte';
 
 	export let onDelete: (() => void) | undefined;
-
 	export let height: string = 'h-6';
+
 </script>
 
 <button

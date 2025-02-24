@@ -42,7 +42,6 @@ const preMeetingGuestSchema = {
   start_time: true,
   end_time: true,
   duration: true,
-  online_url: true,
   type_description: true,
   url_id: true,
   pre_meeting_notif: true,
@@ -58,7 +57,6 @@ const preMeetingHostSchema = {
   start_time: true,
   end_time: true,
   duration: true,
-  online_url: true,
   type_description: true,
   url_id: true,
 };

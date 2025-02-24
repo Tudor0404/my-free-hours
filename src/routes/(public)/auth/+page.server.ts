@@ -12,7 +12,7 @@ export const actions: Actions = {
 		if (error) {
 			redirect(303, '/auth/error');
 		} else {
-			redirect(303, '/');
+			redirect(303, '/auth/confirm-email');
 		}
 	},
 	login: async ({ request, locals: { supabase } }) => {

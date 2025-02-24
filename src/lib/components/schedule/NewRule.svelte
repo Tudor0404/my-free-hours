@@ -4,7 +4,6 @@
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	export let createDay: () => void;
-	``;
 	export let createWeekDay: () => void;
 	export let createMonth: () => void;
 	export let createDate: () => void;
@@ -28,44 +27,52 @@
 <button
 	class={'p-1 h-7 btn variant-soft-primary aspect-square ' + (readOnly ? 'hidden' : '')}
 	type="button"
-	{disabled}
+	disabled={disabled || readOnly}
 	title={disabled ? 'NOT conditions are limited to 1 rule' : ''}
-	use:popup={newRulePopup}><Icon class="w-full h-full" icon="tabler:playlist-add" /></button
+	use:popup={newRulePopup}>
+	<Icon class="w-full h-full" icon="tabler:playlist-add" />
+</button
 >
 
-<div class="card w-[200px] shadow-xl p-2 space-y-2 z-10" data-popup={'newRulePopup' + rand}>
+<div class="card w-[250px] shadow-xl p-2 space-y-2 z-10" data-popup={'newRulePopup' + rand}>
 	<div>
 		<span class="text-tertiary-900"> Fields </span>
 		<div class="grid grid-cols-2 gap-1 w-full">
 			<button
 				class="font-semibold btn btn-sm variant-soft-tertiary"
 				type="button"
-				on:click={createDay}>Day</button
+				on:click={createDay}>Date
+			</button
 			>
 			<button
 				class="font-semibold btn btn-sm variant-soft-tertiary"
 				type="button"
-				on:click={createWeekDay}>Week Day</button
+				on:click={createWeekDay}>Day of week
+			</button
 			>
 			<button
 				class="font-semibold btn btn-sm variant-soft-tertiary"
 				type="button"
-				on:click={createDate}>Date</button
+				on:click={createDate}>Day of month
+			</button
 			>
 			<button
 				class="font-semibold btn btn-sm variant-soft-tertiary"
 				type="button"
-				on:click={createMonth}>Month</button
+				on:click={createMonth}>Month
+			</button
 			>
 			<button
 				class="font-semibold btn btn-sm variant-soft-tertiary"
 				type="button"
-				on:click={createTime}>Time</button
+				on:click={createTime}>Time
+			</button
 			>
 			<button
 				class="font-semibold btn btn-sm variant-soft-tertiary"
 				type="button"
-				on:click={createSchedule}>Schedule</button
+				on:click={createSchedule}>Schedule
+			</button
 			>
 		</div>
 	</div>
@@ -75,17 +82,20 @@
 			<button
 				class="font-semibold btn btn-sm variant-soft-secondary"
 				type="button"
-				on:click={createAnd}>AND</button
+				on:click={createAnd}>AND
+			</button
 			>
 			<button
 				class="font-semibold btn btn-sm variant-soft-secondary"
 				type="button"
-				on:click={createOr}>OR</button
+				on:click={createOr}>OR
+			</button
 			>
 			<button
 				class="font-semibold btn btn-sm variant-soft-secondary"
 				type="button"
-				on:click={createNot}>NOT</button
+				on:click={createNot}>NOT
+			</button
 			>
 		</div>
 	</div>

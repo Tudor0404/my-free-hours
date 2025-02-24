@@ -17,10 +17,15 @@
 	import ScheduleBlock from '$lib/schedule/values/ScheduleBlock';
 	import ScheduleField from './ScheduleField.svelte';
 	import type { Database } from '$types/database.types';
+	import DuplicateRule from '$lib/components/input/buttons/DuplicateRule.svelte';
+	import WrapRule from '$lib/components/schedule/WrapRule.svelte';
+
 
 	export let condition: ConditionBlock;
 
-	export let onDelete: (() => void) | null = null;
+	export let onDelete: (() => void) | undefined = undefined;
+	export let onDuplicate: (() => void) | undefined = undefined;
+	export let setRoot: ((block: ConditionBlock) => void) | undefined = undefined;
 	export let changeCallback: () => void;
 	export let readOnly: boolean = false;
 	export let schedules: Database['public']['Tables']['schedule']['Row'][] | null = [];
@@ -35,9 +40,36 @@
 		condition.rules = [...condition.rules];
 	}
 
+	function duplicateRule(index: number) {
+		const rule = condition.rules[index];
+
+		condition.add_rule(rule.clone(), index);
+		condition.rules = [...condition.rules];
+	}
+
 	function addRule(block: Rule) {
 		condition.add_rule(block);
 		condition.rules = [...condition.rules];
+	}
+
+	function wrapRule(index: number, c: 'AND' | 'OR' | 'NOT') {
+		const newCondition = new ConditionBlock(c);
+
+		if (index == -1) {
+			newCondition.add_rule(condition.clone());
+			condition = newCondition;
+
+			if (setRoot) {
+				setRoot(newCondition);
+			}
+		} else {
+			newCondition.add_rule(condition.rules[index].clone());
+			deleteRule(index);
+			condition.add_rule(newCondition, index);
+			condition.rules = [...condition.rules];
+		}
+
+
 	}
 </script>
 
@@ -66,30 +98,48 @@
 				createNot={() => addRule(new ConditionBlock('NOT'))}
 				createSchedule={() => addRule(new ScheduleBlock(-1))}
 			/>
-			{#if onDelete && !readOnly}
+			<WrapRule
+				{readOnly}
+				wrapAnd={() => wrapRule(-1, "AND")}
+				wrapOr={() => wrapRule(-1, "OR")}
+				wrapNot={() => wrapRule(-1, "NOT")}
+
+			></WrapRule>
+			{#if !readOnly}
 				<div class="flex-grow h-0.5 rounded-md bg-primary-100/20"></div>
-				<DeleteRule {onDelete} />
+				{#if onDuplicate}
+					<DuplicateRule {onDuplicate} />
+				{/if}
+				{#if onDelete}
+					<DeleteRule {onDelete} />
+				{/if}
 			{/if}
 		</div>
 		<div class="flex relative flex-col ml-4 border-l-2 border-primary-200">
 			{#key condition.rules.length}
 				{#each condition.rules as rule, i}
 					{#if rule instanceof DayBlock}
-						<DayField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
+						<DayField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly}
+											onDuplicate={() => duplicateRule(i)} />
 					{:else if rule instanceof DayOfWeekBlock}
-						<DayOfWeekField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
+						<DayOfWeekField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly}
+														onDuplicate={() => duplicateRule(i)} />
 					{:else if rule instanceof MonthBlock}
-						<MonthField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
+						<MonthField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly}
+												onDuplicate={() => duplicateRule(i)} />
 					{:else if rule instanceof DateBlock}
-						<DateField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
+						<DateField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly}
+											 onDuplicate={() => duplicateRule(i)} />
 					{:else if rule instanceof TimeBlock}
-						<TimeField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly} />
+						<TimeField bind:block={rule} onDelete={() => deleteRule(i)} {readOnly}
+											 onDuplicate={() => duplicateRule(i)} />
 					{:else if rule instanceof ScheduleBlock}
 						<ScheduleField
 							bind:block={rule}
 							onDelete={() => deleteRule(i)}
 							{readOnly}
 							{schedules}
+							onDuplicate={() => duplicateRule(i)}
 						/>
 					{:else if rule instanceof ConditionBlock}
 						<svelte:self
@@ -98,6 +148,7 @@
 							{changeCallback}
 							{readOnly}
 							{schedules}
+							onDuplicate={() => duplicateRule(i)}
 						/>
 					{/if}
 				{/each}

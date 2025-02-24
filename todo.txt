@@ -1,0 +1,42 @@
+HARD
+====
+
+
+
+
+
+
+
+
+
+PARTIALLY FIXED:
+
+Schedule generation is pretty neat, but as it is 'top down', I need to think before I create it. It would be nice (but probably infeasible for this project) to be able to *insert* a condition at any level, including at the very top level, e.g. wrap everyhing in an OR so that I can add things I didn't think about first time.  As a workaround, it's relatively easy to make multiple schedules for this purpose, so it's defintely not needed.
+- Added wraping to conditions, but not fields. This is due to the way they are handled separately. It would require a drastic change to the way messages are passed across the tree.
+
+You should proably use today's date/time to constrain the preview, since it must also constrain the real dates.It's conventional for the date preview to block out/grey out days before today, and to signal today with a border, or fill rather than a little tag in the corner.
+- I have constrained the preview, however I cannot change the current day indicator due to the library's API; it would require a swap of the UI library.
+
+
+CANNOT FIX:
+
+Appointment size in the calendar should match the appointment duration - 10 minute meetings are taking up too long, they should take up the right amount of space
+- Library used for the calendar does have the option to prevent events to be taller than they should be.
+
+
+TRANSIENT BUG: Error: Unable to book a meeting with the host at the moment.  Fixed with a refresh.
+TRANSIENT BUG: "Booking unsuccessfully created!" - not sure why, error message was not clear. Tried again and it worked
+- Both of these relate to the url id param being sent back as an install map file name, it is only present when the website is accessed through the production server. Unfortuantely I cannot reproduce these issues on my machine and cannot find similar errors online. I've already tried debugging this and looking thought the docs, but I cannot find a fix. To debug this issue further, it would mean integrating log drains, which would take up too much time.
+
+
+SHOULD NOT FIX:
+
+BUG: there's a problem with the dates and times shown - it only seems to be showing my in person availability, even though I set up a "supervision" meeting type that allows both onine and in person meetings, the booking page says "This meeting type does not allow online meetings".  Maybe  related to the meeting type BUG above.
+- When creating a new meeting, it specfies underneath the checkboxes that online meetings cannot be held if not connected to microsoft
+
+Pre-meeting message delay - is delay the right word?   Pre-meeting message alert maybe? Should there be a 'no alert' option
+- I do not think there should be a no alert option, to prevent guests from forgetting about their meetings
+
+A suggestion for an advanced schedule field - "every n days/weeks/months starting from date" (e.g. recurring meetings?)
+- This change would require a heavy uplift of the scheduling logic as it combined multiple fields (date in combination with the other), and it would break the validation, which is in place separetly in the database and website.
+

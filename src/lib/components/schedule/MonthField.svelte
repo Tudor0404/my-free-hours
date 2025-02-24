@@ -10,6 +10,7 @@
 
 	export let block: MonthBlock;
 	export let onDelete: () => void;
+	export let onDuplicate: () => void;
 	export let readOnly: boolean = false;
 	let operator: Operator = block.operator;
 	let betweenStart: number = 0;
@@ -77,7 +78,7 @@
 	};
 </script>
 
-<FieldContainer field="Month" bind:operator {onDelete} {readOnly}>
+<FieldContainer field="Month" bind:operator {onDelete} {readOnly} {onDuplicate}>
 	{#if operator == 'IN'}
 		<div use:popup={monthPopup}>
 			<AddMultiple

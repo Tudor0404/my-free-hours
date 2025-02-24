@@ -1,1 +1,1 @@
-<h4 class="text-center w-full">You must set your schedules before seeing your calendar</h4>
+<h4 class="text-center w-full">You must set your schedules in the 'details' page before seeing your calendar</h4>

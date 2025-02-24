@@ -10,6 +10,7 @@
 
 	export let block: DateBlock;
 	export let onDelete: () => void;
+	export let onDuplicate: () => void;
 	export let readOnly: boolean = false;
 	let operator: Operator = block.operator;
 	let betweenStart: number = 1;
@@ -46,7 +47,7 @@
 	};
 </script>
 
-<FieldContainer field="Date" bind:operator {onDelete} {readOnly}>
+<FieldContainer field="Day of month" bind:operator {onDelete} {readOnly} {onDuplicate}>
 	{#if operator == 'IN'}
 		<div use:popup={datePopup}>
 			<AddMultiple values={inDate.toSorted((e1, e2) => e1 - e2)} />

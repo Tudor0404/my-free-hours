@@ -1,9 +1,9 @@
-import type { Field } from "$types/Schedule.Field";
-import type { Operator } from "$types/Schedule.Operator";
-import type { ValueBlockInterface } from "$types/Schedule.ValueBlock";
-import type { TimeRange } from "$types/TimeRange";
-import dayjs, { type Dayjs } from "dayjs";
-import { v4 as uuidv4 } from "uuid";
+import type { Field } from '$types/Schedule.Field';
+import type { Operator } from '$types/Schedule.Operator';
+import type { ValueBlockInterface } from '$types/Schedule.ValueBlock';
+import type { TimeRange } from '$types/TimeRange';
+import dayjs, { type Dayjs } from 'dayjs';
+import { v4 as uuidv4 } from 'uuid';
 
 export default abstract class ValueBlock<V> implements ValueBlockInterface<V> {
 	field: Field;
@@ -11,12 +11,7 @@ export default abstract class ValueBlock<V> implements ValueBlockInterface<V> {
 	values: V[];
 	uuid: string;
 
-	constructor(
-		field: Field,
-		operator: Operator,
-		value: V[],
-		uuid: string = uuidv4(),
-	) {
+	constructor(field: Field, operator: Operator, value: V[], uuid: string = uuidv4()) {
 		this.field = field;
 		this.operator = operator;
 		this.values = value;
@@ -27,11 +22,13 @@ export default abstract class ValueBlock<V> implements ValueBlockInterface<V> {
 
 	abstract verify(): boolean;
 
+	abstract clone(): ValueBlock<V>;
+
 	encode_json(): Record<string, any> {
 		return {
 			field: this.field,
 			operator: this.operator,
-			values: this.values,
+			values: this.values
 		};
 	}
 

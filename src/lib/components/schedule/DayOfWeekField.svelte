@@ -10,6 +10,7 @@
 
 	export let block: DayOfWeekBlock;
 	export let onDelete: () => void;
+	export let onDuplicate: () => void;
 	export let readOnly: boolean = false;
 	let operator: Operator = block.operator;
 	let betweenStart: number = 1;
@@ -67,7 +68,7 @@
 	};
 </script>
 
-<FieldContainer field="Week day" bind:operator {onDelete} {readOnly}>
+<FieldContainer field="Day of week" bind:operator {onDelete} {readOnly} {onDuplicate}>
 	{#if operator == 'IN'}
 		<div use:popup={weekDayPopup}>
 			<AddMultiple

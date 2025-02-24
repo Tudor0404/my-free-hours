@@ -14,6 +14,8 @@ export async function load({ params, locals: { supabase } }) {
 	const { data: schedules } = await supabase.from('schedule').select('*');
 	schedulesStore.setFromArray(schedules || []);
 
+	console.log(params);
+
 	const { error: sError, data } = await supabase
 		.rpc('get_booking_page_details', {
 			url_id_input: params.id

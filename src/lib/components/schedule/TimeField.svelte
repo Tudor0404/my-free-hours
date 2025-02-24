@@ -6,6 +6,7 @@
 
 	export let block: TimeBlock;
 	export let onDelete: () => void;
+	export let onDuplicate: () => void;
 	export let readOnly: boolean = false;
 	let start: HoursMinutes = block.start;
 	let end: HoursMinutes = block.end;
@@ -16,7 +17,7 @@
 	}
 </script>
 
-<FieldContainer field="Time" operatorChangeable={false} operator="BETWEEN" {onDelete} {readOnly}>
+<FieldContainer field="Time" operatorChangeable={false} operator="BETWEEN" {onDelete} {readOnly} {onDuplicate}>
 	<Time bind:value={start} maxValue={end} {readOnly} />
 
 	<span>and</span>

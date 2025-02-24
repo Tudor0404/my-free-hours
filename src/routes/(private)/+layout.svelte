@@ -16,7 +16,7 @@
 		}
 		goto('/');
 	};
-	
+
 	const catalogue: {
 		title: string;
 		pages: {
@@ -71,6 +71,16 @@
 
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				<button
+					class="ml-auto btn btn-sm variant-glass-secondary hover:variant-filled-secondary"
+					type="button"
+					on:click={() => navigator.clipboard.writeText(`${data.origin}/book/${data.urlId}`)}
+				>
+					<Icon icon="tabler:link" class="mr-1" />
+					Copy guest link
+				</button
+				>
+
 				<button
 					class="btn btn-sm variant-filled-primary"
 					data-sveltekit-preload-data="hover"

@@ -158,9 +158,9 @@
 		</label>
 
 		<label class="label">
-			<span>Pre-meeting message delay</span>
+			<span>Pre-meeting alert</span>
 			<Info
-			>How much time before the meeting starts, that the pre-notification message is to be sent.
+			>How long before the meeting starts that the pre-meeting message is sent.
 			</Info
 			>
 			<select class="select" bind:value={$form.pre_notification_time} name="pre_notification_time">
@@ -177,9 +177,9 @@
 		</label>
 
 		<label class="label">
-			<span>Post-meeting message delay</span>
+			<span>Post-meeting alert</span>
 			<Info
-			>How much time after the meeting end, that the post-notification message is to be sent.
+			>How long after the meeting ends that the post-meeting message is sent.
 			</Info
 			>
 			<select
@@ -201,7 +201,8 @@
 
 		<label class="label">
 			<span>Default pre-meeting message</span>
-			<Info>Pre-meeting message to be sent if none is specified for the specific meeting type.
+			<Info>Pre-meeting message to be sent if none is specified for the specific meeting type.<br>Message is sent
+				regardless if it is specified or not.
 			</Info
 			>
 			<textarea
@@ -218,7 +219,8 @@
 		<label class="label">
 			<span>Default post-meeting message</span>
 			<Info
-			>Post-meeting message to be sent if none is specified for the specific meeting type.
+			>Post-meeting message to be sent if none is specified for the specific meeting type.<br>Message is not sent if not
+				specified.
 			</Info
 			>
 			<textarea

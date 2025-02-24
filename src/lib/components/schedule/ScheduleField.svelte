@@ -7,6 +7,7 @@
 
 	export let block: ScheduleBlock;
 	export let onDelete: () => void;
+	export let onDuplicate: () => void;
 	export let readOnly: boolean = false;
 	export let schedules: Database['public']['Tables']['schedule']['Row'][] | null;
 
@@ -24,6 +25,7 @@
 	operator="IN"
 	{onDelete}
 	{readOnly}
+	{onDuplicate}
 	showOperator={false}
 >
 	<SelectSchedule

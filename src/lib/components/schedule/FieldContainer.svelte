@@ -2,12 +2,14 @@
 	import type { Operator } from '$types/Schedule.Operator';
 	import Icon from '@iconify/svelte';
 	import DeleteRule from '../input/buttons/DeleteRule.svelte';
+	import DuplicateRule from '$lib/components/input/buttons/DuplicateRule.svelte';
 
 	export let field: string;
 	export let operator: Operator = 'IN';
 	export let operatorChangeable: boolean = true;
 	export let showOperator: boolean = true;
 	export let onDelete: (() => void) | undefined = undefined;
+	export let onDuplicate: (() => void) | undefined = undefined;
 	export let readOnly: boolean = false;
 </script>
 
@@ -31,11 +33,7 @@
 				}}
 			>
 				<span class="">{operator === 'BETWEEN' ? 'between' : 'in'}</span>
-				<!-- {#if operator == 'IN'}
-				<Icon icon="tabler:chevron-up" />
-			{:else}
-				<Icon icon="tabler:chevron-down" />
-			{/if} -->
+
 			</button>
 		{/if}
 	</div>
@@ -43,6 +41,7 @@
 	<slot />
 	{#if !readOnly}
 		<div class="flex-grow h-0.5 rounded-md bg-primary-100/20"></div>
+		<DuplicateRule {onDuplicate} />
 		<DeleteRule {onDelete} />
 	{/if}
 </div>
